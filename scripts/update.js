@@ -9,7 +9,7 @@ const RARITY_CONFIG = {
     'Silver': { maxLevelRange: [45, 55], statMultiplier: 0.80, overallBonus: -12 },
     'Bronze': { maxLevelRange: [40, 60], statMultiplier: 0.75, overallBonus: -16 },
     'White': { maxLevelRange: [30, 60], statMultiplier: 0.70, overallBonus: -20 }
-};
+};   // foii"scripts": { "test": "echo \"Error: no test specified\" && exit 1"//},
 
 // Position-based stat priorities
 const POSITION_STATS = {
