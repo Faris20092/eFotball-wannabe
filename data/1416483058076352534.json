@@ -1,0 +1,58 @@
+{
+  "id": "1416483058076352534",
+  "gp": 10000,
+  "eCoins": 100,
+  "players": [],
+  "squad": {
+    "main": [],
+    "bench": []
+  },
+  "mail": [
+    {
+      "id": "kpbvws9i",
+      "type": "pack",
+      "rarity": "Black",
+      "qty": 1,
+      "date": "2025-09-15"
+    },
+    {
+      "id": "hzmwsttg",
+      "type": "pack",
+      "rarity": "Iconic",
+      "qty": 1,
+      "date": "2025-09-15"
+    },
+    {
+      "id": "2wcmx2tr",
+      "type": "pack",
+      "rarity": "Legend",
+      "qty": 1,
+      "date": "2025-09-15"
+    },
+    {
+      "id": "kvv6ori3",
+      "type": "pack",
+      "rarity": "Black",
+      "qty": 1,
+      "date": "2025-09-15"
+    },
+    {
+      "id": "zs5ah3p9",
+      "type": "pack",
+      "rarity": "Black",
+      "qty": 1,
+      "date": "2025-09-15"
+    }
+  ],
+  "inventory": {
+    "freePacks": {
+      "Iconic": 0,
+      "Legend": 0,
+      "Black": 0
+    }
+  },
+  "minigames": {},
+  "daily": {
+    "lastClaim": ""
+  }
+}

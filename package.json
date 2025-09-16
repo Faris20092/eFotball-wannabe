@@ -1,0 +1,18 @@
+{ "$schema": "https://json.schemastore.org/package.json", "name": "efotbal-wannabe",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@discordjs/ws": "^2.0.3",
+    "@faker-js/faker": "^10.0.0",
+    "discord.js": "^14.13.0",
+    "dotenv": "^17.2.2"
+  }
+}

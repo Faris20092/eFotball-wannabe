@@ -1,0 +1,9 @@
+{
+  "prefix": "!",
+  "botName": "eFotbal wannabe",
+  "gachaGifs": {
+    "Iconic": "https://example.com/gifs/iconic.gif",
+    "Legend": "https://example.com/gifs/legend.gif",
+    "Black": "https://example.com/gifs/black.gif"
+  }
+}
