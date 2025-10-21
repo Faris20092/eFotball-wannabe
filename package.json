@@ -4,8 +4,12 @@
   "main": "index.js",
 
   "scripts": {
+<<<<<<< HEAD
   "start": "node server.js",
   "bot": "node index.js"
+=======
+  "start": "node index.js"
+>>>>>>> 530c177b7cf001cca03f01e5c268645e49b09927
 },
   "keywords": [],
   "author": "",
@@ -15,7 +19,11 @@
     "@discordjs/ws": "^2.0.3",
     "@faker-js/faker": "^10.0.0",
     "discord.js": "^14.13.0",
+<<<<<<< HEAD
     "dotenv": "^17.2.2",
     "express": "^4.18.2"
+=======
+    "dotenv": "^17.2.2"
+>>>>>>> 530c177b7cf001cca03f01e5c268645e49b09927
   }
 }
