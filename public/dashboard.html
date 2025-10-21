@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - eFotball Manager</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">⚽ eFotball Manager</div>
+        <div class="nav-menu">
+            <a href="/dashboard" class="nav-link active">Dashboard</a>
+            <a href="#" onclick="showTab('squad')" class="nav-link">Squad Builder</a>
+            <a href="#" onclick="showTab('players')" class="nav-link">My Players</a>
+            <a href="/logout" class="nav-link">Logout</a>
+        </div>
+        <div class="user-info" id="userInfo">
+            <img id="userAvatar" src="" alt="Avatar" class="user-avatar">
+            <span id="username">Loading...</span>
+        </div>
+    </nav>
+
+    <div class="dashboard-container">
+        <!-- Overview Tab -->
+        <div id="overview-tab" class="tab-content active">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">💰</div>
+                    <div class="stat-info">
+                        <div class="stat-label">GP</div>
+                        <div class="stat-value" id="gpAmount">0</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🪙</div>
+                    <div class="stat-info">
+                        <div class="stat-label">eCoins</div>
+                        <div class="stat-value" id="eCoinsAmount">0</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">👥</div>
+                    <div class="stat-info">
+                        <div class="stat-label">Players</div>
+                        <div class="stat-value" id="playerCount">0</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">⭐</div>
+                    <div class="stat-info">
+                        <div class="stat-label">Team Rating</div>
+                        <div class="stat-value" id="teamRating">0</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="quick-actions">
+                <h2>Quick Actions</h2>
+                <div class="action-buttons">
+                    <button class="action-btn" onclick="showTab('squad')">
+                        <span class="action-icon">⚽</span>
+                        <span>Build Squad</span>
+                    </button>
+                    <button class="action-btn" onclick="showTab('players')">
+                        <span class="action-icon">👥</span>
+                        <span>View Players</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Squad Builder Tab -->
+        <div id="squad-tab" class="tab-content">
+            <div class="squad-builder">
+                <div class="squad-header">
+                    <h2>Squad Builder</h2>
+                    <div class="formation-selector">
+                        <label>Formation:</label>
+                        <select id="formationSelect" onchange="changeFormation()">
+                            <option value="4-3-3">4-3-3</option>
+                            <option value="4-4-2">4-4-2</option>
+                            <option value="3-5-2">3-5-2</option>
+                            <option value="4-2-3-1">4-2-3-1</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary" onclick="saveSquad()">💾 Save Squad</button>
+                </div>
+
+                <div class="squad-pitch" id="squadPitch">
+                    <!-- Squad positions will be dynamically generated -->
+                </div>
+
+                <div class="bench-section">
+                    <h3>Bench</h3>
+                    <div class="bench-players" id="benchPlayers">
+                        <!-- Bench players will be shown here -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="player-selector">
+                <h3>Available Players</h3>
+                <div class="player-filters">
+                    <input type="text" id="playerSearch" placeholder="Search players..." onkeyup="filterPlayers()">
+                    <select id="positionFilter" onchange="filterPlayers()">
+                        <option value="">All Positions</option>
+                        <option value="GK">GK</option>
+                        <option value="DEF">Defenders</option>
+                        <option value="MID">Midfielders</option>
+                        <option value="ATT">Attackers</option>
+                    </select>
+                </div>
+                <div class="available-players" id="availablePlayers">
+                    <!-- Available players will be shown here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Players Tab -->
+        <div id="players-tab" class="tab-content">
+            <div class="players-header">
+                <h2>My Players</h2>
+                <div class="player-filters">
+                    <input type="text" id="allPlayersSearch" placeholder="Search..." onkeyup="filterAllPlayers()">
+                    <select id="rarityFilter" onchange="filterAllPlayers()">
+                        <option value="">All Rarities</option>
+                        <option value="Iconic">💎 Iconic</option>
+                        <option value="Legend">🌟 Legend</option>
+                        <option value="Black">⚫ Black</option>
+                        <option value="Gold">🟡 Gold</option>
+                        <option value="Silver">⚪ Silver</option>
+                        <option value="Bronze">🟤 Bronze</option>
+                        <option value="White">⬜ White</option>
+                    </select>
+                </div>
+            </div>
+            <div class="players-grid" id="allPlayersGrid">
+                <!-- All players will be shown here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Player Modal -->
+    <div id="playerModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <div id="playerModalContent"></div>
+        </div>
+    </div>
+
+    <script src="/dashboard.js"></script>
+</body>
+</html>
