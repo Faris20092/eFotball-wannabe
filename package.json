@@ -5,8 +5,9 @@
   "description": "eFotball Discord Bot - Football Manager Bot with 24/7 web server",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",
-    "bot": "node index.js"
+    "start": "node web-server.js",
+    "bot": "node index.js",
+    "dev": "node web-server.js"
   },
   "keywords": [
     "discord",
@@ -18,11 +19,18 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
-    "@discordjs/ws": "^2.0.3",
     "@faker-js/faker": "^10.0.0",
     "discord.js": "^14.13.0",
     "dotenv": "^17.2.2",
     "express": "^4.18.2",
     "node.js": "^0.0.1-security"
+    "discord.js": "^14.16.3",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
+    "express-session": "^1.18.1",
+    "passport": "^0.7.0",
+    "passport-discord": "^0.1.4",
+    "body-parser": "^1.20.3",
+    "cookie-parser": "1.4.6",
   }
 }
