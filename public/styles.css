@@ -227,16 +227,16 @@ body {
 
 /* Navbar */
 .navbar {
-    background: rgba(0, 20, 220, 0.95);
+    background: rgba(0, 20, 220, 0.98);
     box-shadow: 0 2px 10px rgba(0,0,0,0.5);
-    padding: 15px 30px;
+    padding: 10px 30px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     position: sticky;
     top: 0;
     z-index: 1000;
-    border-bottom: 3px solid var(--secondary);
+    border-bottom: 2px solid rgba(255, 237, 0, 0.3);
 }
 
 .nav-brand {
@@ -249,20 +249,62 @@ body {
 
 .nav-menu {
     display: flex;
-    gap: 30px;
+    gap: 5px;
+    align-items: center;
 }
 
 .nav-link {
     color: #fff;
     text-decoration: none;
     font-weight: 700;
-    transition: color 0.3s;
-    text-transform: uppercase;
-    font-size: 0.9em;
+    transition: all 0.3s;
+    text-transform: capitalize;
+    font-size: 0.95em;
+    padding: 12px 20px;
+    border-radius: 25px;
 }
 
-.nav-link:hover, .nav-link.active {
+.nav-link:hover {
     color: var(--secondary);
+    background: rgba(255, 237, 0, 0.1);
+}
+
+.nav-link.active {
+    background: var(--secondary);
+    color: #000;
+    font-weight: 900;
+}
+
+.nav-btn {
+    background: var(--secondary);
+    color: #000;
+    font-weight: 900;
+    text-transform: uppercase;
+    padding: 12px 35px;
+    border-radius: 30px;
+    box-shadow: 0 3px 10px rgba(255, 237, 0, 0.4);
+}
+
+.nav-btn:hover {
+    background: #FFF500;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255, 237, 0, 0.6);
+}
+
+.nav-btn-pink {
+    background: var(--accent-pink);
+    color: #fff;
+    font-weight: 900;
+    text-transform: uppercase;
+    padding: 12px 35px;
+    border-radius: 30px;
+    box-shadow: 0 3px 10px rgba(255, 0, 107, 0.4);
+}
+
+.nav-btn-pink:hover {
+    background: #FF1A7A;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255, 0, 107, 0.6);
 }
 
 .user-info {
@@ -450,6 +492,19 @@ body {
     cursor: pointer;
     transition: all 0.3s;
     color: #fff;
+    position: relative;
+}
+
+.player-slot.drag-over {
+    background: rgba(255, 237, 0, 0.3);
+    border-color: var(--secondary);
+    border-style: solid;
+    transform: scale(1.05);
+}
+
+.player-slot.dragging {
+    opacity: 0.5;
+    cursor: grabbing;
 }
 
 .player-slot:hover {
@@ -569,9 +624,16 @@ body {
     border-radius: 10px;
     padding: 15px;
     text-align: center;
-    cursor: pointer;
+    cursor: grab;
     transition: all 0.3s;
     color: #fff;
+    user-select: none;
+}
+
+.player-card.dragging {
+    opacity: 0.5;
+    cursor: grabbing;
+    transform: rotate(5deg);
 }
 
 .player-card:hover {

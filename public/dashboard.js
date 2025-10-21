@@ -132,6 +132,19 @@ function renderSquadPitch() {
                 const slot = document.createElement('div');
                 slot.className = player ? 'player-slot filled' : 'player-slot';
                 slot.dataset.position = posIndex;
+                
+                // Add drag and drop events
+                slot.draggable = player ? true : false;
+                if (player) {
+                    slot.dataset.playerId = player.id;
+                    slot.addEventListener('dragstart', handleDragStart);
+                    slot.addEventListener('dragend', handleDragEnd);
+                }
+                slot.addEventListener('dragover', handleDragOver);
+                slot.addEventListener('drop', handleDrop);
+                slot.addEventListener('dragleave', handleDragLeave);
+                
+                // Keep click functionality
                 slot.onclick = () => openPlayerSelector(posIndex);
                 
                 slot.innerHTML = `
@@ -139,7 +152,7 @@ function renderSquadPitch() {
                     ${player ? `
                         <div class="player-name">${player.name}</div>
                         <div class="player-rating">${player.overall}</div>
-                    ` : '<div style="color: #999;">Empty</div>'}
+                    ` : '<div style="color: #999;">Click to add</div>'}
                 `;
                 
                 row.appendChild(slot);
@@ -215,22 +228,6 @@ function renderAllPlayers() {
         const card = createPlayerCard(player, () => showPlayerDetails(player));
         container.appendChild(card);
     });
-}
-
-// Create player card
-function createPlayerCard(player, onClick) {
-    const card = document.createElement('div');
-    card.className = 'player-card';
-    card.onclick = onClick;
-    
-    card.innerHTML = `
-        <div class="rarity">${RARITY_EMOJIS[player.rarity] || '⚽'}</div>
-        <div class="name">${player.name}</div>
-        <div class="overall">${player.overall}</div>
-        <div class="position">${player.position}</div>
-    `;
-    
-    return card;
 }
 
 // Show player details modal
@@ -441,6 +438,113 @@ window.onclick = function(event) {
     if (event.target === modal) {
         closeModal();
     }
+}
+
+// Drag and Drop Handlers
+let draggedElement = null;
+let draggedPlayerId = null;
+let draggedFromPosition = null;
+
+function handleDragStart(e) {
+    draggedElement = e.target;
+    draggedPlayerId = e.target.dataset.playerId;
+    draggedFromPosition = parseInt(e.target.dataset.position);
+    
+    e.target.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/html', e.target.innerHTML);
+}
+
+function handleDragEnd(e) {
+    e.target.classList.remove('dragging');
+    
+    // Remove drag-over class from all slots
+    document.querySelectorAll('.player-slot').forEach(slot => {
+        slot.classList.remove('drag-over');
+    });
+}
+
+function handleDragOver(e) {
+    if (e.preventDefault) {
+        e.preventDefault();
+    }
+    
+    e.dataTransfer.dropEffect = 'move';
+    e.target.closest('.player-slot')?.classList.add('drag-over');
+    
+    return false;
+}
+
+function handleDragLeave(e) {
+    e.target.closest('.player-slot')?.classList.remove('drag-over');
+}
+
+function handleDrop(e) {
+    if (e.stopPropagation) {
+        e.stopPropagation();
+    }
+    
+    e.preventDefault();
+    
+    const dropSlot = e.target.closest('.player-slot');
+    if (!dropSlot) return;
+    
+    const dropPosition = parseInt(dropSlot.dataset.position);
+    const dropPlayerId = dropSlot.dataset.playerId;
+    
+    // Don't drop on the same position
+    if (draggedFromPosition === dropPosition) {
+        dropSlot.classList.remove('drag-over');
+        return false;
+    }
+    
+    // Swap players
+    if (dropPlayerId) {
+        // Swap the two players
+        currentSquad.main[draggedFromPosition] = dropPlayerId;
+        currentSquad.main[dropPosition] = draggedPlayerId;
+    } else {
+        // Move to empty slot
+        currentSquad.main[dropPosition] = draggedPlayerId;
+        currentSquad.main[draggedFromPosition] = null;
+    }
+    
+    // Re-render the pitch
+    renderSquadPitch();
+    calculateTeamRating();
+    
+    return false;
+}
+
+// Make player cards draggable too
+function createPlayerCard(player, onClick) {
+    const card = document.createElement('div');
+    card.className = 'player-card';
+    card.draggable = true;
+    card.dataset.playerId = player.id;
+    
+    // Drag events for player cards
+    card.addEventListener('dragstart', (e) => {
+        draggedPlayerId = player.id;
+        draggedFromPosition = null; // Coming from available players
+        e.target.classList.add('dragging');
+        e.dataTransfer.effectAllowed = 'copy';
+    });
+    
+    card.addEventListener('dragend', (e) => {
+        e.target.classList.remove('dragging');
+    });
+    
+    card.onclick = onClick;
+    
+    card.innerHTML = `
+        <div class="rarity">${RARITY_EMOJIS[player.rarity] || '⚽'}</div>
+        <div class="name">${player.name}</div>
+        <div class="overall">${player.overall}</div>
+        <div class="position">${player.position}</div>
+    `;
+    
+    return card;
 }
 
 // Initialize on page load

@@ -3,17 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - eFotball Manager</title>
+    <title>Dashboard - eFotball wannabe</title>
     <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
     <nav class="navbar">
-        <div class="nav-brand">⚽ eFotball Manager</div>
+        <div class="nav-brand">⚽ eFOOTBALL WANNABE</div>
         <div class="nav-menu">
-            <a href="/dashboard" class="nav-link active">Dashboard</a>
-            <a href="#" onclick="showTab('squad')" class="nav-link">Squad Builder</a>
-            <a href="#" onclick="showTab('players')" class="nav-link">My Players</a>
-            <a href="/logout" class="nav-link">Logout</a>
+            <a href="/dashboard" class="nav-link nav-btn" onclick="showTab('overview'); return false;">HOME</a>
+            <a href="#" class="nav-link" onclick="showTab('overview'); return false;">Overview</a>
+            <a href="#" class="nav-link" onclick="showTab('squad'); return false;">Squad Builder</a>
+            <a href="#" class="nav-link" onclick="showTab('players'); return false;">My Players</a>
+            <a href="#" class="nav-link">Online Support</a>
+            <a href="/logout" class="nav-link nav-btn-pink">LOGOUT</a>
         </div>
         <div class="user-info" id="userInfo">
             <img id="userAvatar" src="" alt="Avatar" class="user-avatar">
