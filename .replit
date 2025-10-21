@@ -1,5 +1,6 @@
 run = "npm start"
 entrypoint = "server.js"
+modules = ["nodejs-20"]
 
 [nix]
 channel = "stable-22_11"
@@ -7,3 +8,10 @@ channel = "stable-22_11"
 [deployment]
 run = ["sh", "-c", "npm start"]
 deploymentTarget = "cloudrun"
+
+[agent]
+expertMode = true
+
+[[ports]]
+localPort = 3000
+externalPort = 80
