@@ -15884,7 +15884,7 @@
       "5c70851d-6a74-4eda-95cb-6507aa0b9593",
       "d865efcf-7f87-49af-bf4c-199581bea66d",
       "65e2083a-8cb1-49df-b66a-b85efd453692",
-      "3d5571d0-c89f-42b0-85c5-cdf71d011370",
+      "04aba96c-b61e-48d6-968f-d91c436da00f",
       "6a50784a-e7f6-4893-a42b-6539460aed84",
       "6dbdf1c4-8c36-4657-afc9-ef0702efcc4c",
       "1406c0c0-148e-45f2-a795-86c19d77f74b",
@@ -15940,5 +15940,6 @@
       "createdAt": 1757941794735
     }
   ],
-  "trainingExp": 0
+  "trainingExp": 0,
+  "formation": "4-3-3"
 }
