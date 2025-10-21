@@ -20,6 +20,7 @@
   "type": "commonjs",
   "dependencies": {
     "@faker-js/faker": "^10.0.0",
+    "node.js": "^0.0.1-security",
     "discord.js": "^14.16.3",
     "dotenv": "^16.4.5",
     "express": "^4.21.1",
@@ -27,6 +28,6 @@
     "passport": "^0.7.0",
     "passport-discord": "^0.1.4",
     "body-parser": "^1.20.3",
-    "cookie-parser": "^1.4.7"
+    "cookie-parser": "1.4.7"
   }
 }
