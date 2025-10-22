@@ -15879,26 +15879,25 @@
   ],
   "squad": {
     "main": [
-      "43ac88c8-4e04-4fb9-8001-03ea543bcca4",
-      "75cd491c-0aad-4b0b-a05c-097f5af4975b",
-      "5c70851d-6a74-4eda-95cb-6507aa0b9593",
-      "d865efcf-7f87-49af-bf4c-199581bea66d",
-      "65e2083a-8cb1-49df-b66a-b85efd453692",
-      "3d5571d0-c89f-42b0-85c5-cdf71d011370",
-      "6a50784a-e7f6-4893-a42b-6539460aed84",
-      "6dbdf1c4-8c36-4657-afc9-ef0702efcc4c",
-      "1406c0c0-148e-45f2-a795-86c19d77f74b",
-      "d31a8945-9524-48eb-ae69-7041f4ac1037",
-      "f7198010-b02f-43af-8d04-87b1d4098f38"
+      null,
+      null,
+      "0d3f4c8c-a138-4f84-8afa-9db889eb9432",
+      null,
+      null,
+      "ae465601-5f0b-454d-a429-3f368ebde08f",
+      null,
+      null,
+      null,
+      null,
+      null
     ],
     "bench": [
       "9b89a1a4-c177-4c74-a970-f7111111c10c",
       "9db50e59-3f2b-4aba-a004-dd75ac5bef9b",
       "93174d15-6544-43ff-9922-6780899eba63",
       "1a15fc85-d699-49cd-a681-665f957efea1",
-      "ae465601-5f0b-454d-a429-3f368ebde08f",
-      "0d3f4c8c-a138-4f84-8afa-9db889eb9432",
-      "0bd029e0-2249-4f22-8b5e-89c2c5731455"
+      "0bd029e0-2249-4f22-8b5e-89c2c5731455",
+      "f7198010-b02f-43af-8d04-87b1d4098f38"
     ]
   },
   "mail": [
