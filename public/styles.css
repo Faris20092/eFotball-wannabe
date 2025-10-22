@@ -568,6 +568,66 @@ body {
     border-style: solid;
 }
 
+/* Reserves */
+.reserves-section {
+    margin-top: 20px;
+    background: rgba(0, 0, 51, 0.3);
+    padding: 20px;
+    border-radius: 10px;
+    border: 2px dashed rgba(65, 105, 225, 0.5);
+    min-height: 100px;
+}
+
+.reserves-section h3 {
+    color: var(--accent-blue);
+    margin-bottom: 15px;
+    font-weight: 900;
+    text-transform: uppercase;
+}
+
+.reserves-players {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    min-height: 60px;
+}
+
+.reserves-section.drag-over {
+    background: rgba(65, 105, 225, 0.2);
+    border-color: var(--accent-blue);
+    border-style: solid;
+}
+
+.reserve-player {
+    background: rgba(0, 0, 51, 0.8);
+    border: 2px solid rgba(65, 105, 225, 0.5);
+    border-radius: 8px;
+    padding: 10px;
+    min-width: 100px;
+    text-align: center;
+    cursor: grab;
+    transition: all 0.3s;
+    color: #fff;
+    user-select: none;
+}
+
+.reserve-player:hover {
+    border-color: var(--accent-blue);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(65, 105, 225, 0.4);
+}
+
+.reserve-player.dragging {
+    opacity: 0.5;
+    cursor: grabbing;
+}
+
+.reserve-player.drag-over {
+    background: rgba(65, 105, 225, 0.3);
+    border-color: var(--accent-blue);
+    border-style: solid;
+}
+
 .bench-player {
     background: rgba(0, 0, 51, 0.8);
     border: 2px solid rgba(255, 237, 0, 0.3);

@@ -1,9 +1,10 @@
 // Global state
 let userData = null;
 let allPlayers = [];
-let currentSquad = { main: [], bench: [] };
+let currentSquad = { main: [], bench: [], reserves: [] };
 let currentFormation = '4-3-3';
 let availablePlayersList = [];
+let autoScrollInterval = null;
 
 const FORMATIONS = {
     '4-3-3': ['GK', 'LB', 'CB', 'CB', 'RB', 'CMF', 'CMF', 'CMF', 'LWF', 'CF', 'RWF'],
@@ -68,7 +69,13 @@ async function loadSquad() {
     try {
         const response = await fetch('/api/squad');
         const data = await response.json();
-        currentSquad = data.squad || { main: [], bench: [] };
+        currentSquad = data.squad || { main: [], bench: [], reserves: [] };
+        
+        // Ensure reserves array exists
+        if (!currentSquad.reserves) {
+            currentSquad.reserves = [];
+        }
+        
         currentFormation = data.formation || '4-3-3';
         document.getElementById('formationSelect').value = currentFormation;
         
@@ -236,6 +243,7 @@ function renderSquadPitch() {
     });
     
     renderBench();
+    renderReserves();
 }
 
 // Render bench
@@ -276,13 +284,55 @@ function renderBench() {
     });
 }
 
+// Render reserves
+function renderReserves() {
+    const reservesContainer = document.getElementById('reservesPlayers');
+    reservesContainer.innerHTML = '';
+    
+    if (!currentSquad.reserves || currentSquad.reserves.length === 0) {
+        reservesContainer.innerHTML = '<p style="color: #999;">No reserve players</p>';
+        return;
+    }
+    
+    currentSquad.reserves.forEach((playerId, idx) => {
+        const player = allPlayers.find(p => p.id === playerId);
+        if (player) {
+            const reservePlayer = document.createElement('div');
+            reservePlayer.className = 'reserve-player';
+            reservePlayer.draggable = true;
+            reservePlayer.dataset.playerId = player.id;
+            reservePlayer.dataset.reserveIndex = idx;
+            reservePlayer.dataset.source = 'reserves';
+            
+            // Add drag events for reserve players
+            reservePlayer.addEventListener('dragstart', handleReserveDragStart);
+            reservePlayer.addEventListener('dragend', handleDragEnd);
+            reservePlayer.addEventListener('dragover', handleDragOver);
+            reservePlayer.addEventListener('drop', handleReserveDrop);
+            reservePlayer.addEventListener('dragleave', handleDragLeave);
+            
+            reservePlayer.onclick = () => showPlayerDetails(player);
+            reservePlayer.innerHTML = `
+                <div>${player.name}</div>
+                <div style="font-weight: bold; color: var(--accent-blue);">${player.overall}</div>
+                <div style="font-size: 0.85em; color: #aaa;">${player.position}</div>
+            `;
+            reservesContainer.appendChild(reservePlayer);
+        }
+    });
+}
+
 // Render available players
 function renderAvailablePlayers() {
     const container = document.getElementById('availablePlayers');
     container.innerHTML = '';
     
-    // Filter out players already in squad
-    const usedPlayerIds = [...currentSquad.main, ...currentSquad.bench].filter(id => id !== null);
+    // Filter out players already in squad, bench, or reserves
+    const usedPlayerIds = [
+        ...currentSquad.main.filter(id => id !== null),
+        ...currentSquad.bench.filter(id => id !== null),
+        ...(currentSquad.reserves || []).filter(id => id !== null)
+    ];
     const available = availablePlayersList.filter(p => !usedPlayerIds.includes(p.id));
     
     if (available.length === 0) {
@@ -590,6 +640,8 @@ let draggedPlayerId = null;
 let draggedFromPosition = null;
 let draggedFromBench = false;
 let draggedBenchIndex = null;
+let draggedFromReserves = false;
+let draggedReserveIndex = null;
 
 function handleDragStart(e) {
     draggedElement = e.target;
@@ -597,10 +649,15 @@ function handleDragStart(e) {
     draggedFromPosition = parseInt(e.target.dataset.position);
     draggedFromBench = false;
     draggedBenchIndex = null;
+    draggedFromReserves = false;
+    draggedReserveIndex = null;
     
     e.target.classList.add('dragging');
     e.dataTransfer.effectAllowed = 'move';
     e.dataTransfer.setData('text/html', e.target.innerHTML);
+    
+    // Start auto-scroll
+    startAutoScroll(e);
 }
 
 function handleBenchDragStart(e) {
@@ -609,14 +666,39 @@ function handleBenchDragStart(e) {
     draggedFromPosition = null;
     draggedFromBench = true;
     draggedBenchIndex = parseInt(e.target.dataset.benchIndex);
+    draggedFromReserves = false;
+    draggedReserveIndex = null;
     
     e.target.classList.add('dragging');
     e.dataTransfer.effectAllowed = 'move';
     e.dataTransfer.setData('text/html', e.target.innerHTML);
+    
+    // Start auto-scroll
+    startAutoScroll(e);
+}
+
+function handleReserveDragStart(e) {
+    draggedElement = e.target;
+    draggedPlayerId = e.target.dataset.playerId;
+    draggedFromPosition = null;
+    draggedFromBench = false;
+    draggedBenchIndex = null;
+    draggedFromReserves = true;
+    draggedReserveIndex = parseInt(e.target.dataset.reserveIndex);
+    
+    e.target.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/html', e.target.innerHTML);
+    
+    // Start auto-scroll
+    startAutoScroll(e);
 }
 
 function handleDragEnd(e) {
     e.target.classList.remove('dragging');
+    
+    // Stop auto-scroll
+    stopAutoScroll();
     
     // Remove drag-over class from all slots
     document.querySelectorAll('.player-slot').forEach(slot => {
@@ -658,8 +740,21 @@ function handleDrop(e) {
         return false;
     }
     
+    // If dragging from reserves
+    if (draggedFromReserves) {
+        // Remove from reserves
+        currentSquad.reserves.splice(draggedReserveIndex, 1);
+        
+        // If dropping on occupied slot, move that player to reserves
+        if (dropPlayerId) {
+            currentSquad.reserves.push(dropPlayerId);
+        }
+        
+        // Add to squad position
+        currentSquad.main[dropPosition] = draggedPlayerId;
+    }
     // If dragging from bench
-    if (draggedFromBench) {
+    else if (draggedFromBench) {
         // Remove from bench
         currentSquad.bench.splice(draggedBenchIndex, 1);
         
@@ -678,8 +773,8 @@ function handleDrop(e) {
         // Add to squad position
         currentSquad.main[dropPosition] = draggedPlayerId;
     }
-    // If dragging from available players (not from pitch or bench)
-    else if (draggedFromPosition === null && !draggedFromBench) {
+    // If dragging from available players (not from pitch, bench, or reserves)
+    else if (draggedFromPosition === null && !draggedFromBench && !draggedFromReserves) {
         // Check if player already exists in squad (strict check)
         const inSquad = currentSquad.main.filter(id => id !== null).indexOf(draggedPlayerId);
         if (inSquad !== -1) {
@@ -740,8 +835,22 @@ function handleBenchDrop(e) {
     
     const dropTarget = e.target.closest('.bench-player');
     
+    // If dragging from reserves to bench
+    if (draggedFromReserves) {
+        // Check bench limit
+        if (currentSquad.bench.length >= 8) {
+            alert('⚠️ Bench is full! Maximum 8 players allowed.');
+            return false;
+        }
+        
+        // Remove from reserves
+        currentSquad.reserves.splice(draggedReserveIndex, 1);
+        
+        // Add to bench
+        currentSquad.bench.push(draggedPlayerId);
+    }
     // If dragging from squad to bench
-    if (draggedFromPosition !== null && !draggedFromBench) {
+    else if (draggedFromPosition !== null && !draggedFromBench && !draggedFromReserves) {
         // Check bench limit
         if (currentSquad.bench.length >= 8) {
             alert('⚠️ Bench is full! Maximum 8 players allowed.');
@@ -757,7 +866,7 @@ function handleBenchDrop(e) {
         }
     }
     // If dragging from available players to bench
-    else if (draggedFromPosition === null && !draggedFromBench) {
+    else if (draggedFromPosition === null && !draggedFromBench && !draggedFromReserves) {
         // Check bench limit
         if (currentSquad.bench.length >= 8) {
             alert('⚠️ Bench is full! Maximum 8 players allowed.');
@@ -788,6 +897,62 @@ function handleBenchDrop(e) {
             const temp = currentSquad.bench[draggedBenchIndex];
             currentSquad.bench[draggedBenchIndex] = currentSquad.bench[dropBenchIndex];
             currentSquad.bench[dropBenchIndex] = temp;
+        }
+    }
+    
+    // Re-render
+    renderSquadPitch();
+    renderAvailablePlayers();
+    calculateTeamRating();
+    
+    return false;
+}
+
+// Handle drop on reserves
+function handleReserveDrop(e) {
+    if (e.stopPropagation) {
+        e.stopPropagation();
+    }
+    
+    e.preventDefault();
+    
+    const dropTarget = e.target.closest('.reserve-player');
+    
+    // If dragging from squad to reserves
+    if (draggedFromPosition !== null && !draggedFromBench && !draggedFromReserves) {
+        currentSquad.main[draggedFromPosition] = null;
+        if (!currentSquad.reserves.includes(draggedPlayerId)) {
+            currentSquad.reserves.push(draggedPlayerId);
+        }
+    }
+    // If dragging from bench to reserves
+    else if (draggedFromBench) {
+        currentSquad.bench.splice(draggedBenchIndex, 1);
+        if (!currentSquad.reserves.includes(draggedPlayerId)) {
+            currentSquad.reserves.push(draggedPlayerId);
+        }
+    }
+    // If dragging from available players to reserves
+    else if (draggedFromPosition === null && !draggedFromBench && !draggedFromReserves) {
+        const inSquad = currentSquad.main.filter(id => id !== null).includes(draggedPlayerId);
+        const inBench = currentSquad.bench.filter(id => id !== null).includes(draggedPlayerId);
+        const inReserves = currentSquad.reserves.filter(id => id !== null).includes(draggedPlayerId);
+        
+        if (inSquad || inBench || inReserves) {
+            alert('⚠️ This player is already in your squad, bench, or reserves!');
+            return false;
+        }
+        
+        currentSquad.reserves.push(draggedPlayerId);
+    }
+    // If swapping reserve players
+    else if (draggedFromReserves && dropTarget) {
+        const dropReserveIndex = parseInt(dropTarget.dataset.reserveIndex);
+        if (draggedReserveIndex !== dropReserveIndex) {
+            // Swap reserve positions
+            const temp = currentSquad.reserves[draggedReserveIndex];
+            currentSquad.reserves[draggedReserveIndex] = currentSquad.reserves[dropReserveIndex];
+            currentSquad.reserves[dropReserveIndex] = temp;
         }
     }
     
@@ -884,4 +1049,84 @@ document.addEventListener('DOMContentLoaded', () => {
             calculateTeamRating();
         });
     }
+    
+    // Make reserves section a drop zone
+    const reservesSection = document.getElementById('reservesSection');
+    if (reservesSection) {
+        reservesSection.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            reservesSection.classList.add('drag-over');
+            handleAutoScroll(e); // Update scroll position
+        });
+        
+        reservesSection.addEventListener('dragleave', (e) => {
+            if (e.target === reservesSection) {
+                reservesSection.classList.remove('drag-over');
+            }
+        });
+        
+        reservesSection.addEventListener('drop', (e) => {
+            e.preventDefault();
+            reservesSection.classList.remove('drag-over');
+            
+            // If dragging from squad to reserves
+            if (draggedFromPosition !== null && !draggedFromBench && !draggedFromReserves) {
+                currentSquad.main[draggedFromPosition] = null;
+                if (!currentSquad.reserves.includes(draggedPlayerId)) {
+                    currentSquad.reserves.push(draggedPlayerId);
+                }
+            }
+            // If dragging from bench to reserves
+            else if (draggedFromBench) {
+                currentSquad.bench.splice(draggedBenchIndex, 1);
+                if (!currentSquad.reserves.includes(draggedPlayerId)) {
+                    currentSquad.reserves.push(draggedPlayerId);
+                }
+            }
+            // If dragging from available players to reserves
+            else if (draggedFromPosition === null && !draggedFromBench && !draggedFromReserves) {
+                const inSquad = currentSquad.main.filter(id => id !== null).includes(draggedPlayerId);
+                const inBench = currentSquad.bench.filter(id => id !== null).includes(draggedPlayerId);
+                const inReserves = currentSquad.reserves.filter(id => id !== null).includes(draggedPlayerId);
+                
+                if (!inSquad && !inBench && !inReserves) {
+                    currentSquad.reserves.push(draggedPlayerId);
+                } else {
+                    alert('⚠️ This player is already in your squad, bench, or reserves!');
+                    return;
+                }
+            }
+            
+            renderSquadPitch();
+            renderAvailablePlayers();
+            calculateTeamRating();
+        });
+    }
 });
+
+// Auto-scroll functionality
+function startAutoScroll(e) {
+    // Store initial mouse position
+    document.addEventListener('dragover', handleAutoScroll);
+}
+
+function handleAutoScroll(e) {
+    const scrollZone = 100; // pixels from edge to trigger scroll
+    const scrollSpeed = 10; // pixels per frame
+    
+    const viewportHeight = window.innerHeight;
+    const mouseY = e.clientY;
+    
+    // Scroll up if near top
+    if (mouseY < scrollZone) {
+        window.scrollBy(0, -scrollSpeed);
+    }
+    // Scroll down if near bottom
+    else if (mouseY > viewportHeight - scrollZone) {
+        window.scrollBy(0, scrollSpeed);
+    }
+}
+
+function stopAutoScroll() {
+    document.removeEventListener('dragover', handleAutoScroll);
+}
