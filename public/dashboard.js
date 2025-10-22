@@ -26,9 +26,7 @@ const RARITY_EMOJIS = {
 async function init() {
     await loadUserData();
     await loadPlayers();
-    await loadSquad();
-    renderSquadPitch();
-    renderAvailablePlayers();
+    await loadSquad(); // This now handles rendering internally
     renderAllPlayers();
 }
 
@@ -83,6 +81,9 @@ async function loadSquad() {
             await saveSquad(true); // Silent save
         }
         
+        // FORCE RE-RENDER after cleanup
+        renderSquadPitch();
+        renderAvailablePlayers();
         calculateTeamRating();
     } catch (error) {
         console.error('Error loading squad:', error);
