@@ -74,10 +74,68 @@ async function loadSquad() {
         currentFormation = data.formation || '4-3-3';
         document.getElementById('formationSelect').value = currentFormation;
         
+        // CRITICAL: Remove duplicates from loaded squad
+        const hadDuplicates = cleanupDuplicates();
+        
+        // If duplicates were found and removed, auto-save the cleaned squad
+        if (hadDuplicates) {
+            console.log('Duplicates detected and removed. Auto-saving cleaned squad...');
+            await saveSquad(true); // Silent save
+        }
+        
         calculateTeamRating();
     } catch (error) {
         console.error('Error loading squad:', error);
     }
+}
+
+// Clean up duplicate players in squad
+function cleanupDuplicates() {
+    const seenIds = new Set();
+    const cleanMain = [];
+    let foundDuplicates = false;
+    
+    // Clean main squad - keep first occurrence, remove duplicates
+    for (let i = 0; i < currentSquad.main.length; i++) {
+        const playerId = currentSquad.main[i];
+        
+        if (playerId === null || playerId === undefined) {
+            cleanMain.push(null);
+        } else if (!seenIds.has(playerId)) {
+            seenIds.add(playerId);
+            cleanMain.push(playerId);
+        } else {
+            // Duplicate found - replace with null
+            console.warn(`Duplicate player ${playerId} found at position ${i}, removing...`);
+            cleanMain.push(null);
+            foundDuplicates = true;
+        }
+    }
+    
+    // Clean bench - remove duplicates and players already in main squad
+    const cleanBench = [];
+    for (const playerId of currentSquad.bench) {
+        if (playerId !== null && playerId !== undefined && !seenIds.has(playerId)) {
+            seenIds.add(playerId);
+            cleanBench.push(playerId);
+        } else if (playerId !== null && playerId !== undefined) {
+            console.warn(`Duplicate player ${playerId} found in bench, removing...`);
+            foundDuplicates = true;
+        }
+    }
+    
+    // Update squad with cleaned data
+    currentSquad.main = cleanMain;
+    currentSquad.bench = cleanBench.slice(0, 8); // Enforce 8 player limit
+    
+    if (foundDuplicates) {
+        console.log('Squad cleaned - duplicates removed:', {
+            main: cleanMain.filter(id => id !== null).length,
+            bench: cleanBench.length
+        });
+    }
+    
+    return foundDuplicates;
 }
 
 // Calculate team rating
@@ -385,7 +443,7 @@ function changeFormation() {
 }
 
 // Save squad
-async function saveSquad() {
+async function saveSquad(silent = false) {
     try {
         const response = await fetch('/api/squad/update', {
             method: 'POST',
@@ -401,13 +459,21 @@ async function saveSquad() {
         const result = await response.json();
         
         if (result.success) {
-            alert('✅ Squad saved successfully!');
+            if (!silent) {
+                alert('✅ Squad saved successfully!');
+            } else {
+                console.log('✅ Squad auto-saved after cleanup');
+            }
         } else {
-            alert('❌ Failed to save squad: ' + (result.error || 'Unknown error'));
+            if (!silent) {
+                alert('❌ Failed to save squad: ' + (result.error || 'Unknown error'));
+            }
         }
     } catch (error) {
         console.error('Error saving squad:', error);
-        alert('❌ Failed to save squad. Please try again.');
+        if (!silent) {
+            alert('❌ Failed to save squad. Please try again.');
+        }
     }
 }
 
