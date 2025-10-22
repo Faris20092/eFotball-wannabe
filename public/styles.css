@@ -687,7 +687,7 @@ body {
 }
 
 .modal-content {
-    background: white;
+    background: #000033;
     border-radius: 15px;
     padding: 30px;
     max-width: 500px;
