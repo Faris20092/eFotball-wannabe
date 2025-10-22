@@ -262,6 +262,8 @@ function renderPlayers() {
         const isOwned = ownedPlayerIds.includes(player.id);
         const card = document.createElement('div');
         card.className = `contract-player-card ${isOwned ? 'owned' : ''}`;
+        card.onclick = () => showPlayerDetails(player);
+        card.style.cursor = 'pointer';
         
         // Sanitize player name for image
         const playerImageName = player.name.replace(/[^a-zA-Z0-9\-_]/g, '_').toLowerCase().replace(/_+/g, '_').replace(/_+$/g, '');
@@ -283,10 +285,65 @@ function renderPlayers() {
     });
 }
 
+// Show player details modal
+function showPlayerDetails(player) {
+    const modal = document.getElementById('playerModal');
+    const content = document.getElementById('playerModalContent');
+    
+    const stats = player.stats || {};
+    const isOwned = ownedPlayerIds.includes(player.id);
+    
+    content.innerHTML = `
+        <h2>${RARITY_EMOJIS[player.rarity] || '⚽'} ${player.name}</h2>
+        ${isOwned ? '<p style="color: #27ae60; font-weight: bold;">✓ You own this player</p>' : '<p style="color: #999;">You don\'t own this player yet</p>'}
+        <div style="margin: 20px 0;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+                <div><strong>Overall:</strong> ${player.overall}</div>
+                <div><strong>Position:</strong> ${player.position}</div>
+                <div><strong>Rarity:</strong> ${player.rarity}</div>
+                <div><strong>Style:</strong> ${player.playingStyle || 'N/A'}</div>
+            </div>
+            
+            <h3 style="color: var(--primary); margin: 20px 0 10px 0;">Stats</h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                <div>⚔️ Attacking: ${stats.attacking || 0}</div>
+                <div>🎯 Dribbling: ${stats.dribbling || 0}</div>
+                <div>🎯 Passing: ${stats.passing || 0}</div>
+                <div>🛡️ Defending: ${stats.defending || 0}</div>
+                <div>💪 Physicality: ${stats.physicality || 0}</div>
+                <div>🧤 Goalkeeping: ${stats.goalkeeping || 0}</div>
+            </div>
+            
+            ${player.skills && player.skills.length > 0 ? `
+                <h3 style="color: var(--primary); margin: 20px 0 10px 0;">Skills</h3>
+                <div style="color: #666;">${player.skills.slice(0, 5).join(', ')}</div>
+            ` : ''}
+        </div>
+    `;
+    
+    modal.classList.add('active');
+    modal.style.display = 'flex';
+}
+
+// Close modal
+function closeModal() {
+    const modal = document.getElementById('playerModal');
+    modal.classList.remove('active');
+    modal.style.display = 'none';
+}
+
 // Event listeners
 document.getElementById('playerSearch').addEventListener('input', filterAndRenderPlayers);
 document.getElementById('rarityFilter').addEventListener('change', filterAndRenderPlayers);
 document.getElementById('ownedFilter').addEventListener('change', filterAndRenderPlayers);
+
+// Close modal on outside click
+window.onclick = function(event) {
+    const modal = document.getElementById('playerModal');
+    if (event.target === modal) {
+        closeModal();
+    }
+}
 
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', init);
