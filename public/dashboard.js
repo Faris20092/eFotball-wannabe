@@ -295,11 +295,19 @@ function openPlayerSelector(positionIndex) {
     
     // Show available players filtered by position
     const requiredPos = FORMATIONS[currentFormation][positionIndex];
-    const usedPlayerIds = [...currentSquad.main, ...currentSquad.bench].filter(id => id !== null);
+    
+    // Get all used player IDs (filter out null and undefined)
+    const usedPlayerIds = [
+        ...currentSquad.main.filter(id => id !== null && id !== undefined),
+        ...currentSquad.bench.filter(id => id !== null && id !== undefined)
+    ];
     
     // Filter players by compatible positions
     const compatible = allPlayers.filter(p => {
+        // Exclude players already in squad or bench
         if (usedPlayerIds.includes(p.id)) return false;
+        
+        // Position compatibility
         if (requiredPos === 'GK') return p.position === 'GK';
         if (requiredPos.includes('B')) return ['CB', 'LB', 'RB'].includes(p.position);
         if (requiredPos.includes('MF')) return ['DMF', 'CMF', 'AMF', 'LMF', 'RMF'].includes(p.position);
@@ -328,20 +336,34 @@ function openPlayerSelector(positionIndex) {
 
 // Assign player to position
 function assignPlayerToPosition(playerId, positionIndex) {
-    // Check if player is already in the squad
-    const existingIndex = currentSquad.main.indexOf(playerId);
-    if (existingIndex !== -1 && existingIndex !== positionIndex) {
-        // Remove from old position
-        currentSquad.main[existingIndex] = null;
+    // CRITICAL: Check if player already exists ANYWHERE in squad or bench
+    const inSquad = currentSquad.main.filter(id => id !== null).indexOf(playerId);
+    const inBench = currentSquad.bench.filter(id => id !== null).indexOf(playerId);
+    
+    if (inSquad !== -1 && inSquad !== positionIndex) {
+        alert('⚠️ This player is already in your squad at another position!');
+        return;
     }
     
-    // Check if player is in bench
-    const benchIndex = currentSquad.bench.indexOf(playerId);
-    if (benchIndex !== -1) {
-        currentSquad.bench.splice(benchIndex, 1);
+    if (inBench !== -1) {
+        alert('⚠️ This player is already on your bench!');
+        return;
     }
     
+    // If position is already occupied, move that player to bench
+    const currentPlayerAtPosition = currentSquad.main[positionIndex];
+    if (currentPlayerAtPosition && currentPlayerAtPosition !== playerId) {
+        // Check bench limit (max 8 players)
+        if (currentSquad.bench.length >= 8) {
+            alert('⚠️ Bench is full! Maximum 8 players allowed on bench.');
+            return;
+        }
+        currentSquad.bench.push(currentPlayerAtPosition);
+    }
+    
+    // Assign player to position
     currentSquad.main[positionIndex] = playerId;
+    
     renderSquadPitch();
     renderAvailablePlayers();
     calculateTeamRating();
@@ -562,6 +584,13 @@ function handleDrop(e) {
         
         // If dropping on occupied slot, move that player to bench
         if (dropPlayerId) {
+            // Check bench limit before adding
+            if (currentSquad.bench.length >= 8) {
+                alert('⚠️ Bench is full! Maximum 8 players allowed.');
+                currentSquad.bench.splice(draggedBenchIndex, 0, draggedPlayerId); // Put back
+                dropSlot.classList.remove('drag-over');
+                return false;
+            }
             currentSquad.bench.push(dropPlayerId);
         }
         
@@ -570,17 +599,17 @@ function handleDrop(e) {
     }
     // If dragging from available players (not from pitch or bench)
     else if (draggedFromPosition === null && !draggedFromBench) {
-        // Check if player already exists in squad
-        const existingIndex = currentSquad.main.indexOf(draggedPlayerId);
-        if (existingIndex !== -1) {
+        // Check if player already exists in squad (strict check)
+        const inSquad = currentSquad.main.filter(id => id !== null).indexOf(draggedPlayerId);
+        if (inSquad !== -1) {
             alert('⚠️ This player is already in your squad!');
             dropSlot.classList.remove('drag-over');
             return false;
         }
         
-        // Check if player is in bench
-        const benchIndex = currentSquad.bench.indexOf(draggedPlayerId);
-        if (benchIndex !== -1) {
+        // Check if player is in bench (strict check)
+        const inBench = currentSquad.bench.filter(id => id !== null).indexOf(draggedPlayerId);
+        if (inBench !== -1) {
             alert('⚠️ This player is already on your bench!');
             dropSlot.classList.remove('drag-over');
             return false;
@@ -588,6 +617,12 @@ function handleDrop(e) {
         
         // If dropping on occupied slot, move that player to bench
         if (dropPlayerId) {
+            // Check bench limit before adding
+            if (currentSquad.bench.length >= 8) {
+                alert('⚠️ Bench is full! Maximum 8 players allowed.');
+                dropSlot.classList.remove('drag-over');
+                return false;
+            }
             currentSquad.bench.push(dropPlayerId);
         }
         
@@ -626,6 +661,12 @@ function handleBenchDrop(e) {
     
     // If dragging from squad to bench
     if (draggedFromPosition !== null && !draggedFromBench) {
+        // Check bench limit
+        if (currentSquad.bench.length >= 8) {
+            alert('⚠️ Bench is full! Maximum 8 players allowed.');
+            return false;
+        }
+        
         // Remove from squad
         currentSquad.main[draggedFromPosition] = null;
         
@@ -636,12 +677,21 @@ function handleBenchDrop(e) {
     }
     // If dragging from available players to bench
     else if (draggedFromPosition === null && !draggedFromBench) {
-        // Check if already in squad or bench
-        if (currentSquad.main.includes(draggedPlayerId)) {
+        // Check bench limit
+        if (currentSquad.bench.length >= 8) {
+            alert('⚠️ Bench is full! Maximum 8 players allowed.');
+            return false;
+        }
+        
+        // Check if already in squad or bench (strict check)
+        const inSquad = currentSquad.main.filter(id => id !== null).includes(draggedPlayerId);
+        const inBench = currentSquad.bench.filter(id => id !== null).includes(draggedPlayerId);
+        
+        if (inSquad) {
             alert('⚠️ This player is already in your squad!');
             return false;
         }
-        if (currentSquad.bench.includes(draggedPlayerId)) {
+        if (inBench) {
             alert('⚠️ This player is already on your bench!');
             return false;
         }
@@ -721,6 +771,12 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             benchSection.classList.remove('drag-over');
             
+            // Check bench limit first
+            if (currentSquad.bench.length >= 8 && !draggedFromBench) {
+                alert('⚠️ Bench is full! Maximum 8 players allowed.');
+                return;
+            }
+            
             // If dragging from squad to bench
             if (draggedFromPosition !== null && !draggedFromBench) {
                 currentSquad.main[draggedFromPosition] = null;
@@ -730,8 +786,15 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             // If dragging from available players to bench
             else if (draggedFromPosition === null && !draggedFromBench) {
-                if (!currentSquad.main.includes(draggedPlayerId) && !currentSquad.bench.includes(draggedPlayerId)) {
+                // Strict duplicate check
+                const inSquad = currentSquad.main.filter(id => id !== null).includes(draggedPlayerId);
+                const inBench = currentSquad.bench.filter(id => id !== null).includes(draggedPlayerId);
+                
+                if (!inSquad && !inBench) {
                     currentSquad.bench.push(draggedPlayerId);
+                } else {
+                    alert('⚠️ This player is already in your squad or bench!');
+                    return;
                 }
             }
             
