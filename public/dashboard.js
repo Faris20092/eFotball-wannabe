@@ -219,21 +219,36 @@ function renderSquadPitch() {
                     slot.dataset.playerId = player.id;
                     slot.addEventListener('dragstart', handleDragStart);
                     slot.addEventListener('dragend', handleDragEnd);
+                    
+                    // Get player image URL (you can customize this based on your image storage)
+                    const playerImage = player.image || `https://cdn.sofifa.net/players/${player.id}/25_60.png`;
+                    
+                    slot.innerHTML = `
+                        <div class="pitch-card">
+                            <div class="pitch-card-rating">${player.overall}</div>
+                            <div class="pitch-card-position">${position}</div>
+                            <div class="pitch-card-image">
+                                <img src="${playerImage}" alt="${player.name}" onerror="this.src='https://via.placeholder.com/80x80/0014DC/FFED00?text=${player.name.charAt(0)}'">
+                            </div>
+                            <div class="pitch-card-name">${player.name}</div>
+                            <div class="pitch-card-stats">
+                                <span class="stat-badge">${RARITY_EMOJIS[player.rarity] || '⚽'}</span>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    slot.onclick = () => openPlayerSelector(posIndex);
+                    slot.innerHTML = `
+                        <div class="pitch-card-empty">
+                            <div class="empty-position">${position}</div>
+                            <div class="empty-text">Click to add</div>
+                        </div>
+                    `;
                 }
+                
                 slot.addEventListener('dragover', handleDragOver);
                 slot.addEventListener('drop', handleDrop);
                 slot.addEventListener('dragleave', handleDragLeave);
-                
-                // Keep click functionality
-                slot.onclick = () => openPlayerSelector(posIndex);
-                
-                slot.innerHTML = `
-                    <div class="position-label">${position}</div>
-                    ${player ? `
-                        <div class="player-name">${player.name}</div>
-                        <div class="player-rating">${player.overall}</div>
-                    ` : '<div style="color: #999;">Click to add</div>'}
-                `;
                 
                 row.appendChild(slot);
             });
@@ -274,10 +289,16 @@ function renderBench() {
             benchPlayer.addEventListener('dragleave', handleDragLeave);
             
             benchPlayer.onclick = () => showPlayerDetails(player);
+            
+            const playerImage = player.image || `https://cdn.sofifa.net/players/${player.id}/25_60.png`;
+            
             benchPlayer.innerHTML = `
-                <div>${player.name}</div>
-                <div style="font-weight: bold; color: var(--secondary);">${player.overall}</div>
-                <div style="font-size: 0.85em; color: #aaa;">${player.position}</div>
+                <div class="bench-card-rating">${player.overall}</div>
+                <div class="bench-card-position">${player.position}</div>
+                <div class="bench-card-image">
+                    <img src="${playerImage}" alt="${player.name}" onerror="this.src='https://via.placeholder.com/60x60/0014DC/FFED00?text=${player.name.charAt(0)}'">
+                </div>
+                <div class="bench-card-name">${player.name}</div>
             `;
             benchContainer.appendChild(benchPlayer);
         }
@@ -312,10 +333,16 @@ function renderReserves() {
             reservePlayer.addEventListener('dragleave', handleDragLeave);
             
             reservePlayer.onclick = () => showPlayerDetails(player);
+            
+            const playerImage = player.image || `https://cdn.sofifa.net/players/${player.id}/25_60.png`;
+            
             reservePlayer.innerHTML = `
-                <div>${player.name}</div>
-                <div style="font-weight: bold; color: var(--accent-blue);">${player.overall}</div>
-                <div style="font-size: 0.85em; color: #aaa;">${player.position}</div>
+                <div class="reserve-card-rating">${player.overall}</div>
+                <div class="reserve-card-position">${player.position}</div>
+                <div class="reserve-card-image">
+                    <img src="${playerImage}" alt="${player.name}" onerror="this.src='https://via.placeholder.com/60x60/4169E1/FFF?text=${player.name.charAt(0)}'">
+                </div>
+                <div class="reserve-card-name">${player.name}</div>
             `;
             reservesContainer.appendChild(reservePlayer);
         }
