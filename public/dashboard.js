@@ -1,7 +1,7 @@
 // Global state
 let userData = null;
 let allPlayers = [];
-let currentSquad = { main: [], bench: [], reserves: [] };
+let currentSquad = { main: [], bench: [] };
 let currentFormation = '4-3-3';
 let availablePlayersList = [];
 let autoScrollInterval = null;
@@ -69,12 +69,7 @@ async function loadSquad() {
     try {
         const response = await fetch('/api/squad');
         const data = await response.json();
-        currentSquad = data.squad || { main: [], bench: [], reserves: [] };
-        
-        // Ensure reserves array exists
-        if (!currentSquad.reserves) {
-            currentSquad.reserves = [];
-        }
+        currentSquad = data.squad || { main: [], bench: [] };
         
         currentFormation = data.formation || '4-3-3';
         document.getElementById('formationSelect').value = currentFormation;
@@ -220,15 +215,15 @@ function renderSquadPitch() {
                     slot.addEventListener('dragstart', handleDragStart);
                     slot.addEventListener('dragend', handleDragEnd);
                     
-                    // Get player image URL (you can customize this based on your image storage)
-                    const playerImage = player.image || `https://cdn.sofifa.net/players/${player.id}/25_60.png`;
+                    // Get player image from local assets
+                    const playerImage = `/assets/faces/${player.name}.png`;
                     
                     slot.innerHTML = `
                         <div class="pitch-card">
                             <div class="pitch-card-rating">${player.overall}</div>
                             <div class="pitch-card-position">${position}</div>
                             <div class="pitch-card-image">
-                                <img src="${playerImage}" alt="${player.name}" onerror="this.src='https://via.placeholder.com/80x80/0014DC/FFED00?text=${player.name.charAt(0)}'">
+                                <img src="${playerImage}" alt="${player.name}" onerror="this.src='/assets/faces/default_player.png'">
                             </div>
                             <div class="pitch-card-name">${player.name}</div>
                             <div class="pitch-card-stats">
@@ -258,7 +253,6 @@ function renderSquadPitch() {
     });
     
     renderBench();
-    renderReserves();
 }
 
 // Render bench
@@ -290,13 +284,13 @@ function renderBench() {
             
             benchPlayer.onclick = () => showPlayerDetails(player);
             
-            const playerImage = player.image || `https://cdn.sofifa.net/players/${player.id}/25_60.png`;
+            const playerImage = `/assets/faces/${player.name}.png`;
             
             benchPlayer.innerHTML = `
                 <div class="bench-card-rating">${player.overall}</div>
                 <div class="bench-card-position">${player.position}</div>
                 <div class="bench-card-image">
-                    <img src="${playerImage}" alt="${player.name}" onerror="this.src='https://via.placeholder.com/60x60/0014DC/FFED00?text=${player.name.charAt(0)}'">
+                    <img src="${playerImage}" alt="${player.name}" onerror="this.src='/assets/faces/default_player.png'">
                 </div>
                 <div class="bench-card-name">${player.name}</div>
             `;
@@ -305,60 +299,14 @@ function renderBench() {
     });
 }
 
-// Render reserves
-function renderReserves() {
-    const reservesContainer = document.getElementById('reservesPlayers');
-    reservesContainer.innerHTML = '';
-    
-    if (!currentSquad.reserves || currentSquad.reserves.length === 0) {
-        reservesContainer.innerHTML = '<p style="color: #999;">No reserve players</p>';
-        return;
-    }
-    
-    currentSquad.reserves.forEach((playerId, idx) => {
-        const player = allPlayers.find(p => p.id === playerId);
-        if (player) {
-            const reservePlayer = document.createElement('div');
-            reservePlayer.className = 'reserve-player';
-            reservePlayer.draggable = true;
-            reservePlayer.dataset.playerId = player.id;
-            reservePlayer.dataset.reserveIndex = idx;
-            reservePlayer.dataset.source = 'reserves';
-            
-            // Add drag events for reserve players
-            reservePlayer.addEventListener('dragstart', handleReserveDragStart);
-            reservePlayer.addEventListener('dragend', handleDragEnd);
-            reservePlayer.addEventListener('dragover', handleDragOver);
-            reservePlayer.addEventListener('drop', handleReserveDrop);
-            reservePlayer.addEventListener('dragleave', handleDragLeave);
-            
-            reservePlayer.onclick = () => showPlayerDetails(player);
-            
-            const playerImage = player.image || `https://cdn.sofifa.net/players/${player.id}/25_60.png`;
-            
-            reservePlayer.innerHTML = `
-                <div class="reserve-card-rating">${player.overall}</div>
-                <div class="reserve-card-position">${player.position}</div>
-                <div class="reserve-card-image">
-                    <img src="${playerImage}" alt="${player.name}" onerror="this.src='https://via.placeholder.com/60x60/4169E1/FFF?text=${player.name.charAt(0)}'">
-                </div>
-                <div class="reserve-card-name">${player.name}</div>
-            `;
-            reservesContainer.appendChild(reservePlayer);
-        }
-    });
-}
-
-// Render available players
 function renderAvailablePlayers() {
     const container = document.getElementById('availablePlayers');
     container.innerHTML = '';
     
-    // Filter out players already in squad, bench, or reserves
+    // Filter out players already in squad or bench
     const usedPlayerIds = [
         ...currentSquad.main.filter(id => id !== null),
-        ...currentSquad.bench.filter(id => id !== null),
-        ...(currentSquad.reserves || []).filter(id => id !== null)
+        ...currentSquad.bench.filter(id => id !== null)
     ];
     const available = availablePlayersList.filter(p => !usedPlayerIds.includes(p.id));
     
@@ -368,10 +316,40 @@ function renderAvailablePlayers() {
     }
     
     available.forEach(player => {
-        const card = createPlayerCard(player, () => {
-            // Add to squad logic handled in openPlayerSelector
-            showPlayerDetails(player);
+        const card = document.createElement('div');
+        card.className = 'available-player-card';
+        card.draggable = true;
+        card.dataset.playerId = player.id;
+        
+        // Add drag events
+        card.addEventListener('dragstart', (e) => {
+            draggedPlayerId = player.id;
+            draggedFromPosition = null;
+            draggedFromBench = false;
+            card.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+            startAutoScroll(e);
         });
+        
+        card.addEventListener('dragend', (e) => {
+            card.classList.remove('dragging');
+            stopAutoScroll();
+        });
+        
+        card.onclick = () => showPlayerDetails(player);
+        
+        const playerImage = `/assets/faces/${player.name}.png`;
+        
+        card.innerHTML = `
+            <div class="available-card-rating">${player.overall}</div>
+            <div class="available-card-position">${player.position}</div>
+            <div class="available-card-rarity">${RARITY_EMOJIS[player.rarity] || '⚽'}</div>
+            <div class="available-card-image">
+                <img src="${playerImage}" alt="${player.name}" onerror="this.src='/assets/faces/default_player.png'">
+            </div>
+            <div class="available-card-name">${player.name}</div>
+        `;
+        
         container.appendChild(card);
     });
 }
@@ -667,8 +645,6 @@ let draggedPlayerId = null;
 let draggedFromPosition = null;
 let draggedFromBench = false;
 let draggedBenchIndex = null;
-let draggedFromReserves = false;
-let draggedReserveIndex = null;
 
 function handleDragStart(e) {
     draggedElement = e.target;
@@ -676,8 +652,6 @@ function handleDragStart(e) {
     draggedFromPosition = parseInt(e.target.dataset.position);
     draggedFromBench = false;
     draggedBenchIndex = null;
-    draggedFromReserves = false;
-    draggedReserveIndex = null;
     
     e.target.classList.add('dragging');
     e.dataTransfer.effectAllowed = 'move';
@@ -693,25 +667,6 @@ function handleBenchDragStart(e) {
     draggedFromPosition = null;
     draggedFromBench = true;
     draggedBenchIndex = parseInt(e.target.dataset.benchIndex);
-    draggedFromReserves = false;
-    draggedReserveIndex = null;
-    
-    e.target.classList.add('dragging');
-    e.dataTransfer.effectAllowed = 'move';
-    e.dataTransfer.setData('text/html', e.target.innerHTML);
-    
-    // Start auto-scroll
-    startAutoScroll(e);
-}
-
-function handleReserveDragStart(e) {
-    draggedElement = e.target;
-    draggedPlayerId = e.target.dataset.playerId;
-    draggedFromPosition = null;
-    draggedFromBench = false;
-    draggedBenchIndex = null;
-    draggedFromReserves = true;
-    draggedReserveIndex = parseInt(e.target.dataset.reserveIndex);
     
     e.target.classList.add('dragging');
     e.dataTransfer.effectAllowed = 'move';
@@ -767,21 +722,8 @@ function handleDrop(e) {
         return false;
     }
     
-    // If dragging from reserves
-    if (draggedFromReserves) {
-        // Remove from reserves
-        currentSquad.reserves.splice(draggedReserveIndex, 1);
-        
-        // If dropping on occupied slot, move that player to reserves
-        if (dropPlayerId) {
-            currentSquad.reserves.push(dropPlayerId);
-        }
-        
-        // Add to squad position
-        currentSquad.main[dropPosition] = draggedPlayerId;
-    }
     // If dragging from bench
-    else if (draggedFromBench) {
+    if (draggedFromBench) {
         // Remove from bench
         currentSquad.bench.splice(draggedBenchIndex, 1);
         
@@ -800,8 +742,8 @@ function handleDrop(e) {
         // Add to squad position
         currentSquad.main[dropPosition] = draggedPlayerId;
     }
-    // If dragging from available players (not from pitch, bench, or reserves)
-    else if (draggedFromPosition === null && !draggedFromBench && !draggedFromReserves) {
+    // If dragging from available players (not from pitch or bench)
+    else if (draggedFromPosition === null && !draggedFromBench) {
         // Check if player already exists in squad (strict check)
         const inSquad = currentSquad.main.filter(id => id !== null).indexOf(draggedPlayerId);
         if (inSquad !== -1) {
@@ -862,22 +804,8 @@ function handleBenchDrop(e) {
     
     const dropTarget = e.target.closest('.bench-player');
     
-    // If dragging from reserves to bench
-    if (draggedFromReserves) {
-        // Check bench limit
-        if (currentSquad.bench.length >= 8) {
-            alert('⚠️ Bench is full! Maximum 8 players allowed.');
-            return false;
-        }
-        
-        // Remove from reserves
-        currentSquad.reserves.splice(draggedReserveIndex, 1);
-        
-        // Add to bench
-        currentSquad.bench.push(draggedPlayerId);
-    }
     // If dragging from squad to bench
-    else if (draggedFromPosition !== null && !draggedFromBench && !draggedFromReserves) {
+    if (draggedFromPosition !== null && !draggedFromBench) {
         // Check bench limit
         if (currentSquad.bench.length >= 8) {
             alert('⚠️ Bench is full! Maximum 8 players allowed.');
@@ -893,7 +821,7 @@ function handleBenchDrop(e) {
         }
     }
     // If dragging from available players to bench
-    else if (draggedFromPosition === null && !draggedFromBench && !draggedFromReserves) {
+    else if (draggedFromPosition === null && !draggedFromBench) {
         // Check bench limit
         if (currentSquad.bench.length >= 8) {
             alert('⚠️ Bench is full! Maximum 8 players allowed.');
@@ -924,62 +852,6 @@ function handleBenchDrop(e) {
             const temp = currentSquad.bench[draggedBenchIndex];
             currentSquad.bench[draggedBenchIndex] = currentSquad.bench[dropBenchIndex];
             currentSquad.bench[dropBenchIndex] = temp;
-        }
-    }
-    
-    // Re-render
-    renderSquadPitch();
-    renderAvailablePlayers();
-    calculateTeamRating();
-    
-    return false;
-}
-
-// Handle drop on reserves
-function handleReserveDrop(e) {
-    if (e.stopPropagation) {
-        e.stopPropagation();
-    }
-    
-    e.preventDefault();
-    
-    const dropTarget = e.target.closest('.reserve-player');
-    
-    // If dragging from squad to reserves
-    if (draggedFromPosition !== null && !draggedFromBench && !draggedFromReserves) {
-        currentSquad.main[draggedFromPosition] = null;
-        if (!currentSquad.reserves.includes(draggedPlayerId)) {
-            currentSquad.reserves.push(draggedPlayerId);
-        }
-    }
-    // If dragging from bench to reserves
-    else if (draggedFromBench) {
-        currentSquad.bench.splice(draggedBenchIndex, 1);
-        if (!currentSquad.reserves.includes(draggedPlayerId)) {
-            currentSquad.reserves.push(draggedPlayerId);
-        }
-    }
-    // If dragging from available players to reserves
-    else if (draggedFromPosition === null && !draggedFromBench && !draggedFromReserves) {
-        const inSquad = currentSquad.main.filter(id => id !== null).includes(draggedPlayerId);
-        const inBench = currentSquad.bench.filter(id => id !== null).includes(draggedPlayerId);
-        const inReserves = currentSquad.reserves.filter(id => id !== null).includes(draggedPlayerId);
-        
-        if (inSquad || inBench || inReserves) {
-            alert('⚠️ This player is already in your squad, bench, or reserves!');
-            return false;
-        }
-        
-        currentSquad.reserves.push(draggedPlayerId);
-    }
-    // If swapping reserve players
-    else if (draggedFromReserves && dropTarget) {
-        const dropReserveIndex = parseInt(dropTarget.dataset.reserveIndex);
-        if (draggedReserveIndex !== dropReserveIndex) {
-            // Swap reserve positions
-            const temp = currentSquad.reserves[draggedReserveIndex];
-            currentSquad.reserves[draggedReserveIndex] = currentSquad.reserves[dropReserveIndex];
-            currentSquad.reserves[dropReserveIndex] = temp;
         }
     }
     
@@ -1067,59 +939,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     currentSquad.bench.push(draggedPlayerId);
                 } else {
                     alert('⚠️ This player is already in your squad or bench!');
-                    return;
-                }
-            }
-            
-            renderSquadPitch();
-            renderAvailablePlayers();
-            calculateTeamRating();
-        });
-    }
-    
-    // Make reserves section a drop zone
-    const reservesSection = document.getElementById('reservesSection');
-    if (reservesSection) {
-        reservesSection.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            reservesSection.classList.add('drag-over');
-            handleAutoScroll(e); // Update scroll position
-        });
-        
-        reservesSection.addEventListener('dragleave', (e) => {
-            if (e.target === reservesSection) {
-                reservesSection.classList.remove('drag-over');
-            }
-        });
-        
-        reservesSection.addEventListener('drop', (e) => {
-            e.preventDefault();
-            reservesSection.classList.remove('drag-over');
-            
-            // If dragging from squad to reserves
-            if (draggedFromPosition !== null && !draggedFromBench && !draggedFromReserves) {
-                currentSquad.main[draggedFromPosition] = null;
-                if (!currentSquad.reserves.includes(draggedPlayerId)) {
-                    currentSquad.reserves.push(draggedPlayerId);
-                }
-            }
-            // If dragging from bench to reserves
-            else if (draggedFromBench) {
-                currentSquad.bench.splice(draggedBenchIndex, 1);
-                if (!currentSquad.reserves.includes(draggedPlayerId)) {
-                    currentSquad.reserves.push(draggedPlayerId);
-                }
-            }
-            // If dragging from available players to reserves
-            else if (draggedFromPosition === null && !draggedFromBench && !draggedFromReserves) {
-                const inSquad = currentSquad.main.filter(id => id !== null).includes(draggedPlayerId);
-                const inBench = currentSquad.bench.filter(id => id !== null).includes(draggedPlayerId);
-                const inReserves = currentSquad.reserves.filter(id => id !== null).includes(draggedPlayerId);
-                
-                if (!inSquad && !inBench && !inReserves) {
-                    currentSquad.reserves.push(draggedPlayerId);
-                } else {
-                    alert('⚠️ This player is already in your squad, bench, or reserves!');
                     return;
                 }
             }
