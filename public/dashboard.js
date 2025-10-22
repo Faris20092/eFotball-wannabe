@@ -183,8 +183,22 @@ function renderSquadPitch() {
             const row = document.createElement('div');
             row.className = 'squad-row';
             
+            // Track which indices we've already used to avoid duplicates
+            const usedIndices = new Set();
+            
             rows[line].forEach((position, idx) => {
-                const posIndex = positions.indexOf(position);
+                // Find the NEXT occurrence of this position that we haven't used yet
+                let posIndex = -1;
+                for (let i = 0; i < positions.length; i++) {
+                    if (positions[i] === position && !usedIndices.has(i)) {
+                        posIndex = i;
+                        usedIndices.add(i);
+                        break;
+                    }
+                }
+                
+                if (posIndex === -1) return; // Skip if not found
+                
                 const playerId = currentSquad.main[posIndex];
                 const player = playerId ? allPlayers.find(p => p.id === playerId) : null;
                 
