@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contracts - eFotball wannabe</title>
+    <link rel="stylesheet" href="/styles.css">
+    <style>
+        .contracts-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .pack-selector {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+
+        .pack-card {
+            background: rgba(0, 0, 51, 0.9);
+            border: 3px solid rgba(255, 237, 0, 0.3);
+            border-radius: 15px;
+            padding: 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+            min-width: 280px;
+            text-align: center;
+        }
+
+        .pack-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--secondary);
+            box-shadow: 0 10px 30px rgba(255, 237, 0, 0.4);
+        }
+
+        .pack-card.active {
+            border-color: var(--secondary);
+            background: rgba(0, 20, 220, 0.4);
+            box-shadow: 0 0 30px rgba(255, 237, 0, 0.5);
+        }
+
+        .pack-icon {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+
+        .pack-name {
+            font-size: 1.4em;
+            font-weight: bold;
+            color: var(--secondary);
+            margin-bottom: 10px;
+        }
+
+        .pack-cost {
+            font-size: 1.2em;
+            color: #fff;
+            margin-bottom: 10px;
+        }
+
+        .pack-description {
+            color: #ccc;
+            font-size: 0.95em;
+            line-height: 1.4;
+        }
+
+        .pack-details {
+            background: rgba(0, 0, 51, 0.8);
+            border: 2px solid rgba(255, 237, 0, 0.3);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        .pack-details h3 {
+            color: var(--secondary);
+            font-size: 1.5em;
+            margin-bottom: 15px;
+        }
+
+        .rarity-chances {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .rarity-item {
+            background: rgba(0, 0, 0, 0.4);
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .rarity-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .rarity-chance {
+            color: #ccc;
+            font-size: 0.9em;
+        }
+
+        .players-section {
+            margin-top: 30px;
+        }
+
+        .players-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .players-header h3 {
+            color: var(--secondary);
+            font-size: 1.8em;
+        }
+
+        .player-filters {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .player-filters input,
+        .player-filters select {
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: 2px solid rgba(255, 237, 0, 0.3);
+            background: rgba(0, 0, 51, 0.8);
+            color: #fff;
+            font-size: 1em;
+        }
+
+        .player-filters input:focus,
+        .player-filters select:focus {
+            outline: none;
+            border-color: var(--secondary);
+        }
+
+        .players-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .contract-player-card {
+            background: linear-gradient(135deg, rgba(0, 20, 220, 0.6), rgba(0, 0, 51, 0.9));
+            border: 2px solid rgba(255, 237, 0, 0.4);
+            border-radius: 12px;
+            padding: 12px;
+            text-align: center;
+            transition: all 0.3s;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .contract-player-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(255, 237, 0, 0.3);
+            border-color: var(--secondary);
+        }
+
+        .contract-player-card.owned {
+            opacity: 0.4;
+            filter: grayscale(100%);
+            background: linear-gradient(135deg, rgba(50, 50, 50, 0.6), rgba(30, 30, 30, 0.9));
+            border-color: rgba(100, 100, 100, 0.4);
+        }
+
+        .contract-player-card.owned::after {
+            content: '✓';
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: rgba(39, 174, 96, 0.9);
+            color: white;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .player-image-container {
+            width: 100%;
+            height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 8px;
+            position: relative;
+        }
+
+        .player-image-container img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .player-overall {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            background: rgba(0, 0, 0, 0.8);
+            color: var(--secondary);
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .player-position {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            padding: 5px 8px;
+            border-radius: 5px;
+            font-size: 0.85em;
+            font-weight: bold;
+        }
+
+        .player-name {
+            font-weight: bold;
+            font-size: 0.95em;
+            margin-bottom: 5px;
+            color: #fff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .player-rarity {
+            font-size: 1.2em;
+            margin-bottom: 3px;
+        }
+
+        .stats-summary {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-label {
+            color: #ccc;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            color: var(--secondary);
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        .discord-notice {
+            background: rgba(88, 101, 242, 0.2);
+            border: 2px solid rgba(88, 101, 242, 0.5);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .discord-notice p {
+            margin: 0;
+            color: #fff;
+        }
+
+        .discord-notice strong {
+            color: #5865F2;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            font-size: 1.2em;
+            color: var(--secondary);
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">⚽ eFOOTBALL WANNABE</div>
+        <div class="nav-menu">
+            <a href="/dashboard" class="nav-link nav-btn">HOME</a>
+            <a href="/dashboard" class="nav-link">Overview</a>
+            <a href="/dashboard#squad" class="nav-link">Squad Builder</a>
+            <a href="/dashboard#players" class="nav-link">My Players</a>
+            <a href="/contracts" class="nav-link active">Contracts</a>
+            <a href="/logout" class="nav-link nav-btn-pink">LOGOUT</a>
+        </div>
+        <div class="user-info" id="userInfo">
+            <img id="userAvatar" src="" alt="Avatar" class="user-avatar">
+            <span id="username">Loading...</span>
+        </div>
+    </nav>
+
+    <div class="contracts-container">
+        <div class="header">
+            <h1>📦 Contract Packs</h1>
+            <p>View available packs and all players you can get</p>
+        </div>
+
+        <div class="discord-notice">
+            <p>💬 <strong>Note:</strong> You can only open packs through Discord. Use the <code>/contract</code> command in Discord to spin packs!</p>
+        </div>
+
+        <div class="pack-selector" id="packSelector">
+            <!-- Pack cards will be generated here -->
+        </div>
+
+        <div id="packDetailsContainer" style="display: none;">
+            <div class="pack-details" id="packDetails">
+                <!-- Pack details will be shown here -->
+            </div>
+
+            <div class="players-section">
+                <div class="players-header">
+                    <h3>Available Players (<span id="playerCount">0</span>)</h3>
+                    <div class="player-filters">
+                        <input type="text" id="playerSearch" placeholder="Search players..." />
+                        <select id="rarityFilter">
+                            <option value="">All Rarities</option>
+                            <option value="Iconic">💎 Iconic</option>
+                            <option value="Legend">🌟 Legend</option>
+                            <option value="Black">⚫ Black</option>
+                            <option value="Gold">🟡 Gold</option>
+                            <option value="Silver">⚪ Silver</option>
+                            <option value="Bronze">🟤 Bronze</option>
+                            <option value="White">⬜ White</option>
+                        </select>
+                        <select id="ownedFilter">
+                            <option value="all">All Players</option>
+                            <option value="owned">Owned Only</option>
+                            <option value="not-owned">Not Owned</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="stats-summary">
+                    <div class="stat-item">
+                        <div class="stat-label">Total Players</div>
+                        <div class="stat-value" id="totalPlayers">0</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Owned</div>
+                        <div class="stat-value" id="ownedPlayers">0</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Not Owned</div>
+                        <div class="stat-value" id="notOwnedPlayers">0</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Collection %</div>
+                        <div class="stat-value" id="collectionPercent">0%</div>
+                    </div>
+                </div>
+
+                <div class="players-grid" id="playersGrid">
+                    <!-- Player cards will be generated here -->
+                </div>
+            </div>
+        </div>
+
+        <div class="loading" id="loading">Loading...</div>
+    </div>
+
+    <script src="/contracts.js"></script>
+</body>
+</html>
