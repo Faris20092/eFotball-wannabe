@@ -541,6 +541,11 @@ body {
 /* Bench */
 .bench-section {
     margin-top: 20px;
+    background: rgba(0, 0, 51, 0.3);
+    padding: 20px;
+    border-radius: 10px;
+    border: 2px dashed rgba(255, 237, 0, 0.3);
+    min-height: 100px;
 }
 
 .bench-section h3 {
@@ -554,6 +559,13 @@ body {
     display: flex;
     gap: 10px;
     flex-wrap: wrap;
+    min-height: 60px;
+}
+
+.bench-section.drag-over {
+    background: rgba(255, 237, 0, 0.2);
+    border-color: var(--secondary);
+    border-style: solid;
 }
 
 .bench-player {
@@ -563,15 +575,27 @@ body {
     padding: 10px;
     min-width: 100px;
     text-align: center;
-    cursor: pointer;
+    cursor: grab;
     transition: all 0.3s;
     color: #fff;
+    user-select: none;
 }
 
 .bench-player:hover {
     border-color: var(--secondary);
     transform: translateY(-2px);
     box-shadow: 0 5px 15px rgba(255, 237, 0, 0.3);
+}
+
+.bench-player.dragging {
+    opacity: 0.5;
+    cursor: grabbing;
+}
+
+.bench-player.drag-over {
+    background: rgba(255, 237, 0, 0.3);
+    border-color: var(--secondary);
+    border-style: solid;
 }
 
 /* Player Selector */

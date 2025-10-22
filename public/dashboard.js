@@ -180,11 +180,23 @@ function renderBench() {
         if (player) {
             const benchPlayer = document.createElement('div');
             benchPlayer.className = 'bench-player';
+            benchPlayer.draggable = true;
+            benchPlayer.dataset.playerId = player.id;
+            benchPlayer.dataset.benchIndex = idx;
+            benchPlayer.dataset.source = 'bench';
+            
+            // Add drag events for bench players
+            benchPlayer.addEventListener('dragstart', handleBenchDragStart);
+            benchPlayer.addEventListener('dragend', handleDragEnd);
+            benchPlayer.addEventListener('dragover', handleDragOver);
+            benchPlayer.addEventListener('drop', handleBenchDrop);
+            benchPlayer.addEventListener('dragleave', handleDragLeave);
+            
             benchPlayer.onclick = () => showPlayerDetails(player);
             benchPlayer.innerHTML = `
                 <div>${player.name}</div>
-                <div style="font-weight: bold; color: var(--primary);">${player.overall}</div>
-                <div style="font-size: 0.85em; color: #666;">${player.position}</div>
+                <div style="font-weight: bold; color: var(--secondary);">${player.overall}</div>
+                <div style="font-size: 0.85em; color: #aaa;">${player.position}</div>
             `;
             benchContainer.appendChild(benchPlayer);
         }
@@ -473,11 +485,27 @@ window.onclick = function(event) {
 let draggedElement = null;
 let draggedPlayerId = null;
 let draggedFromPosition = null;
+let draggedFromBench = false;
+let draggedBenchIndex = null;
 
 function handleDragStart(e) {
     draggedElement = e.target;
     draggedPlayerId = e.target.dataset.playerId;
     draggedFromPosition = parseInt(e.target.dataset.position);
+    draggedFromBench = false;
+    draggedBenchIndex = null;
+    
+    e.target.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/html', e.target.innerHTML);
+}
+
+function handleBenchDragStart(e) {
+    draggedElement = e.target;
+    draggedPlayerId = e.target.dataset.playerId;
+    draggedFromPosition = null;
+    draggedFromBench = true;
+    draggedBenchIndex = parseInt(e.target.dataset.benchIndex);
     
     e.target.classList.add('dragging');
     e.dataTransfer.effectAllowed = 'move';
@@ -522,19 +550,45 @@ function handleDrop(e) {
     const dropPlayerId = dropSlot.dataset.playerId;
     
     // Don't drop on the same position
-    if (draggedFromPosition === dropPosition) {
+    if (!draggedFromBench && draggedFromPosition === dropPosition) {
         dropSlot.classList.remove('drag-over');
         return false;
     }
     
-    // If dragging from available players (not from pitch)
-    if (draggedFromPosition === null) {
+    // If dragging from bench
+    if (draggedFromBench) {
+        // Remove from bench
+        currentSquad.bench.splice(draggedBenchIndex, 1);
+        
+        // If dropping on occupied slot, move that player to bench
+        if (dropPlayerId) {
+            currentSquad.bench.push(dropPlayerId);
+        }
+        
+        // Add to squad position
+        currentSquad.main[dropPosition] = draggedPlayerId;
+    }
+    // If dragging from available players (not from pitch or bench)
+    else if (draggedFromPosition === null && !draggedFromBench) {
         // Check if player already exists in squad
         const existingIndex = currentSquad.main.indexOf(draggedPlayerId);
         if (existingIndex !== -1) {
             alert('⚠️ This player is already in your squad!');
             dropSlot.classList.remove('drag-over');
             return false;
+        }
+        
+        // Check if player is in bench
+        const benchIndex = currentSquad.bench.indexOf(draggedPlayerId);
+        if (benchIndex !== -1) {
+            alert('⚠️ This player is already on your bench!');
+            dropSlot.classList.remove('drag-over');
+            return false;
+        }
+        
+        // If dropping on occupied slot, move that player to bench
+        if (dropPlayerId) {
+            currentSquad.bench.push(dropPlayerId);
         }
         
         // Add to position
@@ -553,6 +607,60 @@ function handleDrop(e) {
     }
     
     // Re-render the pitch
+    renderSquadPitch();
+    renderAvailablePlayers();
+    calculateTeamRating();
+    
+    return false;
+}
+
+// Handle drop on bench
+function handleBenchDrop(e) {
+    if (e.stopPropagation) {
+        e.stopPropagation();
+    }
+    
+    e.preventDefault();
+    
+    const dropTarget = e.target.closest('.bench-player');
+    
+    // If dragging from squad to bench
+    if (draggedFromPosition !== null && !draggedFromBench) {
+        // Remove from squad
+        currentSquad.main[draggedFromPosition] = null;
+        
+        // Add to bench if not already there
+        if (!currentSquad.bench.includes(draggedPlayerId)) {
+            currentSquad.bench.push(draggedPlayerId);
+        }
+    }
+    // If dragging from available players to bench
+    else if (draggedFromPosition === null && !draggedFromBench) {
+        // Check if already in squad or bench
+        if (currentSquad.main.includes(draggedPlayerId)) {
+            alert('⚠️ This player is already in your squad!');
+            return false;
+        }
+        if (currentSquad.bench.includes(draggedPlayerId)) {
+            alert('⚠️ This player is already on your bench!');
+            return false;
+        }
+        
+        // Add to bench
+        currentSquad.bench.push(draggedPlayerId);
+    }
+    // If swapping bench players
+    else if (draggedFromBench && dropTarget) {
+        const dropBenchIndex = parseInt(dropTarget.dataset.benchIndex);
+        if (draggedBenchIndex !== dropBenchIndex) {
+            // Swap bench positions
+            const temp = currentSquad.bench[draggedBenchIndex];
+            currentSquad.bench[draggedBenchIndex] = currentSquad.bench[dropBenchIndex];
+            currentSquad.bench[dropBenchIndex] = temp;
+        }
+    }
+    
+    // Re-render
     renderSquadPitch();
     renderAvailablePlayers();
     calculateTeamRating();
@@ -592,4 +700,44 @@ function createPlayerCard(player, onClick) {
 }
 
 // Initialize on page load
-document.addEventListener('DOMContentLoaded', init);
+document.addEventListener('DOMContentLoaded', () => {
+    init();
+    
+    // Make bench section a drop zone
+    const benchSection = document.getElementById('benchSection');
+    if (benchSection) {
+        benchSection.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            benchSection.classList.add('drag-over');
+        });
+        
+        benchSection.addEventListener('dragleave', (e) => {
+            if (e.target === benchSection) {
+                benchSection.classList.remove('drag-over');
+            }
+        });
+        
+        benchSection.addEventListener('drop', (e) => {
+            e.preventDefault();
+            benchSection.classList.remove('drag-over');
+            
+            // If dragging from squad to bench
+            if (draggedFromPosition !== null && !draggedFromBench) {
+                currentSquad.main[draggedFromPosition] = null;
+                if (!currentSquad.bench.includes(draggedPlayerId)) {
+                    currentSquad.bench.push(draggedPlayerId);
+                }
+            }
+            // If dragging from available players to bench
+            else if (draggedFromPosition === null && !draggedFromBench) {
+                if (!currentSquad.main.includes(draggedPlayerId) && !currentSquad.bench.includes(draggedPlayerId)) {
+                    currentSquad.bench.push(draggedPlayerId);
+                }
+            }
+            
+            renderSquadPitch();
+            renderAvailablePlayers();
+            calculateTeamRating();
+        });
+    }
+});
