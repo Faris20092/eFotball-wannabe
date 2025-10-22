@@ -316,6 +316,19 @@ function openPlayerSelector(positionIndex) {
 
 // Assign player to position
 function assignPlayerToPosition(playerId, positionIndex) {
+    // Check if player is already in the squad
+    const existingIndex = currentSquad.main.indexOf(playerId);
+    if (existingIndex !== -1 && existingIndex !== positionIndex) {
+        // Remove from old position
+        currentSquad.main[existingIndex] = null;
+    }
+    
+    // Check if player is in bench
+    const benchIndex = currentSquad.bench.indexOf(playerId);
+    if (benchIndex !== -1) {
+        currentSquad.bench.splice(benchIndex, 1);
+    }
+    
     currentSquad.main[positionIndex] = playerId;
     renderSquadPitch();
     renderAvailablePlayers();
@@ -514,19 +527,34 @@ function handleDrop(e) {
         return false;
     }
     
-    // Swap players
-    if (dropPlayerId) {
-        // Swap the two players
-        currentSquad.main[draggedFromPosition] = dropPlayerId;
+    // If dragging from available players (not from pitch)
+    if (draggedFromPosition === null) {
+        // Check if player already exists in squad
+        const existingIndex = currentSquad.main.indexOf(draggedPlayerId);
+        if (existingIndex !== -1) {
+            alert('⚠️ This player is already in your squad!');
+            dropSlot.classList.remove('drag-over');
+            return false;
+        }
+        
+        // Add to position
         currentSquad.main[dropPosition] = draggedPlayerId;
     } else {
-        // Move to empty slot
-        currentSquad.main[dropPosition] = draggedPlayerId;
-        currentSquad.main[draggedFromPosition] = null;
+        // Swap players from pitch
+        if (dropPlayerId) {
+            // Swap the two players
+            currentSquad.main[draggedFromPosition] = dropPlayerId;
+            currentSquad.main[dropPosition] = draggedPlayerId;
+        } else {
+            // Move to empty slot
+            currentSquad.main[dropPosition] = draggedPlayerId;
+            currentSquad.main[draggedFromPosition] = null;
+        }
     }
     
     // Re-render the pitch
     renderSquadPitch();
+    renderAvailablePlayers();
     calculateTeamRating();
     
     return false;
