@@ -896,11 +896,20 @@ function createPlayerCard(player, onClick) {
     
     card.onclick = onClick;
     
+    // Sanitize player name for image
+    const playerImageName = player.name.replace(/[^a-zA-Z0-9\-_]/g, '_').toLowerCase().replace(/_+/g, '_').replace(/_+$/g, '');
+    const playerImagePng = `/assets/faces/${playerImageName}.png`;
+    const playerImageJpg = `/assets/faces/${playerImageName}.jpg`;
+    
     card.innerHTML = `
+        <div class="player-image-container">
+            <div class="player-overall">${player.overall}</div>
+            <div class="player-position">${player.position}</div>
+            <img src="${playerImagePng}" alt="${player.name}" 
+                 onerror="this.onerror=null; this.src='${playerImageJpg}'; this.onerror=function(){this.src='/assets/faces/default_player.png'}">
+        </div>
         <div class="rarity">${RARITY_EMOJIS[player.rarity] || '⚽'}</div>
         <div class="name">${player.name}</div>
-        <div class="overall">${player.overall}</div>
-        <div class="position">${player.position}</div>
     `;
     
     return card;
