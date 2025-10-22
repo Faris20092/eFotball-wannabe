@@ -215,15 +215,17 @@ function renderSquadPitch() {
                     slot.addEventListener('dragstart', handleDragStart);
                     slot.addEventListener('dragend', handleDragEnd);
                     
-                    // Get player image from local assets
-                    const playerImage = `/assets/faces/${player.name}.png`;
+                    // Get player image from local assets - try multiple formats
+                    const playerImagePng = `/assets/faces/${player.name}.png`;
+                    const playerImageJpg = `/assets/faces/${player.name}.jpg`;
                     
                     slot.innerHTML = `
                         <div class="pitch-card">
                             <div class="pitch-card-rating">${player.overall}</div>
                             <div class="pitch-card-position">${position}</div>
                             <div class="pitch-card-image">
-                                <img src="${playerImage}" alt="${player.name}" onerror="this.src='/assets/faces/default_player.png'">
+                                <img src="${playerImagePng}" alt="${player.name}" 
+                                     onerror="this.onerror=null; this.src='${playerImageJpg}'; this.onerror=function(){this.src='/assets/faces/default_player.png'}">
                             </div>
                             <div class="pitch-card-name">${player.name}</div>
                             <div class="pitch-card-stats">
@@ -284,13 +286,15 @@ function renderBench() {
             
             benchPlayer.onclick = () => showPlayerDetails(player);
             
-            const playerImage = `/assets/faces/${player.name}.png`;
+            const playerImagePng = `/assets/faces/${player.name}.png`;
+            const playerImageJpg = `/assets/faces/${player.name}.jpg`;
             
             benchPlayer.innerHTML = `
                 <div class="bench-card-rating">${player.overall}</div>
                 <div class="bench-card-position">${player.position}</div>
                 <div class="bench-card-image">
-                    <img src="${playerImage}" alt="${player.name}" onerror="this.src='/assets/faces/default_player.png'">
+                    <img src="${playerImagePng}" alt="${player.name}" 
+                         onerror="this.onerror=null; this.src='${playerImageJpg}'; this.onerror=function(){this.src='/assets/faces/default_player.png'}">
                 </div>
                 <div class="bench-card-name">${player.name}</div>
             `;
@@ -338,14 +342,16 @@ function renderAvailablePlayers() {
         
         card.onclick = () => showPlayerDetails(player);
         
-        const playerImage = `/assets/faces/${player.name}.png`;
+        const playerImagePng = `/assets/faces/${player.name}.png`;
+        const playerImageJpg = `/assets/faces/${player.name}.jpg`;
         
         card.innerHTML = `
             <div class="available-card-rating">${player.overall}</div>
             <div class="available-card-position">${player.position}</div>
             <div class="available-card-rarity">${RARITY_EMOJIS[player.rarity] || '⚽'}</div>
             <div class="available-card-image">
-                <img src="${playerImage}" alt="${player.name}" onerror="this.src='/assets/faces/default_player.png'">
+                <img src="${playerImagePng}" alt="${player.name}" 
+                     onerror="this.onerror=null; this.src='${playerImageJpg}'; this.onerror=function(){this.src='/assets/faces/default_player.png'}">
             </div>
             <div class="available-card-name">${player.name}</div>
         `;

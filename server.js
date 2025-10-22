@@ -48,6 +48,7 @@ function startBot() {
 
 // Middleware
 app.use(express.static(path.join(__dirname, 'public')));
+app.use('/assets', express.static(path.join(__dirname, 'assets')));
 app.use(express.json());
 
 // Routes
