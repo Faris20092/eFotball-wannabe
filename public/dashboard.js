@@ -216,8 +216,8 @@ function renderSquadPitch() {
                     slot.addEventListener('dragend', handleDragEnd);
                     
                     // Get player image from local assets - try multiple formats
-                    // Convert player name to lowercase with underscores (e.g., "Lionel Messi" -> "lionel_messi")
-                    const playerImageName = player.name.toLowerCase().replace(/\s+/g, '_');
+                    // Sanitize player name: lowercase, replace non-alphanumeric with _, collapse multiple _, trim trailing _
+                    const playerImageName = player.name.replace(/[^a-zA-Z0-9\-_]/g, '_').toLowerCase().replace(/_+/g, '_').replace(/_+$/g, '');
                     const playerImagePng = `/assets/faces/${playerImageName}.png`;
                     const playerImageJpg = `/assets/faces/${playerImageName}.jpg`;
                     
@@ -288,8 +288,8 @@ function renderBench() {
             
             benchPlayer.onclick = () => showPlayerDetails(player);
             
-            // Convert player name to lowercase with underscores
-            const playerImageName = player.name.toLowerCase().replace(/\s+/g, '_');
+            // Sanitize player name: lowercase, replace non-alphanumeric with _, collapse multiple _, trim trailing _
+            const playerImageName = player.name.replace(/[^a-zA-Z0-9\-_]/g, '_').toLowerCase().replace(/_+/g, '_').replace(/_+$/g, '');
             const playerImagePng = `/assets/faces/${playerImageName}.png`;
             const playerImageJpg = `/assets/faces/${playerImageName}.jpg`;
             
@@ -346,8 +346,8 @@ function renderAvailablePlayers() {
         
         card.onclick = () => showPlayerDetails(player);
         
-        // Convert player name to lowercase with underscores
-        const playerImageName = player.name.toLowerCase().replace(/\s+/g, '_');
+        // Sanitize player name: lowercase, replace non-alphanumeric with _, collapse multiple _, trim trailing _
+        const playerImageName = player.name.replace(/[^a-zA-Z0-9\-_]/g, '_').toLowerCase().replace(/_+/g, '_').replace(/_+$/g, '');
         const playerImagePng = `/assets/faces/${playerImageName}.png`;
         const playerImageJpg = `/assets/faces/${playerImageName}.jpg`;
         
