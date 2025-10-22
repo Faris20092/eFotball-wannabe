@@ -216,8 +216,10 @@ function renderSquadPitch() {
                     slot.addEventListener('dragend', handleDragEnd);
                     
                     // Get player image from local assets - try multiple formats
-                    const playerImagePng = `/assets/faces/${player.name}.png`;
-                    const playerImageJpg = `/assets/faces/${player.name}.jpg`;
+                    // Convert player name to lowercase with underscores (e.g., "Lionel Messi" -> "lionel_messi")
+                    const playerImageName = player.name.toLowerCase().replace(/\s+/g, '_');
+                    const playerImagePng = `/assets/faces/${playerImageName}.png`;
+                    const playerImageJpg = `/assets/faces/${playerImageName}.jpg`;
                     
                     slot.innerHTML = `
                         <div class="pitch-card">
@@ -286,8 +288,10 @@ function renderBench() {
             
             benchPlayer.onclick = () => showPlayerDetails(player);
             
-            const playerImagePng = `/assets/faces/${player.name}.png`;
-            const playerImageJpg = `/assets/faces/${player.name}.jpg`;
+            // Convert player name to lowercase with underscores
+            const playerImageName = player.name.toLowerCase().replace(/\s+/g, '_');
+            const playerImagePng = `/assets/faces/${playerImageName}.png`;
+            const playerImageJpg = `/assets/faces/${playerImageName}.jpg`;
             
             benchPlayer.innerHTML = `
                 <div class="bench-card-rating">${player.overall}</div>
@@ -342,8 +346,10 @@ function renderAvailablePlayers() {
         
         card.onclick = () => showPlayerDetails(player);
         
-        const playerImagePng = `/assets/faces/${player.name}.png`;
-        const playerImageJpg = `/assets/faces/${player.name}.jpg`;
+        // Convert player name to lowercase with underscores
+        const playerImageName = player.name.toLowerCase().replace(/\s+/g, '_');
+        const playerImagePng = `/assets/faces/${playerImageName}.png`;
+        const playerImageJpg = `/assets/faces/${playerImageName}.jpg`;
         
         card.innerHTML = `
             <div class="available-card-rating">${player.overall}</div>
