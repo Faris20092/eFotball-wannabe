@@ -600,6 +600,13 @@ body {
     color: #fff;
     border-radius: 8px;
     font-size: 1em;
+    font-weight: 600;
+}
+
+.player-filters select option {
+    background: rgba(0, 0, 51, 0.95);
+    color: #fff;
+    padding: 10px;
 }
 
 .player-filters input:focus,

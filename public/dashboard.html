@@ -112,6 +112,11 @@
                         <option value="MID">Midfielders</option>
                         <option value="ATT">Attackers</option>
                     </select>
+                    <select id="availableRatingSort" onchange="filterPlayers()">
+                        <option value="">Sort by Rating</option>
+                        <option value="high-low">⬇️ High to Low</option>
+                        <option value="low-high">⬆️ Low to High</option>
+                    </select>
                 </div>
                 <div class="available-players" id="availablePlayers">
                     <!-- Available players will be shown here -->
@@ -134,6 +139,11 @@
                         <option value="Silver">⚪ Silver</option>
                         <option value="Bronze">🟤 Bronze</option>
                         <option value="White">⬜ White</option>
+                    </select>
+                    <select id="ratingSort" onchange="filterAllPlayers()">
+                        <option value="">Sort by Rating</option>
+                        <option value="high-low">⬇️ High to Low</option>
+                        <option value="low-high">⬆️ Low to High</option>
                     </select>
                 </div>
             </div>

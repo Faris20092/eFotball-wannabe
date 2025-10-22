@@ -368,6 +368,7 @@ async function saveSquad() {
 function filterPlayers() {
     const searchTerm = document.getElementById('playerSearch').value.toLowerCase();
     const positionFilter = document.getElementById('positionFilter').value;
+    const ratingSort = document.getElementById('availableRatingSort').value;
     
     availablePlayersList = allPlayers.filter(player => {
         const matchesSearch = player.name.toLowerCase().includes(searchTerm);
@@ -388,6 +389,13 @@ function filterPlayers() {
         return matchesSearch && matchesPosition;
     });
     
+    // Sort by rating if selected
+    if (ratingSort === 'high-low') {
+        availablePlayersList.sort((a, b) => b.overall - a.overall);
+    } else if (ratingSort === 'low-high') {
+        availablePlayersList.sort((a, b) => a.overall - b.overall);
+    }
+    
     renderAvailablePlayers();
 }
 
@@ -395,12 +403,20 @@ function filterPlayers() {
 function filterAllPlayers() {
     const searchTerm = document.getElementById('allPlayersSearch').value.toLowerCase();
     const rarityFilter = document.getElementById('rarityFilter').value;
+    const ratingSort = document.getElementById('ratingSort').value;
     
-    const filtered = allPlayers.filter(player => {
+    let filtered = allPlayers.filter(player => {
         const matchesSearch = player.name.toLowerCase().includes(searchTerm);
         const matchesRarity = !rarityFilter || player.rarity === rarityFilter;
         return matchesSearch && matchesRarity;
     });
+    
+    // Sort by rating if selected
+    if (ratingSort === 'high-low') {
+        filtered.sort((a, b) => b.overall - a.overall);
+    } else if (ratingSort === 'low-high') {
+        filtered.sort((a, b) => a.overall - b.overall);
+    }
     
     const container = document.getElementById('allPlayersGrid');
     container.innerHTML = '';
