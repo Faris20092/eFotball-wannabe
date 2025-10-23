@@ -262,6 +262,7 @@ function renderPlayers() {
         const isOwned = ownedPlayerIds.includes(player.id);
         const card = document.createElement('div');
         card.className = `contract-player-card ${isOwned ? 'owned' : ''}`;
+        card.dataset.rarity = player.rarity;
         card.onclick = () => showPlayerDetails(player);
         card.style.cursor = 'pointer';
         

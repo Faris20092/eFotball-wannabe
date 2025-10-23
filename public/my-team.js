@@ -328,6 +328,7 @@ function renderAvailablePlayers() {
         card.className = 'available-player-card';
         card.draggable = true;
         card.dataset.playerId = player.id;
+        card.dataset.rarity = player.rarity;
         
         // Add drag events
         card.addEventListener('dragstart', (e) => {
@@ -882,6 +883,7 @@ function createPlayerCard(player, onClick) {
     card.className = 'player-card';
     card.draggable = true;
     card.dataset.playerId = player.id;
+    card.dataset.rarity = player.rarity;
     
     // Drag events for player cards
     card.addEventListener('dragstart', (e) => {
