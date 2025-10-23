@@ -162,6 +162,11 @@ app.get('/contracts', isAuthenticated, (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'contracts.html'));
 });
 
+// My Team route
+app.get('/my-team', isAuthenticated, (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'my-team.html'));
+});
+
 // API Routes
 app.get('/api/user', isAuthenticated, (req, res) => {
     const userData = getUserData(req.user.id);

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - eFotball wannabe</title>
+    <title>My Team - eFotball wannabe</title>
     <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
@@ -11,7 +11,7 @@
         <div class="nav-brand">⚽ eFOOTBALL WANNABE</div>
         <div class="nav-menu">
             <a href="/dashboard" class="nav-link nav-btn">HOME</a>
-            <a href="/my-team" class="nav-link">My Team</a>
+            <a href="/my-team" class="nav-link active">My Team</a>
             <a href="/contracts" class="nav-link">Contracts</a>
             <a href="/logout" class="nav-link nav-btn-pink">LOGOUT</a>
         </div>
@@ -22,56 +22,14 @@
     </nav>
 
     <div class="dashboard-container">
-        <!-- Overview Tab -->
-        <div id="overview-tab" class="tab-content active">
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-icon">💰</div>
-                    <div class="stat-info">
-                        <div class="stat-label">GP</div>
-                        <div class="stat-value" id="gpAmount">0</div>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon">🪙</div>
-                    <div class="stat-info">
-                        <div class="stat-label">eCoins</div>
-                        <div class="stat-value" id="eCoinsAmount">0</div>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon">👥</div>
-                    <div class="stat-info">
-                        <div class="stat-label">Players</div>
-                        <div class="stat-value" id="playerCount">0</div>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon">⭐</div>
-                    <div class="stat-info">
-                        <div class="stat-label">Team Rating</div>
-                        <div class="stat-value" id="teamRating">0</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="quick-actions">
-                <h2>Quick Actions</h2>
-                <div class="action-buttons">
-                    <button class="action-btn" onclick="showTab('squad')">
-                        <span class="action-icon">⚽</span>
-                        <span>Build Squad</span>
-                    </button>
-                    <button class="action-btn" onclick="showTab('players')">
-                        <span class="action-icon">👥</span>
-                        <span>View Players</span>
-                    </button>
-                </div>
-            </div>
+        <!-- Tab Navigation -->
+        <div class="team-tabs">
+            <button class="team-tab active" onclick="showTeamTab('squad')">⚽ Squad Builder</button>
+            <button class="team-tab" onclick="showTeamTab('players')">👥 My Players</button>
         </div>
 
         <!-- Squad Builder Tab -->
-        <div id="squad-tab" class="tab-content">
+        <div id="squad-tab" class="team-tab-content active">
             <div class="squad-builder">
                 <div class="squad-header">
                     <h2>Squad Builder</h2>
@@ -122,8 +80,8 @@
             </div>
         </div>
 
-        <!-- Players Tab -->
-        <div id="players-tab" class="tab-content">
+        <!-- My Players Tab -->
+        <div id="players-tab" class="team-tab-content">
             <div class="players-header">
                 <h2>My Players</h2>
                 <div class="player-filters">
@@ -159,6 +117,6 @@
         </div>
     </div>
 
-    <script src="/dashboard.js"></script>
+    <script src="/my-team.js"></script>
 </body>
 </html>
