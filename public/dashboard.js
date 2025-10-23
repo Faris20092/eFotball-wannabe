@@ -212,6 +212,7 @@ function renderSquadPitch() {
                 slot.draggable = player ? true : false;
                 if (player) {
                     slot.dataset.playerId = player.id;
+                    slot.dataset.rarity = player.rarity;
                     slot.addEventListener('dragstart', handleDragStart);
                     slot.addEventListener('dragend', handleDragEnd);
                     
@@ -276,6 +277,7 @@ function renderBench() {
             benchPlayer.className = 'bench-player';
             benchPlayer.draggable = true;
             benchPlayer.dataset.playerId = player.id;
+            benchPlayer.dataset.rarity = player.rarity;
             benchPlayer.dataset.benchIndex = idx;
             benchPlayer.dataset.source = 'bench';
             

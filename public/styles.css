@@ -500,10 +500,40 @@ body {
     padding: 8px;
 }
 
+.player-slot.filled[data-rarity="Iconic"] {
+    background: linear-gradient(135deg, 
+        rgba(219, 10, 91, 0.95) 0%, 
+        rgba(255, 20, 147, 0.9) 25%, 
+        rgba(199, 21, 133, 0.95) 50%, 
+        rgba(139, 0, 139, 1) 100%);
+    border: 3px solid rgba(255, 20, 147, 0.9);
+    box-shadow: 0 0 20px rgba(255, 20, 147, 0.5);
+}
+
+.player-slot.filled[data-rarity="Legend"] {
+    background: linear-gradient(135deg, 
+        rgba(218, 165, 32, 0.95) 0%, 
+        rgba(255, 215, 0, 0.9) 25%, 
+        rgba(184, 134, 11, 0.95) 50%, 
+        rgba(139, 101, 8, 1) 100%);
+    border: 3px solid rgba(255, 215, 0, 0.9);
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+}
+
 .player-slot.filled:hover {
     transform: translateY(-5px) scale(1.05);
     box-shadow: 0 10px 30px rgba(255, 237, 0, 0.6);
     border-color: #FFF500;
+}
+
+.player-slot.filled[data-rarity="Iconic"]:hover {
+    box-shadow: 0 10px 30px rgba(255, 20, 147, 0.8);
+    border-color: rgba(255, 20, 147, 1);
+}
+
+.player-slot.filled[data-rarity="Legend"]:hover {
+    box-shadow: 0 10px 30px rgba(255, 215, 0, 0.8);
+    border-color: rgba(255, 215, 0, 1);
 }
 
 .player-slot.drag-over {
@@ -764,10 +794,40 @@ body {
     user-select: none;
 }
 
+.bench-player[data-rarity="Iconic"] {
+    background: linear-gradient(135deg, 
+        rgba(219, 10, 91, 0.9) 0%, 
+        rgba(255, 20, 147, 0.8) 25%, 
+        rgba(199, 21, 133, 0.9) 50%, 
+        rgba(139, 0, 139, 0.95) 100%);
+    border: 2px solid rgba(255, 20, 147, 0.8);
+    box-shadow: 0 0 20px rgba(255, 20, 147, 0.4);
+}
+
+.bench-player[data-rarity="Legend"] {
+    background: linear-gradient(135deg, 
+        rgba(218, 165, 32, 0.9) 0%, 
+        rgba(255, 215, 0, 0.8) 25%, 
+        rgba(184, 134, 11, 0.9) 50%, 
+        rgba(139, 101, 8, 0.95) 100%);
+    border: 2px solid rgba(255, 215, 0, 0.8);
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+}
+
 .bench-player:hover {
     border-color: var(--secondary);
     transform: translateY(-3px) scale(1.05);
     box-shadow: 0 5px 20px rgba(255, 237, 0, 0.5);
+}
+
+.bench-player[data-rarity="Iconic"]:hover {
+    box-shadow: 0 5px 25px rgba(255, 20, 147, 0.7);
+    border-color: rgba(255, 20, 147, 1);
+}
+
+.bench-player[data-rarity="Legend"]:hover {
+    box-shadow: 0 5px 25px rgba(255, 215, 0, 0.7);
+    border-color: rgba(255, 215, 0, 1);
 }
 
 .bench-player.dragging {
