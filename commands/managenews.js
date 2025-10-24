@@ -2,17 +2,13 @@ const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require('disc
 const fs = require('fs');
 const path = require('path');
 
-const NEWS_FILE = path.join(__dirname, '..', 'data', 'news.json');
+const NEWS_FILE = path.join(__dirname, '..', 'news.json');
 const ADMIN_IDS = process.env.ADMIN_IDS ? process.env.ADMIN_IDS.split(',') : [];
 
 // Ensure news file exists
 function ensureNewsFile() {
-    const dataDir = path.join(__dirname, '..', 'data');
-    if (!fs.existsSync(dataDir)) {
-        fs.mkdirSync(dataDir, { recursive: true });
-    }
     if (!fs.existsSync(NEWS_FILE)) {
-        fs.writeFileSync(NEWS_FILE, JSON.stringify({ news: [] }, null, 2));
+        fs.writeFileSync(NEWS_FILE, JSON.stringify([], null, 2));
     }
 }
 
@@ -24,8 +20,8 @@ function loadNews() {
 }
 
 // Save news
-function saveNews(newsData) {
-    fs.writeFileSync(NEWS_FILE, JSON.stringify(newsData, null, 2));
+function saveNews(newsArray) {
+    fs.writeFileSync(NEWS_FILE, JSON.stringify(newsArray, null, 2));
 }
 
 module.exports = {
@@ -38,16 +34,15 @@ module.exports = {
                 .setName('add')
                 .setDescription('Add a new news article')
                 .addStringOption(option =>
-                    option.setName('type')
-                        .setDescription('Type of news')
+                    option.setName('category')
+                        .setDescription('Category of news')
                         .setRequired(true)
                         .addChoices(
-                            { name: '🔄 Update', value: 'update' },
-                            { name: '🎉 Event', value: 'event' },
-                            { name: '🔧 Maintenance', value: 'maintenance' },
-                            { name: '📢 Announcement', value: 'announcement' },
-                            { name: '✨ New Feature', value: 'feature' },
-                            { name: '🐛 Bug Fix', value: 'bugfix' }
+                            { name: '⬆️ Update', value: 'Update' },
+                            { name: '✕ Issue', value: 'Issue' },
+                            { name: '🎉 Event', value: 'Event' },
+                            { name: '🔧 Maintenance', value: 'Maintenance' },
+                            { name: '📢 Announcement', value: 'Announcement' }
                         ))
                 .addStringOption(option =>
                     option.setName('title')
@@ -63,11 +58,10 @@ module.exports = {
             subcommand
                 .setName('remove')
                 .setDescription('Remove a news article by ID')
-                .addIntegerOption(option =>
+                .addStringOption(option =>
                     option.setName('id')
-                        .setDescription('News ID to remove')
-                        .setRequired(true)
-                        .setMinValue(1)))
+                        .setDescription('News ID to remove (e.g., news_001)')
+                        .setRequired(true)))
         .addSubcommand(subcommand =>
             subcommand
                 .setName('list')
@@ -89,41 +83,44 @@ module.exports = {
         const subcommand = interaction.options.getSubcommand();
         
         try {
-            const newsData = loadNews();
+            const newsArray = loadNews();
             
             if (subcommand === 'add') {
-                const type = interaction.options.getString('type');
+                const category = interaction.options.getString('category');
                 const title = interaction.options.getString('title');
                 const content = interaction.options.getString('content');
                 
+                // Generate unique ID
+                const existingIds = newsArray.map(n => parseInt(n.id.replace('news_', '')));
+                const nextId = existingIds.length > 0 ? Math.max(...existingIds) + 1 : 1;
+                
                 const newNews = {
-                    id: newsData.news.length > 0 ? Math.max(...newsData.news.map(n => n.id)) + 1 : 1,
-                    type: type,
+                    id: `news_${String(nextId).padStart(3, '0')}`,
                     title: title,
+                    category: category,
+                    preview: content.substring(0, 60) + (content.length > 60 ? '...' : ''),
                     content: content,
-                    date: new Date().toISOString(),
-                    author: interaction.user.tag
+                    date: new Date().toISOString()
                 };
                 
-                newsData.news.push(newNews);
-                saveNews(newsData);
+                newsArray.push(newNews);
+                saveNews(newsArray);
                 
-                const typeEmoji = {
-                    'update': '🔄',
-                    'event': '🎉',
-                    'maintenance': '🔧',
-                    'announcement': '📢',
-                    'feature': '✨',
-                    'bugfix': '🐛'
+                const categoryEmoji = {
+                    'Update': '⬆️',
+                    'Issue': '✕',
+                    'Event': '🎉',
+                    'Maintenance': '🔧',
+                    'Announcement': '📢'
                 };
                 
                 const embed = new EmbedBuilder()
                     .setColor('#27ae60')
                     .setTitle('✅ News Article Created')
-                    .setDescription('The news article has been successfully added!')
+                    .setDescription('The news article has been successfully added to the website!')
                     .addFields(
-                        { name: 'ID', value: `#${newNews.id}`, inline: true },
-                        { name: 'Type', value: `${typeEmoji[type]} ${type}`, inline: true },
+                        { name: 'ID', value: newNews.id, inline: true },
+                        { name: 'Category', value: `${categoryEmoji[category]} ${category}`, inline: true },
                         { name: 'Title', value: title, inline: false },
                         { name: 'Content', value: content, inline: false }
                     )
@@ -133,24 +130,24 @@ module.exports = {
                 await interaction.reply({ embeds: [embed] });
                 
             } else if (subcommand === 'remove') {
-                const id = interaction.options.getInteger('id');
-                const newsIndex = newsData.news.findIndex(n => n.id === id);
+                const id = interaction.options.getString('id');
+                const newsIndex = newsArray.findIndex(n => n.id === id);
                 
                 if (newsIndex === -1) {
                     return interaction.reply({
-                        content: `❌ No news article found with ID #${id}.`,
+                        content: `❌ No news article found with ID ${id}.`,
                         ephemeral: true
                     });
                 }
                 
-                const removedNews = newsData.news[newsIndex];
-                newsData.news.splice(newsIndex, 1);
-                saveNews(newsData);
+                const removedNews = newsArray[newsIndex];
+                newsArray.splice(newsIndex, 1);
+                saveNews(newsArray);
                 
                 const embed = new EmbedBuilder()
                     .setColor('#e74c3c')
                     .setTitle('🗑️ News Article Removed')
-                    .setDescription(`Successfully removed news article #${id}`)
+                    .setDescription(`Successfully removed news article ${id}`)
                     .addFields(
                         { name: 'Title', value: removedNews.title, inline: false },
                         { name: 'Content', value: removedNews.content, inline: false }
@@ -160,20 +157,28 @@ module.exports = {
                 await interaction.reply({ embeds: [embed] });
                 
             } else if (subcommand === 'list') {
-                if (newsData.news.length === 0) {
+                if (newsArray.length === 0) {
                     return interaction.reply({
                         content: '📰 No news articles found.',
                         ephemeral: true
                     });
                 }
                 
-                const sortedNews = newsData.news.sort((a, b) => new Date(b.date) - new Date(a.date));
+                const sortedNews = newsArray.sort((a, b) => new Date(b.date) - new Date(a.date));
                 
                 const embed = new EmbedBuilder()
                     .setColor('#3498db')
                     .setTitle('📋 All News Articles')
                     .setDescription(`Total: ${sortedNews.length} article(s)`)
                     .setTimestamp();
+                
+                const categoryEmoji = {
+                    'Update': '⬆️',
+                    'Issue': '✕',
+                    'Event': '🎉',
+                    'Maintenance': '🔧',
+                    'Announcement': '📢'
+                };
                 
                 sortedNews.forEach(news => {
                     const newsDate = new Date(news.date);
@@ -183,20 +188,11 @@ module.exports = {
                         day: 'numeric'
                     });
                     
-                    const typeEmoji = {
-                        'update': '🔄',
-                        'event': '🎉',
-                        'maintenance': '🔧',
-                        'announcement': '📢',
-                        'feature': '✨',
-                        'bugfix': '🐛'
-                    };
-                    
-                    const emoji = typeEmoji[news.type] || '📰';
+                    const emoji = categoryEmoji[news.category] || '📰';
                     
                     embed.addFields({
-                        name: `#${news.id} - ${emoji} ${news.title}`,
-                        value: `${news.content.substring(0, 100)}${news.content.length > 100 ? '...' : ''}\n*${formattedDate}*`,
+                        name: `${news.id} - ${emoji} ${news.title}`,
+                        value: `${news.preview || news.content.substring(0, 100)}\n*${formattedDate}*`,
                         inline: false
                     });
                 });
@@ -204,9 +200,8 @@ module.exports = {
                 await interaction.reply({ embeds: [embed], ephemeral: true });
                 
             } else if (subcommand === 'clear') {
-                const count = newsData.news.length;
-                newsData.news = [];
-                saveNews(newsData);
+                const count = newsArray.length;
+                saveNews([]);
                 
                 const embed = new EmbedBuilder()
                     .setColor('#e74c3c')

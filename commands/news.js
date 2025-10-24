@@ -2,22 +2,13 @@ const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const fs = require('fs');
 const path = require('path');
 
-const NEWS_FILE = path.join(__dirname, '..', 'data', 'news.json');
-
-// Ensure news file exists
-function ensureNewsFile() {
-    const dataDir = path.join(__dirname, '..', 'data');
-    if (!fs.existsSync(dataDir)) {
-        fs.mkdirSync(dataDir, { recursive: true });
-    }
-    if (!fs.existsSync(NEWS_FILE)) {
-        fs.writeFileSync(NEWS_FILE, JSON.stringify({ news: [] }, null, 2));
-    }
-}
+const NEWS_FILE = path.join(__dirname, '..', 'news.json');
 
 // Load news
 function loadNews() {
-    ensureNewsFile();
+    if (!fs.existsSync(NEWS_FILE)) {
+        return [];
+    }
     const data = fs.readFileSync(NEWS_FILE, 'utf8');
     return JSON.parse(data);
 }
@@ -34,16 +25,15 @@ module.exports = {
     
     async execute(interaction) {
         try {
-            const newsData = loadNews();
-            const allNews = newsData.news || [];
+            const newsArray = loadNews();
             
-            if (allNews.length === 0) {
+            if (newsArray.length === 0) {
                 return interaction.reply({
                     embeds: [
                         new EmbedBuilder()
                             .setColor('#0014DC')
                             .setTitle('📰 Game News')
-                            .setDescription('No news available at the moment. Check back later!')
+                            .setDescription('No news available at the moment. Check back later!\n\nVisit the website for more: http://localhost:3000/news')
                             .setTimestamp()
                     ],
                     ephemeral: true
@@ -51,7 +41,7 @@ module.exports = {
             }
             
             // Sort news by date (newest first)
-            const sortedNews = allNews.sort((a, b) => new Date(b.date) - new Date(a.date));
+            const sortedNews = newsArray.sort((a, b) => new Date(b.date) - new Date(a.date));
             
             const page = interaction.options.getInteger('page') || 1;
             const itemsPerPage = 5;
@@ -71,34 +61,31 @@ module.exports = {
             const embed = new EmbedBuilder()
                 .setColor('#FFED00')
                 .setTitle('📰 eFOOTBALL WANNABE - Latest News')
-                .setDescription('Stay updated with the latest game updates, events, and announcements!')
+                .setDescription('Stay updated with the latest game updates, events, and announcements!\n\n🌐 View on website: http://localhost:3000/news')
                 .setFooter({ text: `Page ${page}/${totalPages} • Total News: ${sortedNews.length}` })
                 .setTimestamp();
             
-            pageNews.forEach((news, index) => {
+            const categoryEmoji = {
+                'Update': '⬆️',
+                'Issue': '✕',
+                'Event': '🎉',
+                'Maintenance': '🔧',
+                'Announcement': '📢'
+            };
+            
+            pageNews.forEach((news) => {
                 const newsDate = new Date(news.date);
                 const formattedDate = newsDate.toLocaleDateString('en-US', {
                     year: 'numeric',
                     month: 'short',
-                    day: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit'
+                    day: 'numeric'
                 });
                 
-                const typeEmoji = {
-                    'update': '🔄',
-                    'event': '🎉',
-                    'maintenance': '🔧',
-                    'announcement': '📢',
-                    'feature': '✨',
-                    'bugfix': '🐛'
-                };
-                
-                const emoji = typeEmoji[news.type] || '📰';
+                const emoji = categoryEmoji[news.category] || '📰';
                 
                 embed.addFields({
                     name: `${emoji} ${news.title}`,
-                    value: `${news.content}\n\n*${formattedDate}*${news.author ? ` • by ${news.author}` : ''}`,
+                    value: `${news.content}\n\n*${formattedDate}*`,
                     inline: false
                 });
             });

@@ -172,6 +172,11 @@ app.get('/mail', isAuthenticated, (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'mail.html'));
 });
 
+// News route
+app.get('/news', isAuthenticated, (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'news.html'));
+});
+
 // API Routes
 app.get('/api/user', isAuthenticated, (req, res) => {
     const userData = getUserData(req.user.id);
@@ -447,6 +452,17 @@ app.post('/api/mail/claim-all', isAuthenticated, (req, res) => {
             eCoins: userData.eCoins
         }
     });
+});
+
+// News API endpoint
+app.get('/api/news', (req, res) => {
+    const newsFile = path.join(__dirname, 'news.json');
+    if (fs.existsSync(newsFile)) {
+        const newsData = JSON.parse(fs.readFileSync(newsFile, 'utf8'));
+        res.json({ news: newsData });
+    } else {
+        res.json({ news: [] });
+    }
 });
 
 // Bot status API
