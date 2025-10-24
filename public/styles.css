@@ -336,6 +336,14 @@ body {
     align-items: center;
 }
 
+.coming-soon-banner {
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.95), rgba(20, 20, 20, 0.95));
+    border: 2px solid rgba(255, 237, 0, 0.3);
+    justify-content: center;
+    text-align: center;
+    min-height: 200px;
+}
+
 .banner-content {
     flex: 1;
     z-index: 2;
@@ -413,9 +421,12 @@ body {
 /* Game Mode Buttons */
 .game-modes {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    grid-template-columns: repeat(2, 1fr);
     gap: 20px;
     margin-top: 30px;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .game-mode-btn {
@@ -1554,25 +1565,6 @@ body {
 }
 
 /* Responsive */
-@media (max-width: 1024px) {
-    .game-modes {
-        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-    }
-    
-    .featured-banner {
-        flex-direction: column;
-        min-height: auto;
-    }
-    
-    .banner-image {
-        margin-top: 20px;
-    }
-    
-    .banner-title {
-        font-size: 1.5em;
-    }
-}
-
 @media (max-width: 768px) {
     .top-bar-right {
         flex-wrap: wrap;
@@ -1585,18 +1577,9 @@ body {
         justify-content: center;
     }
     
-    .home-tabs {
-        flex-wrap: wrap;
-        gap: 5px;
-    }
-    
-    .home-tab {
-        padding: 10px 20px;
-        font-size: 0.95em;
-    }
-    
     .game-modes {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: 1fr;
+        max-width: 300px;
     }
     
     .mode-icon {
@@ -1608,7 +1591,7 @@ body {
     }
     
     .banner-title {
-        font-size: 1.3em;
+        font-size: 1.5em;
     }
     
     .banner-description {

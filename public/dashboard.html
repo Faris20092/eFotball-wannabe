@@ -30,78 +30,25 @@
     </nav>
 
     <div class="dashboard-container">
-        <!-- Home Tab Navigation -->
-        <div class="home-tabs">
-            <button class="home-tab active" data-tab="home">Home</button>
-            <button class="home-tab" data-tab="shop">Shop</button>
-            <button class="home-tab" data-tab="academy">Academy</button>
-            <button class="home-tab" data-tab="extras">Extras</button>
-        </div>
-
-        <!-- Home Tab Content -->
-        <div id="home-content" class="home-tab-content active">
-            <!-- Featured Banner -->
-            <div class="featured-banner">
-                <div class="banner-content">
-                    <div class="banner-badge">Epic</div>
-                    <h2 class="banner-title">Spanish League Midfielders</h2>
-                    <p class="banner-timer">Ends in: <span id="bannerTimer">5 day(s) 22 hr(s)</span></p>
-                    <p class="banner-description">Introducing Playmakers of the Domestic Leagues!</p>
-                    <p class="banner-note">"The displayed Overall Ratings reflect the highest possible Ratings of the players."</p>
-                </div>
-                <div class="banner-image">
-                    <img src="/assets/banner-players.png" alt="Featured Players" onerror="this.style.display='none'">
-                </div>
-                <button class="banner-settings">⚙️</button>
-            </div>
-
-            <!-- Game Mode Buttons -->
-            <div class="game-modes">
-                <button class="game-mode-btn mode-cyan" onclick="window.location.href='/match'">
-                    <div class="mode-icon">⚽</div>
-                    <div class="mode-label">Match</div>
-                </button>
-                <button class="game-mode-btn mode-red" onclick="window.location.href='/my-team'">
-                    <div class="mode-icon">🛡️</div>
-                    <div class="mode-label">My Team</div>
-                </button>
-                <button class="game-mode-btn mode-purple" onclick="window.location.href='/contracts'">
-                    <div class="mode-icon">👤➕</div>
-                    <div class="mode-label">Contracts</div>
-                </button>
-                <button class="game-mode-btn mode-green" onclick="showMissions()">
-                    <div class="mode-icon">🎯</div>
-                    <div class="mode-label">Missions</div>
-                </button>
-                <button class="game-mode-btn mode-orange" onclick="showDailyGame()">
-                    <div class="mode-icon">🎮</div>
-                    <div class="mode-label">Daily Game</div>
-                </button>
+        <!-- Featured Banner -->
+        <div class="featured-banner coming-soon-banner">
+            <div class="banner-content">
+                <h2 class="banner-title">Coming Soon</h2>
+                <p class="banner-description">New features and exciting content are on the way!</p>
+                <p class="banner-note">Stay tuned for updates</p>
             </div>
         </div>
 
-        <!-- Shop Tab Content -->
-        <div id="shop-content" class="home-tab-content">
-            <div class="coming-soon">
-                <h2>🏪 Shop</h2>
-                <p>Coming Soon!</p>
-            </div>
-        </div>
-
-        <!-- Academy Tab Content -->
-        <div id="academy-content" class="home-tab-content">
-            <div class="coming-soon">
-                <h2>🎓 Academy</h2>
-                <p>Coming Soon!</p>
-            </div>
-        </div>
-
-        <!-- Extras Tab Content -->
-        <div id="extras-content" class="home-tab-content">
-            <div class="coming-soon">
-                <h2>✨ Extras</h2>
-                <p>Coming Soon!</p>
-            </div>
+        <!-- Game Mode Buttons -->
+        <div class="game-modes">
+            <button class="game-mode-btn mode-red" onclick="window.location.href='/my-team'">
+                <div class="mode-icon">🛡️</div>
+                <div class="mode-label">My Team</div>
+            </button>
+            <button class="game-mode-btn mode-purple" onclick="window.location.href='/contracts'">
+                <div class="mode-icon">👤➕</div>
+                <div class="mode-label">Contracts</div>
+            </button>
         </div>
 
         <!-- Overview Tab (Hidden by default) -->
