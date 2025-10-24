@@ -15904,19 +15904,21 @@
   },
   "mail": [
     {
-      "id": "a90xvy9j",
+      "id": "6bp1p72u",
       "type": "pack",
       "rarity": "Legend",
       "qty": 1,
-      "date": "2025-10-24"
+      "date": "2025-10-24",
+      "claimed": true
     }
   ],
   "inventory": {
     "freePacks": {
       "Iconic": 1,
-      "Legend": 4,
+      "Legend": 6,
       "Black": 2
-    }
+    },
+    "LegendPack": 3
   },
   "minigames": {
     "penalty": {
