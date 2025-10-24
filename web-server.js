@@ -309,12 +309,12 @@ app.post('/api/mail/claim', isAuthenticated, (req, res) => {
         return res.json({ success: false, message: 'Already claimed' });
     }
     
-    console.log('Claiming mail:', mail.title);
+    console.log('Claiming mail:', mail.title || mail.type);
     
     // Mark as claimed
     mail.claimed = true;
     
-    // Add rewards
+    // Handle new format (rewards object)
     if (mail.rewards) {
         if (mail.rewards.gp) {
             userData.gp = (userData.gp || 0) + mail.rewards.gp;
@@ -332,6 +332,26 @@ app.post('/api/mail/claim', isAuthenticated, (req, res) => {
                 const packKey = `${pack}Pack`;
                 userData.inventory[packKey] = (userData.inventory[packKey] || 0) + 1;
             });
+        }
+    }
+    // Handle old format (type, amount, rarity fields)
+    else if (mail.type) {
+        if (mail.type === 'gp' && mail.amount) {
+            userData.gp = (userData.gp || 0) + mail.amount;
+        }
+        else if (mail.type === 'eCoins' && mail.amount) {
+            userData.eCoins = (userData.eCoins || 0) + mail.amount;
+        }
+        else if (mail.type === 'pack' && mail.rarity) {
+            userData.inventory = userData.inventory || {};
+            const packKey = `${mail.rarity}Pack`;
+            userData.inventory[packKey] = (userData.inventory[packKey] || 0) + 1;
+        }
+        else if (mail.type === 'trainer' && mail.trainerName) {
+            // Add trainer to inventory or handle as needed
+            userData.inventory = userData.inventory || {};
+            userData.inventory.trainers = userData.inventory.trainers || [];
+            userData.inventory.trainers.push(mail.trainerName);
         }
     }
     
@@ -363,30 +383,55 @@ app.post('/api/mail/claim-all', isAuthenticated, (req, res) => {
     };
     
     userData.mail.forEach(mail => {
-        if (!mail.claimed && mail.rewards) {
+        if (!mail.claimed) {
             mail.claimed = true;
             claimedCount++;
             
-            if (mail.rewards.gp) {
-                userData.gp = (userData.gp || 0) + mail.rewards.gp;
-                totalRewards.gp += mail.rewards.gp;
+            // Handle new format (rewards object)
+            if (mail.rewards) {
+                if (mail.rewards.gp) {
+                    userData.gp = (userData.gp || 0) + mail.rewards.gp;
+                    totalRewards.gp += mail.rewards.gp;
+                }
+                if (mail.rewards.eCoins) {
+                    userData.eCoins = (userData.eCoins || 0) + mail.rewards.eCoins;
+                    totalRewards.eCoins += mail.rewards.eCoins;
+                }
+                if (mail.rewards.players && mail.rewards.players.length > 0) {
+                    userData.players = userData.players || [];
+                    userData.players.push(...mail.rewards.players);
+                    totalRewards.players += mail.rewards.players.length;
+                }
+                if (mail.rewards.packs && mail.rewards.packs.length > 0) {
+                    userData.inventory = userData.inventory || {};
+                    mail.rewards.packs.forEach(pack => {
+                        const packKey = `${pack}Pack`;
+                        userData.inventory[packKey] = (userData.inventory[packKey] || 0) + 1;
+                    });
+                    totalRewards.packs += mail.rewards.packs.length;
+                }
             }
-            if (mail.rewards.eCoins) {
-                userData.eCoins = (userData.eCoins || 0) + mail.rewards.eCoins;
-                totalRewards.eCoins += mail.rewards.eCoins;
-            }
-            if (mail.rewards.players && mail.rewards.players.length > 0) {
-                userData.players = userData.players || [];
-                userData.players.push(...mail.rewards.players);
-                totalRewards.players += mail.rewards.players.length;
-            }
-            if (mail.rewards.packs && mail.rewards.packs.length > 0) {
-                userData.inventory = userData.inventory || {};
-                mail.rewards.packs.forEach(pack => {
-                    const packKey = `${pack}Pack`;
+            // Handle old format (type, amount, rarity fields)
+            else if (mail.type) {
+                if (mail.type === 'gp' && mail.amount) {
+                    userData.gp = (userData.gp || 0) + mail.amount;
+                    totalRewards.gp += mail.amount;
+                }
+                else if (mail.type === 'eCoins' && mail.amount) {
+                    userData.eCoins = (userData.eCoins || 0) + mail.amount;
+                    totalRewards.eCoins += mail.amount;
+                }
+                else if (mail.type === 'pack' && mail.rarity) {
+                    userData.inventory = userData.inventory || {};
+                    const packKey = `${mail.rarity}Pack`;
                     userData.inventory[packKey] = (userData.inventory[packKey] || 0) + 1;
-                });
-                totalRewards.packs += mail.rewards.packs.length;
+                    totalRewards.packs += 1;
+                }
+                else if (mail.type === 'trainer' && mail.trainerName) {
+                    userData.inventory = userData.inventory || {};
+                    userData.inventory.trainers = userData.inventory.trainers || [];
+                    userData.inventory.trainers.push(mail.trainerName);
+                }
             }
         }
     });

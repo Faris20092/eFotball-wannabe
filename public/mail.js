@@ -44,6 +44,9 @@ async function loadMail() {
         const data = await response.json();
         mailData = data.mail || [];
         
+        console.log('Loaded mail data:', mailData);
+        console.log('Mail count:', mailData.length);
+        
         renderMail();
         updateStats();
     } catch (error) {
@@ -57,10 +60,15 @@ function renderMail() {
     const container = document.getElementById('mailList');
     container.innerHTML = '';
     
+    console.log('Rendering mail. Total items:', mailData.length);
+    
     // Sort by date (newest first) and filter out claimed mail
     const sortedMail = [...mailData]
         .filter(m => !m.claimed)
         .sort((a, b) => new Date(b.date) - new Date(a.date));
+    
+    console.log('Unclaimed mail:', sortedMail.length);
+    console.log('Mail items:', sortedMail);
     
     if (sortedMail.length === 0) {
         document.getElementById('emptyState').style.display = 'block';
@@ -69,11 +77,19 @@ function renderMail() {
     
     document.getElementById('emptyState').style.display = 'none';
     
-    sortedMail.forEach(mail => {
+    sortedMail.forEach((mail, index) => {
+        // Generate ID if it doesn't exist
+        if (!mail.id) {
+            mail.id = `mail_${Date.now()}_${index}`;
+        }
+        
         const mailItem = document.createElement('div');
         mailItem.className = 'inbox-item';
         mailItem.dataset.mailId = mail.id;
-        mailItem.onclick = () => claimMail(mail.id);
+        mailItem.onclick = () => {
+            console.log('Clicked mail with ID:', mail.id);
+            claimMail(mail.id);
+        };
         
         const date = new Date(mail.date);
         const formattedDate = date.toLocaleDateString('en-US', {
@@ -87,6 +103,7 @@ function renderMail() {
         let rewardDescription = '';
         let expiryText = '';
         
+        // Handle new format (rewards object)
         if (mail.rewards) {
             const rewardParts = [];
             
@@ -113,6 +130,22 @@ function renderMail() {
             
             rewardDescription = rewardParts.join(', ');
         }
+        // Handle old format (type, amount, rarity fields)
+        else if (mail.type) {
+            if (mail.type === 'gp') {
+                rewardIcon = '💰';
+                rewardDescription = `${(mail.amount || 0).toLocaleString()} GP`;
+            } else if (mail.type === 'eCoins') {
+                rewardIcon = '🪙';
+                rewardDescription = `${mail.amount || 0} eFootball™ Coins`;
+            } else if (mail.type === 'pack') {
+                rewardIcon = '⭐';
+                rewardDescription = `${mail.rarity || 'Free'} Pack x1`;
+            } else if (mail.type === 'trainer') {
+                rewardIcon = '📚';
+                rewardDescription = `${mail.trainerName || 'Trainer'} x1`;
+            }
+        }
         
         // Check if mail has expiry
         if (mail.expiry) {
@@ -128,7 +161,7 @@ function renderMail() {
         }
         
         mailItem.innerHTML = `
-            <div class="inbox-icon" style="background: ${getRewardColor(mail.rewards)}">
+            <div class="inbox-icon" style="background: ${getRewardColor(mail)}">
                 <span>${rewardIcon}</span>
             </div>
             <div class="inbox-content">
@@ -146,23 +179,40 @@ function renderMail() {
 }
 
 // Get reward background color based on type
-function getRewardColor(rewards) {
-    if (!rewards) return 'linear-gradient(135deg, #4CAF50, #45a049)';
+function getRewardColor(mail) {
+    // Handle new format (rewards object)
+    if (mail.rewards) {
+        const rewards = mail.rewards;
+        if (rewards.players && rewards.players.length > 0) {
+            return 'linear-gradient(135deg, #4CAF50, #45a049)'; // Green for players
+        }
+        if (rewards.eCoins) {
+            return 'linear-gradient(135deg, #FFD700, #FFA500)'; // Gold for coins
+        }
+        if (rewards.packs && rewards.packs.length > 0) {
+            return 'linear-gradient(135deg, #FFEB3B, #FBC02D)'; // Yellow for packs
+        }
+        if (rewards.gp) {
+            return 'linear-gradient(135deg, #2196F3, #1976D2)'; // Blue for GP
+        }
+    }
+    // Handle old format (type field)
+    else if (mail.type) {
+        if (mail.type === 'pack') {
+            return 'linear-gradient(135deg, #FFEB3B, #FBC02D)'; // Yellow for packs
+        }
+        if (mail.type === 'eCoins') {
+            return 'linear-gradient(135deg, #FFD700, #FFA500)'; // Gold for coins
+        }
+        if (mail.type === 'gp') {
+            return 'linear-gradient(135deg, #2196F3, #1976D2)'; // Blue for GP
+        }
+        if (mail.type === 'trainer') {
+            return 'linear-gradient(135deg, #9C27B0, #7B1FA2)'; // Purple for trainers
+        }
+    }
     
-    if (rewards.players && rewards.players.length > 0) {
-        return 'linear-gradient(135deg, #4CAF50, #45a049)'; // Green for players
-    }
-    if (rewards.eCoins) {
-        return 'linear-gradient(135deg, #FFD700, #FFA500)'; // Gold for coins
-    }
-    if (rewards.packs && rewards.packs.length > 0) {
-        return 'linear-gradient(135deg, #FFEB3B, #FBC02D)'; // Yellow for packs
-    }
-    if (rewards.gp) {
-        return 'linear-gradient(135deg, #2196F3, #1976D2)'; // Blue for GP
-    }
-    
-    return 'linear-gradient(135deg, #9C27B0, #7B1FA2)'; // Purple default
+    return 'linear-gradient(135deg, #4CAF50, #45a049)'; // Green default
 }
 
 // Update stats
