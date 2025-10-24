@@ -1,6 +1,6 @@
 {
   "id": "440435428357832705",
-  "gp": 264500,
+  "gp": 265000,
   "eCoins": 762115,
   "players": [
     {
@@ -15904,13 +15904,7 @@
   },
   "mail": [
     {
-      "id": "yyyidfai",
-      "type": "gp",
-      "amount": 500,
-      "date": "2025-09-16"
-    },
-    {
-      "id": "kbr7t2is",
+      "id": "2rqy0ty3",
       "type": "pack",
       "rarity": "Legend",
       "qty": 1,
@@ -15920,7 +15914,7 @@
   "inventory": {
     "freePacks": {
       "Iconic": 0,
-      "Legend": 0,
+      "Legend": 1,
       "Black": 2
     }
   },
