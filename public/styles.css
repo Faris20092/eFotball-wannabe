@@ -496,6 +496,208 @@ body {
     color: rgba(255, 255, 255, 0.7);
 }
 
+/* Mail Page */
+.mail-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.mail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.mail-header h1 {
+    color: var(--secondary);
+    font-size: 2.5em;
+    margin: 0;
+}
+
+.mail-stats {
+    display: flex;
+    gap: 30px;
+    background: rgba(0, 20, 220, 0.3);
+    padding: 15px 25px;
+    border-radius: 15px;
+    margin-bottom: 30px;
+}
+
+.mail-stats .stat-item {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.mail-stats .stat-label {
+    color: rgba(255, 255, 255, 0.8);
+    font-weight: bold;
+}
+
+.mail-stats .stat-value {
+    color: var(--secondary);
+    font-weight: bold;
+    font-size: 1.2em;
+}
+
+.mail-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.mail-item {
+    background: linear-gradient(135deg, rgba(0, 20, 220, 0.4), rgba(0, 0, 80, 0.4));
+    border: 2px solid rgba(255, 237, 0, 0.3);
+    border-radius: 15px;
+    padding: 20px;
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    transition: all 0.3s;
+    cursor: pointer;
+}
+
+.mail-item:not(.claimed):hover {
+    border-color: var(--secondary);
+    transform: translateY(-3px);
+    box-shadow: 0 5px 20px rgba(255, 237, 0, 0.3);
+}
+
+.mail-item.claimed {
+    opacity: 0.6;
+    background: linear-gradient(135deg, rgba(50, 50, 50, 0.4), rgba(30, 30, 30, 0.4));
+    border-color: rgba(100, 100, 100, 0.3);
+    cursor: default;
+}
+
+.mail-icon {
+    font-size: 3em;
+    min-width: 60px;
+    text-align: center;
+}
+
+.mail-content {
+    flex: 1;
+}
+
+.mail-title {
+    font-size: 1.3em;
+    font-weight: bold;
+    color: var(--secondary);
+    margin-bottom: 8px;
+}
+
+.mail-message {
+    color: #fff;
+    margin-bottom: 10px;
+    line-height: 1.5;
+}
+
+.mail-rewards {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.reward-item {
+    background: rgba(255, 237, 0, 0.2);
+    border: 1px solid rgba(255, 237, 0, 0.4);
+    padding: 5px 12px;
+    border-radius: 15px;
+    font-size: 0.9em;
+    font-weight: bold;
+    color: #fff;
+}
+
+.mail-date {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.85em;
+}
+
+.mail-action {
+    min-width: 100px;
+    text-align: center;
+}
+
+.claim-btn {
+    background: linear-gradient(135deg, #27ae60, #229954);
+    border: none;
+    color: white;
+    padding: 12px 25px;
+    border-radius: 10px;
+    font-weight: bold;
+    font-size: 1em;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.claim-btn:hover {
+    background: linear-gradient(135deg, #229954, #1e8449);
+    transform: scale(1.05);
+}
+
+.claimed-badge {
+    background: rgba(100, 100, 100, 0.5);
+    color: rgba(255, 255, 255, 0.7);
+    padding: 8px 20px;
+    border-radius: 10px;
+    font-weight: bold;
+    display: inline-block;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 80px 20px;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.empty-icon {
+    font-size: 5em;
+    margin-bottom: 20px;
+}
+
+.empty-state h2 {
+    color: #fff;
+    font-size: 2em;
+    margin-bottom: 10px;
+}
+
+.empty-state p {
+    font-size: 1.2em;
+}
+
+.icon-btn.active {
+    background: rgba(255, 237, 0, 0.3);
+    border: 2px solid var(--secondary);
+}
+
+/* Notification animations */
+@keyframes slideIn {
+    from {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOut {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+}
+
 /* Navbar */
 .navbar {
     background: rgba(0, 20, 220, 0.98);

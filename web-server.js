@@ -167,6 +167,11 @@ app.get('/my-team', isAuthenticated, (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'my-team.html'));
 });
 
+// Mail route
+app.get('/mail', isAuthenticated, (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'mail.html'));
+});
+
 // API Routes
 app.get('/api/user', isAuthenticated, (req, res) => {
     const userData = getUserData(req.user.id);
@@ -271,6 +276,99 @@ app.get('/api/packs', isAuthenticated, (req, res) => {
         }
     };
     res.json({ packs: PACKS });
+});
+
+// Mail API endpoints
+app.get('/api/mail', isAuthenticated, (req, res) => {
+    const userData = getUserData(req.user.id);
+    if (!userData) {
+        return res.json({ mail: [] });
+    }
+    res.json({ mail: userData.mail || [] });
+});
+
+app.post('/api/mail/claim', isAuthenticated, (req, res) => {
+    const { mailId } = req.body;
+    const userData = getUserData(req.user.id);
+    
+    if (!userData || !userData.mail) {
+        return res.json({ success: false, message: 'No mail found' });
+    }
+    
+    const mail = userData.mail.find(m => m.id === mailId);
+    if (!mail) {
+        return res.json({ success: false, message: 'Mail not found' });
+    }
+    
+    if (mail.claimed) {
+        return res.json({ success: false, message: 'Already claimed' });
+    }
+    
+    // Mark as claimed
+    mail.claimed = true;
+    
+    // Add rewards
+    if (mail.rewards) {
+        if (mail.rewards.gp) {
+            userData.gp = (userData.gp || 0) + mail.rewards.gp;
+        }
+        if (mail.rewards.eCoins) {
+            userData.eCoins = (userData.eCoins || 0) + mail.rewards.eCoins;
+        }
+        if (mail.rewards.players && mail.rewards.players.length > 0) {
+            userData.players = userData.players || [];
+            userData.players.push(...mail.rewards.players);
+        }
+    }
+    
+    saveUserData(req.user.id, userData);
+    
+    res.json({
+        success: true,
+        newBalance: {
+            gp: userData.gp,
+            eCoins: userData.eCoins
+        }
+    });
+});
+
+app.post('/api/mail/claim-all', isAuthenticated, (req, res) => {
+    const userData = getUserData(req.user.id);
+    
+    if (!userData || !userData.mail) {
+        return res.json({ success: false, message: 'No mail found' });
+    }
+    
+    let claimedCount = 0;
+    
+    userData.mail.forEach(mail => {
+        if (!mail.claimed && mail.rewards) {
+            mail.claimed = true;
+            claimedCount++;
+            
+            if (mail.rewards.gp) {
+                userData.gp = (userData.gp || 0) + mail.rewards.gp;
+            }
+            if (mail.rewards.eCoins) {
+                userData.eCoins = (userData.eCoins || 0) + mail.rewards.eCoins;
+            }
+            if (mail.rewards.players && mail.rewards.players.length > 0) {
+                userData.players = userData.players || [];
+                userData.players.push(...mail.rewards.players);
+            }
+        }
+    });
+    
+    saveUserData(req.user.id, userData);
+    
+    res.json({
+        success: true,
+        claimedCount,
+        newBalance: {
+            gp: userData.gp,
+            eCoins: userData.eCoins
+        }
+    });
 });
 
 // Bot status API
