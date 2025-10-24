@@ -335,7 +335,7 @@ app.post('/api/mail/claim', isAuthenticated, (req, res) => {
         }
     }
     
-    saveUserData(req.user.id, userData);
+    setUserData(req.user.id, userData);
     
     res.json({
         success: true,
@@ -391,7 +391,7 @@ app.post('/api/mail/claim-all', isAuthenticated, (req, res) => {
         }
     });
     
-    saveUserData(req.user.id, userData);
+    setUserData(req.user.id, userData);
     
     res.json({
         success: true,
