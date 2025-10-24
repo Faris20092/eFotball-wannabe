@@ -30,36 +30,25 @@
     </nav>
 
     <div class="dashboard-container">
-        <div class="mail-container">
-            <div class="mail-header">
-                <h1>📬 Mailbox</h1>
-                <button class="btn btn-primary" id="claimAllBtn" onclick="claimAll()" disabled>
-                    🎁 Claim All
+        <div class="inbox-container">
+            <div class="inbox-header">
+                <h1 class="inbox-title">Inbox</h1>
+                <button class="btn-claim-all" id="claimAllBtn" onclick="claimAll()" disabled>
+                    Claim All
                 </button>
             </div>
 
-            <div class="mail-stats">
-                <div class="stat-item">
-                    <span class="stat-label">Total Messages:</span>
-                    <span class="stat-value" id="totalMail">0</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-label">Unclaimed:</span>
-                    <span class="stat-value" id="unclaimedMail">0</span>
-                </div>
-            </div>
-
-            <div id="mailList" class="mail-list">
+            <div id="mailList" class="inbox-list">
                 <!-- Mail items will be generated here -->
             </div>
 
-            <div id="emptyState" class="empty-state" style="display:none;">
-                <div class="empty-icon">📭</div>
-                <h2>No Mail</h2>
-                <p>You don't have any messages at the moment.</p>
+            <div id="emptyState" class="empty-inbox" style="display:none;">
+                <div class="empty-icon">📬</div>
+                <h2>No Messages</h2>
+                <p>Your inbox is empty. Check back later for rewards!</p>
             </div>
 
-            <div class="loading" id="loading">Loading mail...</div>
+            <div class="loading" id="loading">Loading inbox...</div>
         </div>
     </div>
 

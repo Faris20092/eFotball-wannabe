@@ -71,51 +71,73 @@ function renderMail() {
     
     sortedMail.forEach(mail => {
         const mailItem = document.createElement('div');
-        mailItem.className = 'mail-item';
+        mailItem.className = 'inbox-item';
         mailItem.dataset.mailId = mail.id;
+        mailItem.onclick = () => claimMail(mail.id);
         
         const date = new Date(mail.date);
         const formattedDate = date.toLocaleDateString('en-US', {
-            month: 'short',
-            day: 'numeric',
-            year: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit'
+            month: '2-digit',
+            day: '2-digit',
+            year: 'numeric'
         });
         
-        // Format rewards with detailed information
-        let rewardsHTML = '';
+        // Get reward icon and description
+        let rewardIcon = '🎁';
+        let rewardDescription = '';
+        let expiryText = '';
+        
         if (mail.rewards) {
+            const rewardParts = [];
+            
             if (mail.rewards.gp) {
-                rewardsHTML += `<span class="reward-item">💰 ${mail.rewards.gp.toLocaleString()} GP</span>`;
+                rewardIcon = '💰';
+                rewardParts.push(`${mail.rewards.gp.toLocaleString()} GP`);
             }
             if (mail.rewards.eCoins) {
-                rewardsHTML += `<span class="reward-item">🪙 ${mail.rewards.eCoins} eCoins</span>`;
+                rewardIcon = '🪙';
+                rewardParts.push(`${mail.rewards.eCoins} eFootball™ Coins`);
             }
             if (mail.rewards.players && mail.rewards.players.length > 0) {
                 mail.rewards.players.forEach(player => {
-                    const rarityEmoji = {'Iconic': '💎', 'Legend': '🌟', 'Black': '⚫', 'Gold': '🟡', 'Silver': '⚪', 'Bronze': '🟤', 'White': '⬜'}[player.rarity] || '👤';
-                    rewardsHTML += `<span class="reward-item">${rarityEmoji} ${player.name} (${player.overall})</span>`;
+                    rewardIcon = '👤';
+                    rewardParts.push(`${player.name} x1`);
                 });
             }
             if (mail.rewards.packs && mail.rewards.packs.length > 0) {
                 mail.rewards.packs.forEach(pack => {
-                    const packEmoji = {'Iconic': '💎', 'Legend': '🌟', 'Black': '⚫'}[pack] || '📦';
-                    rewardsHTML += `<span class="reward-item">${packEmoji} ${pack} Pack</span>`;
+                    rewardIcon = '⭐';
+                    rewardParts.push(`${pack} Pack x1`);
                 });
+            }
+            
+            rewardDescription = rewardParts.join(', ');
+        }
+        
+        // Check if mail has expiry
+        if (mail.expiry) {
+            const expiryDate = new Date(mail.expiry);
+            const now = new Date();
+            const diffTime = expiryDate - now;
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            const diffHours = Math.ceil((diffTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            
+            if (diffTime > 0) {
+                expiryText = `<div class="inbox-expiry">Expires in: ${diffDays} day(s) ${diffHours} hr(s)</div>`;
             }
         }
         
         mailItem.innerHTML = `
-            <div class="mail-icon">📬</div>
-            <div class="mail-content">
-                <div class="mail-title">${mail.title || 'Reward'}</div>
-                <div class="mail-message">${mail.message || 'You have received rewards!'}</div>
-                <div class="mail-rewards">${rewardsHTML || '<span class="reward-item">🎁 Reward</span>'}</div>
-                <div class="mail-date">${formattedDate}</div>
+            <div class="inbox-icon" style="background: ${getRewardColor(mail.rewards)}">
+                <span>${rewardIcon}</span>
             </div>
-            <div class="mail-action">
-                <button class="claim-btn" onclick="claimMail('${mail.id}')">Claim</button>
+            <div class="inbox-content">
+                <div class="inbox-title">${mail.title || 'Reward'}</div>
+                <div class="inbox-description">${rewardDescription || 'You have received rewards!'}</div>
+            </div>
+            <div class="inbox-meta">
+                <div class="inbox-date">${formattedDate}</div>
+                ${expiryText}
             </div>
         `;
         
@@ -123,26 +145,46 @@ function renderMail() {
     });
 }
 
+// Get reward background color based on type
+function getRewardColor(rewards) {
+    if (!rewards) return 'linear-gradient(135deg, #4CAF50, #45a049)';
+    
+    if (rewards.players && rewards.players.length > 0) {
+        return 'linear-gradient(135deg, #4CAF50, #45a049)'; // Green for players
+    }
+    if (rewards.eCoins) {
+        return 'linear-gradient(135deg, #FFD700, #FFA500)'; // Gold for coins
+    }
+    if (rewards.packs && rewards.packs.length > 0) {
+        return 'linear-gradient(135deg, #FFEB3B, #FBC02D)'; // Yellow for packs
+    }
+    if (rewards.gp) {
+        return 'linear-gradient(135deg, #2196F3, #1976D2)'; // Blue for GP
+    }
+    
+    return 'linear-gradient(135deg, #9C27B0, #7B1FA2)'; // Purple default
+}
+
 // Update stats
 function updateStats() {
     const unclaimed = mailData.filter(m => !m.claimed).length;
-    const total = unclaimed;
-    
-    document.getElementById('totalMail').textContent = total;
-    document.getElementById('unclaimedMail').textContent = unclaimed;
     
     // Update badge
     const badge = document.getElementById('mailBadge');
-    if (unclaimed > 0) {
-        badge.textContent = unclaimed;
-        badge.style.display = 'block';
-    } else {
-        badge.style.display = 'none';
+    if (badge) {
+        if (unclaimed > 0) {
+            badge.textContent = unclaimed;
+            badge.style.display = 'block';
+        } else {
+            badge.style.display = 'none';
+        }
     }
     
     // Enable/disable claim all button
     const claimAllBtn = document.getElementById('claimAllBtn');
-    claimAllBtn.disabled = unclaimed === 0;
+    if (claimAllBtn) {
+        claimAllBtn.disabled = unclaimed === 0;
+    }
 }
 
 // Claim single mail
