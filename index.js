@@ -4,6 +4,31 @@ const path = require('path');
 const { Client, GatewayIntentBits, Collection, EmbedBuilder } = require('discord.js');
 const config = require('./config.json');
 
+// --- Healthcheck Setup (Keep Bot Alive) ---
+const HEALTHCHECK_URL = process.env.HEALTHCHECK_URL;
+
+// Function to send the "I'm alive!" signal
+function sendHealthcheck() {
+    if (HEALTHCHECK_URL) {
+        // Use fetch (built into Node.js 18+)
+        fetch(HEALTHCHECK_URL)
+            .then(res => console.log('✅ Healthcheck sent successfully:', res.status))
+            .catch(err => console.error('❌ Healthcheck failed:', err));
+    } else {
+        console.warn("⚠️ HEALTHCHECK_URL not set. Skipping health check.");
+    }
+}
+
+// Ping every 25 minutes (just under the 30-minute period)
+const PING_INTERVAL_MS = 25 * 60 * 1000;
+
+// Start the interval timer
+setInterval(sendHealthcheck, PING_INTERVAL_MS);
+
+// Run the first check immediately
+sendHealthcheck();
+
+// --- Discord Bot Setup ---
 const client = new Client({
     intents: [
         GatewayIntentBits.Guilds,
