@@ -14,6 +14,7 @@ module.exports = {
                     '`/profile` — View your profile and balances',
                     '`/collection` — Browse your players with filters and pages',
                     '`/leaderboard` — View rankings',
+                    '`/news [page:<n>]` — View latest game updates and news',
                     '`/help` — Show this help message'
                 ].join('\n') },
                 { name: 'Contract', value: [
