@@ -352,10 +352,5 @@ function showNotification(message, type = 'info') {
     }, 3000);
 }
 
-// Helper function for news
-function viewNews() {
-    alert('📰 News feature - Use /news command in Discord to view latest updates!');
-}
-
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', init);

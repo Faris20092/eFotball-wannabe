@@ -1006,7 +1006,3 @@ function stopAutoScroll() {
     document.removeEventListener('dragover', handleAutoScroll);
 }
 
-// Helper function for news
-function viewNews() {
-    alert('📰 News feature - Use /news command in Discord to view latest updates!');
-}
