@@ -557,20 +557,11 @@ body {
     gap: 20px;
     align-items: center;
     transition: all 0.3s;
-    cursor: pointer;
 }
 
-.mail-item:not(.claimed):hover {
+.mail-item:hover {
     border-color: var(--secondary);
-    transform: translateY(-3px);
     box-shadow: 0 5px 20px rgba(255, 237, 0, 0.3);
-}
-
-.mail-item.claimed {
-    opacity: 0.6;
-    background: linear-gradient(135deg, rgba(50, 50, 50, 0.4), rgba(30, 30, 30, 0.4));
-    border-color: rgba(100, 100, 100, 0.3);
-    cursor: default;
 }
 
 .mail-icon {

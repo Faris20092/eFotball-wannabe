@@ -71,8 +71,8 @@ function renderMail() {
     
     sortedMail.forEach(mail => {
         const mailItem = document.createElement('div');
-        mailItem.className = `mail-item ${mail.claimed ? 'claimed' : ''}`;
-        mailItem.onclick = () => !mail.claimed && claimMail(mail.id);
+        mailItem.className = 'mail-item';
+        mailItem.dataset.mailId = mail.id;
         
         const date = new Date(mail.date);
         const formattedDate = date.toLocaleDateString('en-US', {
@@ -115,7 +115,7 @@ function renderMail() {
                 <div class="mail-date">${formattedDate}</div>
             </div>
             <div class="mail-action">
-                <button class="claim-btn">Claim</button>
+                <button class="claim-btn" onclick="claimMail('${mail.id}')">Claim</button>
             </div>
         `;
         
