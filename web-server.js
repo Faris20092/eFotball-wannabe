@@ -319,12 +319,20 @@ app.post('/api/mail/claim', isAuthenticated, (req, res) => {
             userData.players = userData.players || [];
             userData.players.push(...mail.rewards.players);
         }
+        if (mail.rewards.packs && mail.rewards.packs.length > 0) {
+            userData.inventory = userData.inventory || {};
+            mail.rewards.packs.forEach(pack => {
+                const packKey = `${pack}Pack`;
+                userData.inventory[packKey] = (userData.inventory[packKey] || 0) + 1;
+            });
+        }
     }
     
     saveUserData(req.user.id, userData);
     
     res.json({
         success: true,
+        rewards: mail.rewards,
         newBalance: {
             gp: userData.gp,
             eCoins: userData.eCoins
@@ -340,6 +348,12 @@ app.post('/api/mail/claim-all', isAuthenticated, (req, res) => {
     }
     
     let claimedCount = 0;
+    const totalRewards = {
+        gp: 0,
+        eCoins: 0,
+        players: 0,
+        packs: 0
+    };
     
     userData.mail.forEach(mail => {
         if (!mail.claimed && mail.rewards) {
@@ -348,13 +362,24 @@ app.post('/api/mail/claim-all', isAuthenticated, (req, res) => {
             
             if (mail.rewards.gp) {
                 userData.gp = (userData.gp || 0) + mail.rewards.gp;
+                totalRewards.gp += mail.rewards.gp;
             }
             if (mail.rewards.eCoins) {
                 userData.eCoins = (userData.eCoins || 0) + mail.rewards.eCoins;
+                totalRewards.eCoins += mail.rewards.eCoins;
             }
             if (mail.rewards.players && mail.rewards.players.length > 0) {
                 userData.players = userData.players || [];
                 userData.players.push(...mail.rewards.players);
+                totalRewards.players += mail.rewards.players.length;
+            }
+            if (mail.rewards.packs && mail.rewards.packs.length > 0) {
+                userData.inventory = userData.inventory || {};
+                mail.rewards.packs.forEach(pack => {
+                    const packKey = `${pack}Pack`;
+                    userData.inventory[packKey] = (userData.inventory[packKey] || 0) + 1;
+                });
+                totalRewards.packs += mail.rewards.packs.length;
             }
         }
     });
@@ -364,6 +389,7 @@ app.post('/api/mail/claim-all', isAuthenticated, (req, res) => {
     res.json({
         success: true,
         claimedCount,
+        totalRewards,
         newBalance: {
             gp: userData.gp,
             eCoins: userData.eCoins

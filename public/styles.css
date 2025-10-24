@@ -1799,6 +1799,44 @@ body {
     .banner-description {
         font-size: 0.95em;
     }
+    
+    /* Mail page responsive */
+    .mail-header {
+        flex-direction: column;
+        gap: 15px;
+        align-items: stretch;
+    }
+    
+    .mail-header h1 {
+        font-size: 2em;
+        text-align: center;
+    }
+    
+    .mail-stats {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .mail-item {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .mail-icon {
+        font-size: 2em;
+    }
+    
+    .mail-action {
+        width: 100%;
+    }
+    
+    .claim-btn {
+        width: 100%;
+    }
+    
+    .mail-rewards {
+        flex-direction: column;
+    }
 }
 
 @media (max-width: 768px) {

@@ -57,15 +57,17 @@ function renderMail() {
     const container = document.getElementById('mailList');
     container.innerHTML = '';
     
-    if (mailData.length === 0) {
+    // Sort by date (newest first) and filter out claimed mail
+    const sortedMail = [...mailData]
+        .filter(m => !m.claimed)
+        .sort((a, b) => new Date(b.date) - new Date(a.date));
+    
+    if (sortedMail.length === 0) {
         document.getElementById('emptyState').style.display = 'block';
         return;
     }
     
     document.getElementById('emptyState').style.display = 'none';
-    
-    // Sort by date (newest first)
-    const sortedMail = [...mailData].sort((a, b) => new Date(b.date) - new Date(a.date));
     
     sortedMail.forEach(mail => {
         const mailItem = document.createElement('div');
@@ -81,7 +83,7 @@ function renderMail() {
             minute: '2-digit'
         });
         
-        // Format rewards
+        // Format rewards with detailed information
         let rewardsHTML = '';
         if (mail.rewards) {
             if (mail.rewards.gp) {
@@ -91,15 +93,21 @@ function renderMail() {
                 rewardsHTML += `<span class="reward-item">🪙 ${mail.rewards.eCoins} eCoins</span>`;
             }
             if (mail.rewards.players && mail.rewards.players.length > 0) {
-                rewardsHTML += `<span class="reward-item">👤 ${mail.rewards.players.length} Player(s)</span>`;
+                mail.rewards.players.forEach(player => {
+                    const rarityEmoji = {'Iconic': '💎', 'Legend': '🌟', 'Black': '⚫', 'Gold': '🟡', 'Silver': '⚪', 'Bronze': '🟤', 'White': '⬜'}[player.rarity] || '👤';
+                    rewardsHTML += `<span class="reward-item">${rarityEmoji} ${player.name} (${player.overall})</span>`;
+                });
             }
             if (mail.rewards.packs && mail.rewards.packs.length > 0) {
-                rewardsHTML += `<span class="reward-item">📦 ${mail.rewards.packs.length} Pack(s)</span>`;
+                mail.rewards.packs.forEach(pack => {
+                    const packEmoji = {'Iconic': '💎', 'Legend': '🌟', 'Black': '⚫'}[pack] || '📦';
+                    rewardsHTML += `<span class="reward-item">${packEmoji} ${pack} Pack</span>`;
+                });
             }
         }
         
         mailItem.innerHTML = `
-            <div class="mail-icon">${mail.claimed ? '✅' : '📬'}</div>
+            <div class="mail-icon">📬</div>
             <div class="mail-content">
                 <div class="mail-title">${mail.title || 'Reward'}</div>
                 <div class="mail-message">${mail.message || 'You have received rewards!'}</div>
@@ -107,7 +115,7 @@ function renderMail() {
                 <div class="mail-date">${formattedDate}</div>
             </div>
             <div class="mail-action">
-                ${mail.claimed ? '<span class="claimed-badge">Claimed</span>' : '<button class="claim-btn">Claim</button>'}
+                <button class="claim-btn">Claim</button>
             </div>
         `;
         
@@ -117,8 +125,8 @@ function renderMail() {
 
 // Update stats
 function updateStats() {
-    const total = mailData.length;
     const unclaimed = mailData.filter(m => !m.claimed).length;
+    const total = unclaimed;
     
     document.getElementById('totalMail').textContent = total;
     document.getElementById('unclaimedMail').textContent = unclaimed;
@@ -157,8 +165,19 @@ async function claimMail(mailId) {
                 mail.claimed = true;
             }
             
-            // Show success message
-            showNotification('✅ Reward claimed successfully!', 'success');
+            // Show detailed success message
+            let message = '✅ Claimed: ';
+            if (data.rewards) {
+                const parts = [];
+                if (data.rewards.gp) parts.push(`${data.rewards.gp.toLocaleString()} GP`);
+                if (data.rewards.eCoins) parts.push(`${data.rewards.eCoins} eCoins`);
+                if (data.rewards.players) parts.push(`${data.rewards.players.length} Player(s)`);
+                if (data.rewards.packs) parts.push(`${data.rewards.packs.length} Pack(s)`);
+                message += parts.join(', ');
+            } else {
+                message = '✅ Reward claimed successfully!';
+            }
+            showNotification(message, 'success');
             
             // Re-render
             renderMail();
@@ -193,11 +212,22 @@ async function claimAll() {
         if (data.success) {
             // Update local data
             mailData.forEach(mail => {
-                mail.claimed = true;
+                if (!mail.claimed) {
+                    mail.claimed = true;
+                }
             });
             
-            // Show success message
-            showNotification(`✅ Claimed ${data.claimedCount} reward(s) successfully!`, 'success');
+            // Show detailed success message
+            let message = `✅ Claimed ${data.claimedCount} reward(s): `;
+            if (data.totalRewards) {
+                const parts = [];
+                if (data.totalRewards.gp) parts.push(`${data.totalRewards.gp.toLocaleString()} GP`);
+                if (data.totalRewards.eCoins) parts.push(`${data.totalRewards.eCoins} eCoins`);
+                if (data.totalRewards.players) parts.push(`${data.totalRewards.players} Player(s)`);
+                if (data.totalRewards.packs) parts.push(`${data.totalRewards.packs} Pack(s)`);
+                message += parts.join(', ');
+            }
+            showNotification(message, 'success');
             
             // Re-render
             renderMail();
