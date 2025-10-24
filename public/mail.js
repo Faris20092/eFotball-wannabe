@@ -301,6 +301,7 @@ async function claimAll() {
         });
         
         const data = await response.json();
+        console.log('Claim all response:', data);
         
         if (data.success) {
             // Update local data
@@ -310,27 +311,14 @@ async function claimAll() {
                 }
             });
             
-            // Show detailed success message
-            let message = `✅ Claimed ${data.claimedCount} reward(s): `;
-            if (data.totalRewards) {
-                const parts = [];
-                if (data.totalRewards.gp) parts.push(`${data.totalRewards.gp.toLocaleString()} GP`);
-                if (data.totalRewards.eCoins) parts.push(`${data.totalRewards.eCoins} eCoins`);
-                if (data.totalRewards.players) parts.push(`${data.totalRewards.players} Player(s)`);
-                if (data.totalRewards.packs) parts.push(`${data.totalRewards.packs} Pack(s)`);
-                message += parts.join(', ');
-            }
+            // Show success message
+            const count = data.claimedCount || 0;
+            let message = `✅ Claimed ${count} reward(s) successfully!`;
             showNotification(message, 'success');
             
-            // Re-render
-            renderMail();
-            updateStats();
-            
-            // Update currency display
-            if (data.newBalance) {
-                document.getElementById('topGP').textContent = (data.newBalance.gp || 0).toLocaleString();
-                document.getElementById('topEcoins').textContent = data.newBalance.eCoins || 0;
-            }
+            // Reload all data
+            await loadMail();
+            await loadUserData();
         } else {
             showNotification('❌ ' + (data.message || 'Failed to claim rewards'), 'error');
         }
