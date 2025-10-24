@@ -86,10 +86,6 @@ function renderMail() {
         const mailItem = document.createElement('div');
         mailItem.className = 'inbox-item';
         mailItem.dataset.mailId = mail.id;
-        mailItem.onclick = () => {
-            console.log('Clicked mail with ID:', mail.id);
-            claimMail(mail.id);
-        };
         
         const date = new Date(mail.date);
         const formattedDate = date.toLocaleDateString('en-US', {
