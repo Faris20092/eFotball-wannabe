@@ -15904,7 +15904,7 @@
   },
   "mail": [
     {
-      "id": "2rqy0ty3",
+      "id": "a90xvy9j",
       "type": "pack",
       "rarity": "Legend",
       "qty": 1,
@@ -15913,8 +15913,8 @@
   ],
   "inventory": {
     "freePacks": {
-      "Iconic": 0,
-      "Legend": 1,
+      "Iconic": 1,
+      "Legend": 4,
       "Black": 2
     }
   },
