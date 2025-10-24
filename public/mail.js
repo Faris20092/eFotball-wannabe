@@ -189,20 +189,33 @@ function updateStats() {
 
 // Claim single mail
 async function claimMail(mailId) {
+    if (!mailId) {
+        console.error('No mail ID provided');
+        showNotification('❌ Invalid mail ID', 'error');
+        return;
+    }
+    
     try {
+        console.log('Claiming mail:', mailId);
+        
         const response = await fetch('/api/mail/claim', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ mailId })
+            body: JSON.stringify({ mailId: mailId })
         });
         
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
         const data = await response.json();
+        console.log('Claim response:', data);
         
         if (data.success) {
             // Update local data
-            const mail = mailData.find(m => m.id === mailId);
+            const mail = mailData.find(m => m.id == mailId || m.id === mailId);
             if (mail) {
                 mail.claimed = true;
             }
@@ -225,17 +238,15 @@ async function claimMail(mailId) {
             renderMail();
             updateStats();
             
-            // Update currency display
-            if (data.newBalance) {
-                document.getElementById('topGP').textContent = (data.newBalance.gp || 0).toLocaleString();
-                document.getElementById('topEcoins').textContent = data.newBalance.eCoins || 0;
-            }
+            // Reload user data to update currency
+            await loadUserData();
         } else {
+            console.error('Claim failed:', data.message);
             showNotification('❌ ' + (data.message || 'Failed to claim reward'), 'error');
         }
     } catch (error) {
         console.error('Error claiming mail:', error);
-        showNotification('❌ Error claiming reward', 'error');
+        showNotification('❌ Error: ' + error.message, 'error');
     }
 }
 

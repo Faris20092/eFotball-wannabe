@@ -291,18 +291,25 @@ app.post('/api/mail/claim', isAuthenticated, (req, res) => {
     const { mailId } = req.body;
     const userData = getUserData(req.user.id);
     
+    console.log('Claim request for mail ID:', mailId);
+    console.log('User has mail:', userData?.mail?.length || 0);
+    
     if (!userData || !userData.mail) {
         return res.json({ success: false, message: 'No mail found' });
     }
     
-    const mail = userData.mail.find(m => m.id === mailId);
+    // Find mail with flexible ID comparison (string or number)
+    const mail = userData.mail.find(m => m.id == mailId || m.id === mailId);
     if (!mail) {
+        console.log('Mail not found. Available IDs:', userData.mail.map(m => m.id));
         return res.json({ success: false, message: 'Mail not found' });
     }
     
     if (mail.claimed) {
         return res.json({ success: false, message: 'Already claimed' });
     }
+    
+    console.log('Claiming mail:', mail.title);
     
     // Mark as claimed
     mail.claimed = true;
