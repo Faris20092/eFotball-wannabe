@@ -165,7 +165,7 @@ function renderMail() {
                 <span>${rewardIcon}</span>
             </div>
             <div class="inbox-content">
-                <div class="inbox-title">${mail.title || 'Reward'}</div>
+                <div class="inbox-title">${mail.title || (mail.type ? (mail.type === 'pack' ? 'Free Pack' : mail.type === 'eCoins' ? 'eCoins Reward' : mail.type === 'gp' ? 'GP Reward' : 'Reward') : 'Reward')}</div>
                 <div class="inbox-description">${rewardDescription || 'You have received rewards!'}</div>
             </div>
             <div class="inbox-meta">
@@ -271,17 +271,7 @@ async function claimMail(mailId) {
             }
             
             // Show detailed success message
-            let message = '✅ Claimed: ';
-            if (data.rewards) {
-                const parts = [];
-                if (data.rewards.gp) parts.push(`${data.rewards.gp.toLocaleString()} GP`);
-                if (data.rewards.eCoins) parts.push(`${data.rewards.eCoins} eCoins`);
-                if (data.rewards.players) parts.push(`${data.rewards.players.length} Player(s)`);
-                if (data.rewards.packs) parts.push(`${data.rewards.packs.length} Pack(s)`);
-                message += parts.join(', ');
-            } else {
-                message = '✅ Reward claimed successfully!';
-            }
+            let message = '✅ Claimed successfully!';
             showNotification(message, 'success');
             
             // Re-render
