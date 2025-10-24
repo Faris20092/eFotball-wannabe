@@ -15904,18 +15904,24 @@
   },
   "mail": [
     {
-      "id": "6bp1p72u",
+      "id": "jwtryhlj",
+      "type": "trainer",
+      "trainerName": "S+ Trainer",
+      "exp": 1000000,
+      "date": "2025-10-24"
+    },
+    {
+      "id": "724w0sw0",
       "type": "pack",
-      "rarity": "Legend",
+      "rarity": "Iconic",
       "qty": 1,
-      "date": "2025-10-24",
-      "claimed": true
+      "date": "2025-10-24"
     }
   ],
   "inventory": {
     "freePacks": {
       "Iconic": 1,
-      "Legend": 6,
+      "Legend": 7,
       "Black": 2
     },
     "LegendPack": 3
