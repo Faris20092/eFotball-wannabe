@@ -29,6 +29,34 @@ async function init() {
     await loadPlayers();
     await loadSquad(); // This now handles rendering internally
     renderAllPlayers();
+    startBannerTimer();
+}
+
+// Banner timer
+function startBannerTimer() {
+    // Set a target date (5 days from now)
+    const targetDate = new Date();
+    targetDate.setDate(targetDate.getDate() + 5);
+    targetDate.setHours(targetDate.getHours() + 22);
+    
+    function updateTimer() {
+        const now = new Date();
+        const diff = targetDate - now;
+        
+        if (diff <= 0) {
+            document.getElementById('bannerTimer').textContent = 'Event Ended';
+            return;
+        }
+        
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        
+        document.getElementById('bannerTimer').textContent = `${days} day(s) ${hours} hr(s) ${minutes} min(s)`;
+    }
+    
+    updateTimer();
+    setInterval(updateTimer, 60000); // Update every minute
 }
 
 // Load user data
@@ -46,6 +74,10 @@ async function loadUserData() {
             document.getElementById('gpAmount').textContent = (data.gameData.gp || 0).toLocaleString();
             document.getElementById('eCoinsAmount').textContent = data.gameData.eCoins || 0;
             document.getElementById('playerCount').textContent = (data.gameData.players || []).length;
+            
+            // Update top bar currency
+            document.getElementById('topGP').textContent = (data.gameData.gp || 0).toLocaleString();
+            document.getElementById('topEcoins').textContent = data.gameData.eCoins || 0;
         }
     } catch (error) {
         console.error('Error loading user data:', error);
@@ -1000,4 +1032,39 @@ function handleAutoScroll(e) {
 
 function stopAutoScroll() {
     document.removeEventListener('dragover', handleAutoScroll);
+}
+
+// Home tab switching
+document.addEventListener('DOMContentLoaded', () => {
+    const homeTabs = document.querySelectorAll('.home-tab');
+    homeTabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            // Remove active class from all tabs and contents
+            document.querySelectorAll('.home-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.home-tab-content').forEach(c => c.classList.remove('active'));
+            
+            // Add active class to clicked tab
+            tab.classList.add('active');
+            
+            // Show corresponding content
+            const tabName = tab.getAttribute('data-tab');
+            const content = document.getElementById(`${tabName}-content`);
+            if (content) {
+                content.classList.add('active');
+            }
+        });
+    });
+});
+
+// Helper functions for game modes
+function showMissions() {
+    alert('🎯 Missions feature coming soon!');
+}
+
+function showDailyGame() {
+    alert('🎮 Daily Game feature coming soon!');
+}
+
+function viewNews() {
+    alert('📰 News feature - Use /news command in Discord to view latest updates!');
 }
