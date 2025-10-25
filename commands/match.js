@@ -310,31 +310,24 @@ function createMatchEmbed(matchState, latestEvent) {
 }
 
 function calculateTeamStrength(userData, client) {
-    const positions = { GK: [], DEF: [], MID: [], ATT: [] };
-    
-    for (const id of userData.squad.main) {
-        const player = userData.players.find(p => p.id === id);
-        if (player) {
-            const pos = player.position || 'MID';
-            if (positions[pos]) {
-                positions[pos].push(player.overall);
-            } else {
-                positions.MID.push(player.overall);
+    if (!userData.squad || !userData.squad.main || userData.squad.main.length < 11) {
+        return 50; // Default low strength
+    }
+
+    let totalStrength = 0;
+    let playerCount = 0;
+
+    for (const playerId of userData.squad.main) {
+        if (playerId) {
+            const player = userData.players.find(p => p.id === playerId);
+            if (player) {
+                totalStrength += player.overall;
+                playerCount++;
             }
         }
     }
 
-    const weights = { GK: 0.15, DEF: 0.30, MID: 0.35, ATT: 0.20 };
-    let totalStrength = 0;
-    
-    for (const [pos, players] of Object.entries(positions)) {
-        if (players.length > 0) {
-            const avgStrength = players.reduce((a, b) => a + b, 0) / players.length;
-            totalStrength += avgStrength * weights[pos];
-        }
-    }
-
-    return Math.round(totalStrength || 50);
+    return playerCount > 0 ? Math.round(totalStrength / playerCount) : 50;
 }
 
 function generateMatchTimeline(playerStrength, opponentStrength) {
