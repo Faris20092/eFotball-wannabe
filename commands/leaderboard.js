@@ -38,26 +38,35 @@ function loadAllUsers(dataDir) {
   for (const f of files) {
     if (!f.endsWith('.json')) continue;
     const u = tryReadUser(path.join(dataDir, f));
-    if (u && u.id) out.push(u);
+    // Only include users who have played (have stats) and are not bots
+    if (u && u.id && u.stats && !u.bot) {
+      out.push(u);
+    }
   }
   return out;
 }
 
 function rankUsers(users, metric, guild = null) {
-    const arr = users.map(u => {
-      const gp = Number(u.gp || 0);
-      const wins = Number(u?.stats?.wins || 0);
-      const strength = computeStrength(u);
-      
-      // Try to get username from guild if available
-      let name = u.username || u.tag || u.id;
-      if (guild && guild.members.cache.has(u.id)) {
-        const member = guild.members.cache.get(u.id);
-        name = member.user.username || member.displayName || name;
-      }
-      
-      return { id: u.id, name, gp, wins, strength };
-    });
+    const arr = users
+      .filter(u => {
+        // Additional filter: must have played at least 1 match
+        const totalMatches = (u?.stats?.wins || 0) + (u?.stats?.draws || 0) + (u?.stats?.losses || 0);
+        return totalMatches > 0;
+      })
+      .map(u => {
+        const gp = Number(u.gp || 0);
+        const wins = Number(u?.stats?.wins || 0);
+        const strength = computeStrength(u);
+        
+        // Try to get username from guild if available
+        let name = u.username || u.tag || u.id;
+        if (guild && guild.members.cache.has(u.id)) {
+          const member = guild.members.cache.get(u.id);
+          name = member.user.username || member.displayName || name;
+        }
+        
+        return { id: u.id, name, gp, wins, strength };
+      });
     
     switch (metric) {
       case 'wins':
