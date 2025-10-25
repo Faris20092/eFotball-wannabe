@@ -430,9 +430,13 @@ async function handlePvPChance(interaction1, interaction2, event, matchState) {
 }
 
 function createPvPMatchEmbed(matchState, message) {
+    const opponentDisplay = matchState.player2.isAI 
+        ? `${matchState.player2.username} (AI)` 
+        : matchState.player2.username;
+    
     return new EmbedBuilder()
         .setTitle('⚽ **PvP FOOTBALL BATTLE** 🔥')
-        .setDescription(`**${matchState.player1.username}** 🆚 **${matchState.player2.username}**${matchState.player2.isAI ? ' (AI)' : ''}`)
+        .setDescription(`**${matchState.player1.username}** 🆚 **${opponentDisplay}**`)
         .addFields(
             { name: '⚽ Score', value: `**${matchState.player1Score} - ${matchState.player2Score}**`, inline: true },
             { name: '⏰ Time', value: `**${matchState.currentMinute}'**`, inline: true },

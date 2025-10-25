@@ -61,7 +61,7 @@ module.exports = {
             const embed = new EmbedBuilder()
                 .setColor('#FFED00')
                 .setTitle('📰 eFOOTBALL WANNABE - Latest News')
-                .setDescription('Stay updated with the latest game updates, events, and announcements!\n\n🌐 View on website: http://localhost:3000/news')
+                .setDescription('Stay updated with the latest game updates, events, and announcements!\n\n')
                 .setFooter({ text: `Page ${page}/${totalPages} • Total News: ${sortedNews.length}` })
                 .setTimestamp();
             
