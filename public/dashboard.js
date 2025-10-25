@@ -727,11 +727,30 @@ function showTab(tabName) {
     });
 }
 
+// Show commands modal
+function showCommandsModal() {
+    const modal = document.getElementById('commandsModal');
+    modal.classList.add('active');
+    modal.style.display = 'flex';
+}
+
+// Close commands modal
+function closeCommandsModal() {
+    const modal = document.getElementById('commandsModal');
+    modal.classList.remove('active');
+    modal.style.display = 'none';
+}
+
 // Close modal on outside click
 window.onclick = function(event) {
-    const modal = document.getElementById('playerModal');
-    if (event.target === modal) {
+    const playerModal = document.getElementById('playerModal');
+    const commandsModal = document.getElementById('commandsModal');
+    
+    if (event.target === playerModal) {
         closeModal();
+    }
+    if (event.target === commandsModal) {
+        closeCommandsModal();
     }
 }
 

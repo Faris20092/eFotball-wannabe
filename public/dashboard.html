@@ -53,8 +53,19 @@
             </div>
 
             <!-- Commands Section -->
-            <div class="commands-section">
-                <h2 class="section-title">📜 Discord Bot Commands</h2>
+            <div class="main-section-card section-blue" onclick="showCommandsModal()">
+                <div class="section-icon">📜</div>
+                <div class="section-title">Discord Commands</div>
+                <div class="section-description">View all available bot commands</div>
+            </div>
+
+        </div>
+
+        <!-- Commands Modal -->
+        <div id="commandsModal" class="modal">
+            <div class="modal-content commands-modal-content">
+                <span class="close" onclick="closeCommandsModal()">&times;</span>
+                <h2 style="color: var(--secondary); text-align: center; margin-bottom: 30px;">📜 Discord Bot Commands</h2>
                 <div class="commands-grid">
                     <div class="command-category">
                         <h3>⚽ Matches</h3>
