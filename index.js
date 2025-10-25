@@ -20,7 +20,7 @@ function sendHealthcheck() {
 }
 
 // Ping every 25 minutes (just under the 30-minute period)
-const PING_INTERVAL_MS = 25 * 60 * 1000;
+const PING_INTERVAL_MS = 5 * 60 * 1000;
 
 // Start the interval timer
 setInterval(sendHealthcheck, PING_INTERVAL_MS);

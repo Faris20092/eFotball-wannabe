@@ -20,14 +20,16 @@
   "type": "commonjs",
   "dependencies": {
     "@faker-js/faker": "^10.0.0",
-    "node.js": "^0.0.1-security",
+    "better-sqlite3": "^12.4.1",
+    "body-parser": "^1.20.3",
+    "cookie-parser": "1.4.7",
     "discord.js": "^14.16.3",
     "dotenv": "^16.4.5",
     "express": "^4.21.1",
     "express-session": "^1.18.1",
+    "express-session-better-sqlite3": "^1.2.1",
+    "node.js": "^0.0.1-security",
     "passport": "^0.7.0",
-    "passport-discord": "^0.1.4",
-    "body-parser": "^1.20.3",
-    "cookie-parser": "1.4.7"
+    "passport-discord": "^0.1.4"
   }
 }
