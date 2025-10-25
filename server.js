@@ -327,7 +327,7 @@ app.get('/ping', (req, res) => {
 });
 
 // Daily Game page
-app.get('/daily-game', (req, res) => {
+app.get('/dailygame', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'daily-game.html'));
 });
 
