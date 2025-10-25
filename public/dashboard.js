@@ -47,6 +47,18 @@ async function loadUserData() {
             document.getElementById('eCoinsAmount').textContent = data.gameData.eCoins || 0;
             document.getElementById('playerCount').textContent = (data.gameData.players || []).length;
             
+            // Update mail badge
+            const unclaimedMail = (data.gameData.mail || []).filter(m => !m.claimed).length;
+            const mailBadge = document.getElementById('mailBadge');
+            if (mailBadge) {
+                if (unclaimedMail > 0) {
+                    mailBadge.textContent = unclaimedMail;
+                    mailBadge.style.display = 'block';
+                } else {
+                    mailBadge.style.display = 'none';
+                }
+            }
+            
             // Update top bar currency
             document.getElementById('topGP').textContent = (data.gameData.gp || 0).toLocaleString();
             document.getElementById('topEcoins').textContent = data.gameData.eCoins || 0;
