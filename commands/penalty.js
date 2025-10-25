@@ -191,7 +191,9 @@ module.exports = {
       const scored = direction !== keeper;
       const delta = scored ? ON_SCORE : ON_MISS;
 
+      const oldRemaining = state.remaining;
       state.remaining = Math.max(0, state.remaining - delta);
+      const newRemaining = state.remaining;
       
       // Only update lastPlay if NOT in admin mode
       if (!isAdminMode) {
@@ -205,22 +207,22 @@ module.exports = {
 
       let rewardText = '';
 
-      // Milestone: 50 eCoins at 19
-      if (state.remaining === 19 && !state.milestones.ecoin19) {
+      // Check if player passed through milestone 19 (50 eCoins)
+      if (oldRemaining > 19 && newRemaining <= 19 && !state.milestones.ecoin19) {
         if (!userData.mail) userData.mail = [];
         userData.mail.push({ id: Math.random().toString(36).slice(2, 10), type: 'eCoins', amount: 50, date: today });
         state.milestones.ecoin19 = true;
-        rewardText += '\n\n⭐ Milestone: **+50 eCoins** (reached 19).';
+        rewardText += '\n\n⭐ Milestone: **+50 eCoins** (passed 19).';
       }
 
-      // Milestones: +500 GP for ranges 35–20 and 18–1
-      if ((state.remaining <= 35 && state.remaining >= 20) || (state.remaining <= 18 && state.remaining >= 1)) {
+      // Give +500 GP for landing position if in valid ranges (35–20 or 18–1)
+      if ((newRemaining <= 35 && newRemaining >= 20) || (newRemaining <= 18 && newRemaining >= 1)) {
         state.milestones.gp = state.milestones.gp || {};
-        if (!state.milestones.gp[state.remaining]) {
+        if (!state.milestones.gp[newRemaining]) {
           if (!userData.mail) userData.mail = [];
           userData.mail.push({ id: Math.random().toString(36).slice(2, 10), type: 'gp', amount: 500, date: today });
-          state.milestones.gp[state.remaining] = true;
-          rewardText += `\n\n💵 Milestone: **+500 GP** (landed on ${state.remaining}).`;
+          state.milestones.gp[newRemaining] = true;
+          rewardText += `\n\n💵 **+500 GP** (landed on ${newRemaining}).`;
         }
       }
 
