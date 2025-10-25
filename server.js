@@ -326,6 +326,11 @@ app.get('/ping', (req, res) => {
     res.send('pong');
 });
 
+// Daily Game page
+app.get('/daily-game', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'daily-game.html'));
+});
+
 // Format uptime
 function formatUptime(ms) {
     const seconds = Math.floor(ms / 1000);
