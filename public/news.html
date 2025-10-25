@@ -8,25 +8,17 @@
 </head>
 <body>
     <nav class="navbar">
-        <div class="nav-left">
-            <h1 class="logo">⚽ EFOOTBALL WANNABE</h1>
-        </div>
+        <div class="nav-brand">⚽ eFOOTBALL WANNABE</div>
         <div class="top-bar-right">
             <div class="currency-display">
-                <span class="currency-item">
-                    <span class="currency-icon">💰</span>
-                    <span id="topGP">0</span>
-                </span>
-                <span class="currency-item">
-                    <span class="currency-icon">🪙</span>
-                    <span id="topEcoins">0</span>
-                </span>
+                <span class="currency-item">💰 <span id="topGP">0</span></span>
+                <span class="currency-item">🪙 <span id="topEcoins">0</span></span>
             </div>
-            <div class="icon-buttons">
+            <div class="top-icons">
                 <button class="icon-btn" onclick="window.location.href='/dashboard'" title="Home">🏠</button>
                 <button class="icon-btn" onclick="window.location.href='/mail'" title="Mailbox">
                     📬
-                    <span class="badge" id="mailBadge" style="display:none;">0</span>
+                    <span class="notification-badge" id="mailBadge" style="display:none;">0</span>
                 </button>
                 <button class="icon-btn active" onclick="window.location.href='/news'" title="News">📰</button>
                 <button class="icon-btn" onclick="window.location.href='/logout'" title="Logout">🚪</button>
