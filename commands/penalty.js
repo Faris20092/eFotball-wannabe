@@ -80,10 +80,50 @@ module.exports = {
     const sub = interaction.options.getSubcommand();
     const state = ensurePenaltyState(userData);
 
+    // Check if user is admin
+    const ADMIN_IDS = (process.env.ADMIN_IDS || '').split(',').map(id => id.trim());
+    const isAdmin = ADMIN_IDS.includes(interaction.user.id);
+
     const today = todayKey();
     if (state.date !== today) {
       state.date = today;
       state.milestones = {};
+    }
+
+    // Admin commands
+    if (sub === 'admin-reset') {
+      if (!isAdmin) {
+        return await interaction.reply({ content: '❌ This command is admin-only.', ephemeral: true });
+      }
+      
+      state.lastPlay = '';
+      state.remaining = START_STEPS;
+      state.milestones = {};
+      client.saveUserData(interaction.user.id, userData);
+      
+      return await interaction.reply({ 
+        content: '✅ **Admin Reset Complete**\n• Daily shot reset\n• Path reset to 35\n• Milestones cleared', 
+        ephemeral: true 
+      });
+    }
+
+    if (sub === 'admin-shoot') {
+      if (!isAdmin) {
+        return await interaction.reply({ content: '❌ This command is admin-only.', ephemeral: true });
+      }
+      
+      // Admin can shoot unlimited times - bypass daily check
+      const row = new ActionRowBuilder().addComponents(
+        new ButtonBuilder().setCustomId('penalty_left').setLabel('⬅️ Left').setStyle(ButtonStyle.Primary),
+        new ButtonBuilder().setCustomId('penalty_center').setLabel('⬆️ Center').setStyle(ButtonStyle.Primary),
+        new ButtonBuilder().setCustomId('penalty_right').setLabel('➡️ Right').setStyle(ButtonStyle.Primary)
+      );
+
+      return await interaction.reply({
+        content: '🔑 **[ADMIN MODE]** Choose your direction:',
+        components: [row],
+        ephemeral: true
+      });
     }
 
     if (sub === 'status') {
@@ -124,19 +164,24 @@ module.exports = {
 
   async handleButton(interaction) {
     try {
-      const [action, direction, userId] = interaction.customId.split('_');
+      const parts = interaction.customId.split('_');
+      const action = parts[0];
+      const direction = parts[1];
+      
       if (action !== 'penalty') return;
-
-      if (interaction.user.id !== userId) {
-        return await interaction.reply({ content: '⛔ This button isn\'t for you.', ephemeral: true });
-      }
 
       const { client } = interaction;
       const userData = client.getUserData(interaction.user.id);
       const state = ensurePenaltyState(userData);
       const today = todayKey();
+      
+      // Check if admin is using admin-shoot (no daily limit)
+      const ADMIN_IDS = (process.env.ADMIN_IDS || '').split(',').map(id => id.trim());
+      const isAdmin = ADMIN_IDS.includes(interaction.user.id);
+      const isAdminMode = interaction.message.content.includes('[ADMIN MODE]');
 
-      if (state.lastPlay === today) {
+      // Only check daily limit if NOT in admin mode
+      if (!isAdminMode && state.lastPlay === today) {
         return await interaction.reply({ content: '⛔ You already shot today.', ephemeral: true });
       }
 
@@ -145,11 +190,16 @@ module.exports = {
       const delta = scored ? ON_SCORE : ON_MISS;
 
       state.remaining = Math.max(0, state.remaining - delta);
-      state.lastPlay = today;
+      
+      // Only update lastPlay if NOT in admin mode
+      if (!isAdminMode) {
+        state.lastPlay = today;
+      }
 
+      const modePrefix = isAdminMode ? '🔑 **[ADMIN MODE]**\n' : '';
       let desc = scored
-        ? `✅ **GOAL!**\nYou aimed **${direction}** and the keeper went **${keeper}**.\n\n🟢 Progress: **-${ON_SCORE}** steps`
-        : `❌ **MISS!**\nYou aimed **${direction}** but the keeper went **${keeper}**.\n\n🔴 Progress: **-${ON_MISS}** steps`;
+        ? `${modePrefix}✅ **GOAL!**\nYou aimed **${direction}** and the keeper went **${keeper}**.\n\n🟢 Progress: **-${ON_SCORE}** steps`
+        : `${modePrefix}❌ **MISS!**\nYou aimed **${direction}** but the keeper went **${keeper}**.\n\n🔴 Progress: **-${ON_MISS}** steps`;
 
       let rewardText = '';
 

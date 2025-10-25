@@ -1,7 +1,7 @@
 // Daily Game Path System
 let userData = null;
-let currentPosition = 0;
-let totalSteps = 35; // Match penalty START_STEPS
+let currentPosition = 35; // Start at 35
+let totalSteps = 36; // 0 to 35 = 36 positions
 
 // Initialize page
 async function init() {
@@ -29,9 +29,8 @@ async function loadUserData() {
             }
             
             // Get current position from penalty data
-            // Position = totalSteps - remaining (e.g., 35 - 23 = 12 steps completed)
-            const remaining = userData.minigames?.penalty?.remaining || 35;
-            currentPosition = totalSteps - remaining;
+            // Position = remaining (35 down to 0)
+            currentPosition = userData.minigames?.penalty?.remaining ?? 35;
             
             // Check mail notifications
             checkMailNotifications();
@@ -73,26 +72,26 @@ function generatePath() {
     pathNodes.innerHTML = '';
     pathSvg.innerHTML = '';
     
-    // Define path coordinates (snake pattern)
+    // Define path coordinates (snake pattern from 35 to 0)
     const nodes = [];
-    const rows = 5;
+    const rows = 4;
     const cols = 10;
     const nodeSpacing = 70;
     const startX = 50;
     const startY = 50;
     
-    for (let row = 0; row < rows; row++) {
-        for (let col = 0; col < cols; col++) {
-            const index = row * cols + col;
-            if (index >= totalSteps) break;
-            
-            // Alternate direction for snake pattern
-            const actualCol = row % 2 === 0 ? col : (cols - 1 - col);
-            const x = startX + actualCol * nodeSpacing;
-            const y = startY + row * nodeSpacing;
-            
-            nodes.push({ x, y, index });
-        }
+    // Generate positions for steps 35 down to 0
+    for (let i = 35; i >= 0; i--) {
+        const pathIndex = 35 - i; // 0 to 35
+        const row = Math.floor(pathIndex / cols);
+        const colInRow = pathIndex % cols;
+        
+        // Alternate direction for snake pattern
+        const actualCol = row % 2 === 0 ? colInRow : (cols - 1 - colInRow);
+        const x = startX + actualCol * nodeSpacing;
+        const y = startY + row * nodeSpacing;
+        
+        nodes.push({ x, y, step: i }); // step is the actual remaining value (35 to 0)
     }
     
     // Draw connecting lines
@@ -116,7 +115,7 @@ function generatePath() {
         nodeDiv.style.top = `${node.y}px`;
         
         // Determine node type and reward
-        const reward = getRewardForStep(node.index);
+        const reward = getRewardForStep(node.step);
         
         // Add icon
         const icon = document.createElement('div');
@@ -127,11 +126,11 @@ function generatePath() {
         // Add step number
         const stepNum = document.createElement('div');
         stepNum.className = 'node-number';
-        stepNum.textContent = node.index + 1;
+        stepNum.textContent = node.step;
         nodeDiv.appendChild(stepNum);
         
         // Mark current position
-        if (node.index === currentPosition) {
+        if (node.step === currentPosition) {
             nodeDiv.classList.add('current-position');
             
             // Add player marker
@@ -141,8 +140,8 @@ function generatePath() {
             nodeDiv.appendChild(marker);
         }
         
-        // Mark completed nodes
-        if (node.index < currentPosition) {
+        // Mark completed nodes (passed = higher than current)
+        if (node.step > currentPosition) {
             nodeDiv.classList.add('completed');
         }
         
@@ -157,36 +156,47 @@ function generatePath() {
 
 // Get reward for specific step
 function getRewardForStep(step) {
-    // Special reward at the end (step 34 = reaching 0 remaining)
-    if (step === 34) return { icon: '🎁', special: true, name: 'Mystery Reward', type: 'special' };
+    // End reward at step 0 - Random reward
+    if (step === 0) {
+        return { icon: '🎁', special: true, name: 'Mystery Reward', type: 'special' };
+    }
     
-    // Milestone rewards every 10 steps
-    if (step % 10 === 9) return { icon: '💎', special: true, name: 'Bonus Reward', type: 'pack' };
+    // Milestone: 50 eCoins at step 19
+    if (step === 19) {
+        return { icon: '🪙', special: true, name: '50 eCoins', type: 'ecoins' };
+    }
     
-    // Regular rewards
-    const rewards = [
-        { icon: '🪙', name: 'eCoins', type: 'ecoins' },
-        { icon: '💰', name: 'GP', type: 'gp' },
-        { icon: '⚽', name: 'Progress', type: 'progress' },
-    ];
+    // Milestone: +500 GP for ranges 35-20 and 18-1
+    if ((step >= 20 && step <= 35) || (step >= 1 && step <= 18)) {
+        return { icon: '💰', name: '+500 GP', type: 'gp' };
+    }
     
-    return rewards[step % rewards.length];
+    // Default
+    return { icon: '⚽', name: 'Progress', type: 'progress' };
 }
 
 // Update display
 function updateDisplay() {
-    const remaining = totalSteps - currentPosition;
-    document.getElementById('remainingSteps').textContent = remaining;
+    // Remaining is the current position (35 down to 0)
+    document.getElementById('remainingSteps').textContent = currentPosition;
     
-    // Find next milestone reward (every 10 steps: 9, 19, 29, and final at 34)
-    const milestones = [9, 19, 29, 34];
-    const nextMilestone = milestones.find(m => m >= currentPosition);
+    // Find next big milestone (19 = eCoins, 0 = Mystery Reward)
+    let nextRewardStep = null;
+    let rewardName = '';
+    let rewardIcon = '';
     
-    if (nextMilestone !== undefined) {
-        const stepsToReward = nextMilestone - currentPosition;
-        const rewardName = nextMilestone === 34 ? 'Mystery Reward' : 'Bonus Reward';
-        const rewardIcon = nextMilestone === 34 ? '🎁' : '💎';
-        
+    if (currentPosition > 19) {
+        nextRewardStep = 19;
+        rewardName = '50 eCoins';
+        rewardIcon = '🪙';
+    } else if (currentPosition > 0) {
+        nextRewardStep = 0;
+        rewardName = 'Mystery Reward';
+        rewardIcon = '🎁';
+    }
+    
+    if (nextRewardStep !== null) {
+        const stepsToReward = currentPosition - nextRewardStep;
         document.getElementById('nextReward').innerHTML = `
             <div class="reward-icon">${rewardIcon}</div>
             <div class="reward-details">
@@ -199,7 +209,7 @@ function updateDisplay() {
             <div class="reward-icon">🎉</div>
             <div class="reward-details">
                 <div class="reward-name">Path Complete!</div>
-                <div class="reward-steps">Keep playing for more rewards</div>
+                <div class="reward-steps">Resets to 35 after claiming</div>
             </div>
         `;
     }
