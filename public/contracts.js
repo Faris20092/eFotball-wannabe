@@ -294,9 +294,19 @@ function showPlayerDetails(player) {
     const stats = player.stats || {};
     const isOwned = ownedPlayerIds.includes(player.id);
     
-    // Get player image path
+    // Get player full image path (240x340 images)
     const sanitizedName = player.name.replace(/[^a-zA-Z0-9\-_]/g, '_').toLowerCase().replace(/_+/g, '_').replace(/_+$/g, '');
-    const playerImagePath = `/assets/faces/${sanitizedName}.png`;
+    const playerImagePath = `/assets/playerimages/${sanitizedName}.png`;
+    
+    // Rarity icons
+    const rarityIcons = {
+        'Iconic': '💎',
+        'Legend': '🌟',
+        'Black': '⚫',
+        'Gold': '🟡',
+        'Silver': '⚪',
+        'Bronze': '🟤'
+    };
     
     content.innerHTML = `
         <div class="player-detail-container">
@@ -304,9 +314,10 @@ function showPlayerDetails(player) {
                 <div class="player-detail-card">
                     <div class="player-card-position">${player.position}</div>
                     <div class="player-card-rating">${player.overall}</div>
-                    <div class="player-card-rarity">${player.rarity}</div>
+                    <div class="player-card-rarity">${rarityIcons[player.rarity] || '⚽'}</div>
+                    <div class="player-card-rarity-bottom">${player.rarity}</div>
                     <img src="${playerImagePath}" alt="${player.name}" class="player-detail-image" 
-                         onerror="this.src='/assets/faces/default_player.png'">
+                         onerror="this.src='/assets/playerimages/default_player.png'">
                 </div>
                 ${isOwned ? '<p style="color: #27ae60; font-weight: bold; text-align: center; margin-top: 15px;">✓ You own this player</p>' : '<p style="color: #999; text-align: center; margin-top: 15px;">You don\'t own this player yet</p>'}
             </div>
