@@ -408,30 +408,84 @@ function showPlayerDetails(player) {
     
     const stats = player.stats || {};
     
+    // Get player image path
+    const sanitizedName = player.name.replace(/[^a-zA-Z0-9\-_]/g, '_').toLowerCase().replace(/_+/g, '_').replace(/_+$/g, '');
+    const playerImagePath = `/assets/faces/${sanitizedName}.png`;
+    
     content.innerHTML = `
-        <h2>${RARITY_EMOJIS[player.rarity] || '⚽'} ${player.name}</h2>
-        <div style="margin: 20px 0;">
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
-                <div><strong>Overall:</strong> ${player.overall}</div>
-                <div><strong>Position:</strong> ${player.position}</div>
-                <div><strong>Rarity:</strong> ${player.rarity}</div>
-                <div><strong>Style:</strong> ${player.playingStyle || 'N/A'}</div>
+        <div class="player-detail-container">
+            <div class="player-detail-left">
+                <div class="player-detail-card">
+                    <div class="player-card-position">${player.position}</div>
+                    <div class="player-card-rating">${player.overall}</div>
+                    <div class="player-card-rarity">${player.rarity}</div>
+                    <img src="${playerImagePath}" alt="${player.name}" class="player-detail-image" 
+                         onerror="this.src='/assets/faces/default_player.png'">
+                </div>
             </div>
-            
-            <h3 style="color: var(--primary); margin: 20px 0 10px 0;">Stats</h3>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                <div>⚔️ Attacking: ${stats.attacking || 0}</div>
-                <div>🎯 Dribbling: ${stats.dribbling || 0}</div>
-                <div>🎯 Passing: ${stats.passing || 0}</div>
-                <div>🛡️ Defending: ${stats.defending || 0}</div>
-                <div>💪 Physicality: ${stats.physicality || 0}</div>
-                <div>🧤 Goalkeeping: ${stats.goalkeeping || 0}</div>
+            <div class="player-detail-right">
+                <div class="player-detail-header">
+                    <div class="player-detail-info">
+                        <div class="player-detail-row">
+                            <span class="player-detail-label">Overall:</span>
+                            <span class="player-detail-value">${player.overall}</span>
+                        </div>
+                        <div class="player-detail-row">
+                            <span class="player-detail-label">Position:</span>
+                            <span class="player-detail-value">${player.position}</span>
+                        </div>
+                    </div>
+                    <div class="player-detail-info">
+                        <div class="player-detail-row">
+                            <span class="player-detail-label">Rarity:</span>
+                            <span class="player-detail-value">${player.rarity}</span>
+                        </div>
+                        <div class="player-detail-row">
+                            <span class="player-detail-label">Style:</span>
+                            <span class="player-detail-value">${player.playingStyle || 'N/A'}</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <h3 class="player-detail-section-title">Stats</h3>
+                <div class="player-detail-stats">
+                    <div class="player-detail-stat">
+                        <span class="stat-icon">⚔️</span>
+                        <span class="stat-label">Attacking:</span>
+                        <span class="stat-value">${stats.attacking || 0}</span>
+                    </div>
+                    <div class="player-detail-stat">
+                        <span class="stat-icon">🎯</span>
+                        <span class="stat-label">Dribbling:</span>
+                        <span class="stat-value">${stats.dribbling || 0}</span>
+                    </div>
+                    <div class="player-detail-stat">
+                        <span class="stat-icon">⚽</span>
+                        <span class="stat-label">Passing:</span>
+                        <span class="stat-value">${stats.passing || 0}</span>
+                    </div>
+                    <div class="player-detail-stat">
+                        <span class="stat-icon">🛡️</span>
+                        <span class="stat-label">Defending:</span>
+                        <span class="stat-value">${stats.defending || 0}</span>
+                    </div>
+                    <div class="player-detail-stat">
+                        <span class="stat-icon">💪</span>
+                        <span class="stat-label">Physicality:</span>
+                        <span class="stat-value">${stats.physicality || 0}</span>
+                    </div>
+                    <div class="player-detail-stat">
+                        <span class="stat-icon">🧤</span>
+                        <span class="stat-label">Goalkeeping:</span>
+                        <span class="stat-value">${stats.goalkeeping || 0}</span>
+                    </div>
+                </div>
+                
+                ${player.skills && player.skills.length > 0 ? `
+                    <h3 class="player-detail-section-title">Skills</h3>
+                    <div class="player-detail-skills">${player.skills.slice(0, 5).join(', ')}</div>
+                ` : ''}
             </div>
-            
-            ${player.skills && player.skills.length > 0 ? `
-                <h3 style="color: var(--primary); margin: 20px 0 10px 0;">Skills</h3>
-                <div style="color: #666;">${player.skills.slice(0, 5).join(', ')}</div>
-            ` : ''}
         </div>
     `;
     
