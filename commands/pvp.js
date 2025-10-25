@@ -6,6 +6,9 @@ const {
     ButtonStyle 
 } = require('discord.js');
 
+// Import AI teams from match.js
+const AI_TEAMS = require('./match.js').AI_TEAMS;
+
 const MATCH_REWARDS = {
     pvp: {
         win: { gp: 12000, eCoins: 25 },
@@ -181,42 +184,49 @@ async function matchWithAI(userId, playerData, client) {
             return userData && userData.squad && userData.squad.main && userData.squad.main.length >= 11;
         });
     
-    if (allUserIds.length === 0) {
-        // No AI opponents available
-        const noOpponentEmbed = new EmbedBuilder()
-            .setTitle('😔 **NO OPPONENTS FOUND**')
-            .setDescription('🌐 No players or AI opponents available!\n\n⏰ **Try again later** or invite friends to play!')
-            .setColor('#e74c3c')
-            .addFields(
-                { name: '💡 Tip', value: 'Build your squad and try again!', inline: false }
-            );
-
-        await playerData.interaction.editReply({ embeds: [noOpponentEmbed] });
-        return;
-    }
-
-    const opponentId = allUserIds[Math.floor(Math.random() * allUserIds.length)];
-    const opponentUserData = client.getUserData(opponentId);
+    let aiOpponent;
+    let opponentId;
+    let isTeamOpponent = false;
     
-    // Try to get Discord user info
-    let opponentUsername = 'AI Opponent';
-    try {
-        const discordUser = await client.users.fetch(opponentId);
-        opponentUsername = discordUser.username;
-    } catch (error) {
-        console.log(`Could not fetch Discord user ${opponentId}:`, error.message);
-        opponentUsername = 'AI Opponent';
-    }
+    if (allUserIds.length === 0) {
+        // No real users available - use AI teams from match.js
+        const randomTeam = AI_TEAMS[Math.floor(Math.random() * AI_TEAMS.length)];
+        
+        // Create fake user data for team opponent
+        aiOpponent = {
+            userData: null, // No real user data
+            interaction: null,
+            timestamp: Date.now(),
+            username: randomTeam.name,
+            teamStrength: randomTeam.strength
+        };
+        opponentId = 'team_' + randomTeam.name.replace(/\s+/g, '_');
+        isTeamOpponent = true;
+    } else {
+        // Use real user's squad
+        opponentId = allUserIds[Math.floor(Math.random() * allUserIds.length)];
+        const opponentUserData = client.getUserData(opponentId);
+        
+        // Try to get Discord user info
+        let opponentUsername = 'AI Opponent';
+        try {
+            const discordUser = await client.users.fetch(opponentId);
+            opponentUsername = discordUser.username;
+        } catch (error) {
+            console.log(`Could not fetch Discord user ${opponentId}:`, error.message);
+            opponentUsername = 'AI Opponent';
+        }
 
-    const aiOpponent = {
-        userData: opponentUserData,
-        interaction: null,
-        timestamp: Date.now(),
-        username: opponentUsername
-    };
+        aiOpponent = {
+            userData: opponentUserData,
+            interaction: null,
+            timestamp: Date.now(),
+            username: opponentUsername
+        };
+    }
 
     // Start AI match
-    await startPvPMatch(playerData, aiOpponent, opponentId, client, true);
+    await startPvPMatch(playerData, aiOpponent, opponentId, client, true, isTeamOpponent);
 }
 
 async function findMatch(userId, client) {
@@ -293,9 +303,9 @@ async function findMatch(userId, client) {
     await startPvPMatch(playerData, opponent, opponentId, client);
 }
 
-async function startPvPMatch(player1, player2, player2Id, client, isAI = false) {
+async function startPvPMatch(player1, player2, player2Id, client, isAI = false, isTeamOpponent = false) {
     const teamStrength1 = calculateTeamStrength(player1.userData, client);
-    const teamStrength2 = calculateTeamStrength(player2.userData, client);
+    const teamStrength2 = isTeamOpponent ? player2.teamStrength : calculateTeamStrength(player2.userData, client);
 
     // Create match state
     const matchState = {

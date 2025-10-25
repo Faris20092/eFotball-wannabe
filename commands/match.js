@@ -123,6 +123,7 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName('match')
         .setDescription('🔥 Battle against legendary AI teams - Are you ready to become a CHAMPION?! ⚽'),
+    AI_TEAMS: AI_TEAMS, // Export AI_TEAMS for use in pvp.js
     async execute(interaction) {
         const { client } = interaction;
         const userId = interaction.user.id;
@@ -161,7 +162,8 @@ module.exports = {
             currentMinute: 0,
             opponent: opponent,
             userId: userId,
-            username: interaction.user.username
+            username: interaction.user.username,
+            teamStrength: teamStrength // Store team strength for display
         };
         activeMatches.set(userId, matchState);
 
@@ -175,7 +177,7 @@ module.exports = {
                 { name: '💪 Team Power', value: `**${teamStrength}** vs **${opponent.strength}**`, inline: true }
             )
             .setColor('#3498db')
-            .setFooter({ text: '🔥 MATCH IS HEATING UP! Get ready for some ACTION!' });
+            .setFooter({ text: `🔥 MATCH IS HEATING UP! Get ready for some ACTION! | Your Team: ${teamStrength}` });
 
         await interaction.reply({ embeds: [embed] });
 
@@ -281,12 +283,16 @@ async function processMatchEvents(interaction, events, matchState, client, userD
 }
 
 function createMatchEmbed(matchState, latestEvent) {
+    // Calculate team strength for display
+    const userTeamStrength = matchState.teamStrength || 'N/A';
+    
     const embed = new EmbedBuilder()
         .setTitle('⚽ **EPIC FOOTBALL BATTLE** 🔥')
         .setDescription(`**${matchState.username}'s DREAM Team** 🆚 **${matchState.opponent.name}**`)
         .addFields(
             { name: '⚽ **Score**', value: `**${matchState.playerScore} - ${matchState.opponentScore}**`, inline: true },
             { name: '⏰ **Time**', value: `**${matchState.currentMinute}'**`, inline: true },
+            { name: '💪 **Team Power**', value: `**${userTeamStrength}** vs **${matchState.opponent.strength}**`, inline: true },
             { name: '🎯 **Latest Action**', value: latestEvent || '**Match starting... GET READY!** 🚀', inline: false }
         )
         .setColor('#3498db');
