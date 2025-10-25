@@ -1,7 +1,8 @@
 require('dotenv').config();
 const express = require('express');
-const session = require('express-session');
-const BetterSqlite3Store = require('express-session-better-sqlite3')(session);
+const betterSqlite3 = require('better-sqlite3');
+const expressSession = require('express-session');
+const expressSessionBetterSqlite3 = require('express-session-better-sqlite3');
 const passport = require('passport');
 const DiscordStrategy = require('passport-discord').Strategy;
 const bodyParser = require('body-parser');
@@ -41,15 +42,18 @@ passport.deserializeUser((obj, done) => {
     done(null, obj);
 });
 
+// Create SQLite database for sessions
+const sqliteDb = new betterSqlite3(path.join(__dirname, 'sessions.db'));
+
+// Create the session store
+const BetterSqlite3SessionStore = expressSessionBetterSqlite3(expressSession, sqliteDb);
+
 // Middleware
 app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(session({
-    store: new BetterSqlite3Store({
-        path: path.join(__dirname, 'sessions.db'),
-        ttl: 7 * 24 * 60 * 60 * 1000 // 7 days in milliseconds
-    }),
+app.use(expressSession({
+    store: new BetterSqlite3SessionStore(),
     secret: process.env.SESSION_SECRET || 'efotball-secret-key-change-this',
     resave: false,
     saveUninitialized: false,
