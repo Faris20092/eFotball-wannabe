@@ -1,7 +1,7 @@
 // Daily Game Path System
 let userData = null;
 let currentPosition = 0;
-let totalSteps = 50;
+let totalSteps = 35; // Match penalty START_STEPS
 
 // Initialize page
 async function init() {
@@ -29,7 +29,9 @@ async function loadUserData() {
             }
             
             // Get current position from penalty data
-            currentPosition = userData.penalty?.totalGoals || 0;
+            // Position = totalSteps - remaining (e.g., 35 - 23 = 12 steps completed)
+            const remaining = userData.minigames?.penalty?.remaining || 35;
+            currentPosition = totalSteps - remaining;
             
             // Check mail notifications
             checkMailNotifications();
@@ -155,16 +157,17 @@ function generatePath() {
 
 // Get reward for specific step
 function getRewardForStep(step) {
-    // Special rewards at milestones
-    if (step === 14) return { icon: '💎', special: true, name: 'Iconic Pack', type: 'pack' };
-    if (step === 29) return { icon: '🌟', special: true, name: 'Legend Pack', type: 'pack' };
-    if (step === 49) return { icon: '🏆', special: true, name: 'Grand Prize', type: 'special' };
+    // Special reward at the end (step 34 = reaching 0 remaining)
+    if (step === 34) return { icon: '🎁', special: true, name: 'Mystery Reward', type: 'special' };
+    
+    // Milestone rewards every 10 steps
+    if (step % 10 === 9) return { icon: '💎', special: true, name: 'Bonus Reward', type: 'pack' };
     
     // Regular rewards
     const rewards = [
-        { icon: '🪙', name: '100 eCoins', type: 'ecoins' },
-        { icon: '💰', name: '5000 GP', type: 'gp' },
-        { icon: '📦', name: 'Standard Pack', type: 'pack' },
+        { icon: '🪙', name: 'eCoins', type: 'ecoins' },
+        { icon: '💰', name: 'GP', type: 'gp' },
+        { icon: '⚽', name: 'Progress', type: 'progress' },
     ];
     
     return rewards[step % rewards.length];
@@ -175,21 +178,19 @@ function updateDisplay() {
     const remaining = totalSteps - currentPosition;
     document.getElementById('remainingSteps').textContent = remaining;
     
-    // Find next big reward
-    const bigRewards = [
-        { step: 14, icon: '💎', name: 'Iconic Pack' },
-        { step: 29, icon: '🌟', name: 'Legend Pack' },
-        { step: 49, icon: '🏆', name: 'Grand Prize' }
-    ];
+    // Find next milestone reward (every 10 steps: 9, 19, 29, and final at 34)
+    const milestones = [9, 19, 29, 34];
+    const nextMilestone = milestones.find(m => m >= currentPosition);
     
-    const nextBig = bigRewards.find(r => r.step >= currentPosition);
-    
-    if (nextBig) {
-        const stepsToReward = nextBig.step - currentPosition;
+    if (nextMilestone !== undefined) {
+        const stepsToReward = nextMilestone - currentPosition;
+        const rewardName = nextMilestone === 34 ? 'Mystery Reward' : 'Bonus Reward';
+        const rewardIcon = nextMilestone === 34 ? '🎁' : '💎';
+        
         document.getElementById('nextReward').innerHTML = `
-            <div class="reward-icon">${nextBig.icon}</div>
+            <div class="reward-icon">${rewardIcon}</div>
             <div class="reward-details">
-                <div class="reward-name">${nextBig.name}</div>
+                <div class="reward-name">${rewardName}</div>
                 <div class="reward-steps">In ${stepsToReward} step${stepsToReward !== 1 ? 's' : ''}</div>
             </div>
         `;
@@ -197,8 +198,8 @@ function updateDisplay() {
         document.getElementById('nextReward').innerHTML = `
             <div class="reward-icon">🎉</div>
             <div class="reward-details">
-                <div class="reward-name">All Rewards Claimed!</div>
-                <div class="reward-steps">Come back tomorrow</div>
+                <div class="reward-name">Path Complete!</div>
+                <div class="reward-steps">Keep playing for more rewards</div>
             </div>
         `;
     }
