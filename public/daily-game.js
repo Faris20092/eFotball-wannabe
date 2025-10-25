@@ -15,15 +15,17 @@ async function loadUserData() {
     try {
         const response = await fetch('/api/user');
         if (response.ok) {
-            userData = await response.json();
+            const data = await response.json();
+            userData = data.gameData || {};
             
             // Update top bar
             document.getElementById('topGP').textContent = (userData.gp || 0).toLocaleString();
             document.getElementById('topEcoins').textContent = (userData.eCoins || 0).toLocaleString();
-            document.getElementById('username').textContent = userData.username || 'Player';
+            document.getElementById('username').textContent = data.discord?.username || 'Player';
             
-            if (userData.avatar) {
-                document.getElementById('userAvatar').src = userData.avatar;
+            if (data.discord?.avatar) {
+                const avatarUrl = `https://cdn.discordapp.com/avatars/${data.discord.id}/${data.discord.avatar}.png`;
+                document.getElementById('userAvatar').src = avatarUrl;
             }
             
             // Get current position from penalty data
@@ -31,9 +33,13 @@ async function loadUserData() {
             
             // Check mail notifications
             checkMailNotifications();
+        } else {
+            console.error('Failed to load user data:', response.status);
+            document.getElementById('username').textContent = 'Not Logged In';
         }
     } catch (error) {
         console.error('Error loading user data:', error);
+        document.getElementById('username').textContent = 'Error Loading';
     }
 }
 

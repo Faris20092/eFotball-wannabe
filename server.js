@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const path = require('path');
+const fs = require('fs');
 const { spawn } = require('child_process');
 
 const app = express();
@@ -329,6 +330,30 @@ app.get('/ping', (req, res) => {
 // Daily Game page
 app.get('/dailygame', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'daily-game.html'));
+});
+
+// API endpoint to get user data
+app.get('/api/user', (req, res) => {
+    const userId = req.query.userId;
+    
+    if (!userId) {
+        return res.status(400).json({ error: 'userId parameter required' });
+    }
+    
+    const dataPath = path.join(__dirname, 'data');
+    const userFile = path.join(dataPath, `${userId}.json`);
+    
+    if (fs.existsSync(userFile)) {
+        try {
+            const userData = JSON.parse(fs.readFileSync(userFile, 'utf8'));
+            res.json(userData);
+        } catch (error) {
+            console.error(`❌ Error reading user data for ${userId}:`, error.message);
+            res.status(500).json({ error: 'Failed to read user data' });
+        }
+    } else {
+        res.status(404).json({ error: 'User not found' });
+    }
 });
 
 // Format uptime

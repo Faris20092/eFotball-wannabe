@@ -186,6 +186,11 @@ app.get('/news', isAuthenticated, (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'news.html'));
 });
 
+// Daily Game route
+app.get('/dailygame', isAuthenticated, (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'daily-game.html'));
+});
+
 // API Routes
 app.get('/api/user', isAuthenticated, (req, res) => {
     const userData = getUserData(req.user.id);
