@@ -86,12 +86,138 @@ module.exports = {
             username: interaction.user.username
         });
 
-        // Try to find a match
-        setTimeout(async () => {
-            await findMatch(userId, client);
-        }, 2000); // 2 second delay for "connection checking"
+        // Start matchmaking process with progressive updates
+        await startMatchmaking(userId, client);
     }
 };
+
+async function startMatchmaking(userId, client) {
+    const playerData = matchmakingQueue.get(userId);
+    if (!playerData) return;
+
+    const MIN_WAIT_TIME = 10000; // 10 seconds minimum
+    const MAX_WAIT_TIME = 25000; // 25 seconds maximum
+    const CHECK_INTERVAL = 2000; // Check every 2 seconds
+    
+    let elapsedTime = 0;
+    const startTime = Date.now();
+
+    // Update embed every 2 seconds while searching
+    const searchInterval = setInterval(async () => {
+        if (!matchmakingQueue.has(userId)) {
+            clearInterval(searchInterval);
+            return;
+        }
+
+        elapsedTime = Date.now() - startTime;
+        const remainingTime = Math.ceil((MAX_WAIT_TIME - elapsedTime) / 1000);
+
+        // Check if minimum wait time has passed
+        if (elapsedTime >= MIN_WAIT_TIME) {
+            // Look for real opponent
+            const opponent = await findRealOpponent(userId);
+            
+            if (opponent) {
+                clearInterval(searchInterval);
+                const [opponentId, opponentData] = opponent;
+                
+                // Remove both from queue
+                matchmakingQueue.delete(userId);
+                matchmakingQueue.delete(opponentId);
+                
+                // Start real PvP match
+                await startPvPMatch(playerData, opponentData, opponentId, client, false);
+                return;
+            }
+        }
+
+        // Update searching embed
+        const searchEmbed = new EmbedBuilder()
+            .setTitle('🔍 **SEARCHING FOR OPPONENT...**')
+            .setDescription(`⏳ **${Math.floor(elapsedTime / 1000)}s** elapsed...\n🌐 Looking for players across all servers!`)
+            .setColor('#f39c12')
+            .addFields(
+                { name: '👤 Your Team', value: `**${playerData.username}**`, inline: true },
+                { name: '🎯 Status', value: elapsedTime < MIN_WAIT_TIME ? '⏰ **WARMING UP...**' : '🔄 **SEARCHING...**', inline: true },
+                { name: '⏱️ Time Left', value: `**${remainingTime}s**`, inline: true }
+            )
+            .setFooter({ text: 'Matching you with players worldwide...' });
+
+        try {
+            await playerData.interaction.editReply({ embeds: [searchEmbed] });
+        } catch (error) {
+            clearInterval(searchInterval);
+        }
+
+        // Max time reached - match with AI
+        if (elapsedTime >= MAX_WAIT_TIME) {
+            clearInterval(searchInterval);
+            matchmakingQueue.delete(userId);
+            await matchWithAI(userId, playerData, client);
+        }
+    }, CHECK_INTERVAL);
+}
+
+async function findRealOpponent(userId) {
+    // Look for another player in queue (excluding self)
+    const availableOpponents = Array.from(matchmakingQueue.entries())
+        .filter(([id, data]) => {
+            if (id === userId) return false;
+            // Check if opponent has been waiting at least 10 seconds
+            const waitTime = Date.now() - data.timestamp;
+            return waitTime >= 10000 && waitTime < 60000; // Between 10s and 60s
+        })
+        .sort((a, b) => a[1].timestamp - b[1].timestamp); // Oldest first
+
+    return availableOpponents.length > 0 ? availableOpponents[0] : null;
+}
+
+async function matchWithAI(userId, playerData, client) {
+    // Find AI opponent from users who have played
+    const allUserIds = (typeof client.listAllUserIds === 'function' ? client.listAllUserIds() : [])
+        .filter(id => {
+            if (id === userId) return false;
+            const userData = client.getUserData(id);
+            return userData && userData.squad && userData.squad.main && userData.squad.main.length >= 11;
+        });
+    
+    if (allUserIds.length === 0) {
+        // No AI opponents available
+        const noOpponentEmbed = new EmbedBuilder()
+            .setTitle('😔 **NO OPPONENTS FOUND**')
+            .setDescription('🌐 No players or AI opponents available!\n\n⏰ **Try again later** or invite friends to play!')
+            .setColor('#e74c3c')
+            .addFields(
+                { name: '💡 Tip', value: 'Build your squad and try again!', inline: false }
+            );
+
+        await playerData.interaction.editReply({ embeds: [noOpponentEmbed] });
+        return;
+    }
+
+    const opponentId = allUserIds[Math.floor(Math.random() * allUserIds.length)];
+    const opponentUserData = client.getUserData(opponentId);
+    
+    // Try to get Discord user info
+    let opponentUsername = 'AI Opponent';
+    try {
+        const discordUser = await client.users.fetch(opponentId);
+        opponentUsername = discordUser.username;
+    } catch (error) {
+        console.log(`Could not fetch Discord user ${opponentId}:`, error.message);
+        opponentUsername = 'AI Opponent';
+    }
+
+    const aiOpponent = {
+        userData: opponentUserData,
+        interaction: null,
+        timestamp: Date.now(),
+        username: opponentUsername
+    };
+
+    // Start AI match
+    await startPvPMatch(playerData, aiOpponent, opponentId, client, true);
+}
 
 async function findMatch(userId, client) {
     const playerData = matchmakingQueue.get(userId);
@@ -109,8 +235,15 @@ async function findMatch(userId, client) {
         // Found a real opponent
         [opponentId, opponent] = availableOpponents[0];
     } else {
-        // No real opponent found, create AI opponent based on existing users on disk
-        const allUserIds = (typeof client.listAllUserIds === 'function' ? client.listAllUserIds() : []).filter(id => id !== userId);
+        // No real opponent found, create AI opponent based on users who have actually played
+        const allUserIds = (typeof client.listAllUserIds === 'function' ? client.listAllUserIds() : [])
+            .filter(id => {
+                if (id === userId) return false;
+                // Only include users who have a valid squad
+                const userData = client.getUserData(id);
+                return userData && userData.squad && userData.squad.main && userData.squad.main.length >= 11;
+            });
+        
         if (allUserIds.length > 0) {
             opponentId = allUserIds[Math.floor(Math.random() * allUserIds.length)];
             const opponentUserData = client.getUserData(opponentId);
@@ -121,8 +254,9 @@ async function findMatch(userId, client) {
                 const discordUser = await client.users.fetch(opponentId);
                 opponentUsername = discordUser.username;
             } catch (error) {
-                // Fallback to generic name if user not found
-                opponentUsername = `Player ${opponentId.slice(-4)}`;
+                // If user not found in Discord, try to get from user data
+                console.log(`Could not fetch Discord user ${opponentId}:`, error.message);
+                opponentUsername = 'AI Opponent';
             }
 
             opponent = {
@@ -159,7 +293,7 @@ async function findMatch(userId, client) {
     await startPvPMatch(playerData, opponent, opponentId, client);
 }
 
-async function startPvPMatch(player1, player2, player2Id, client) {
+async function startPvPMatch(player1, player2, player2Id, client, isAI = false) {
     const teamStrength1 = calculateTeamStrength(player1.userData, client);
     const teamStrength2 = calculateTeamStrength(player2.userData, client);
 
@@ -178,7 +312,7 @@ async function startPvPMatch(player1, player2, player2Id, client) {
             id: player2Id,
             username: player2.username,
             strength: teamStrength2,
-            isAI: !player2.interaction // Mark if AI opponent
+            isAI: isAI // Mark if AI opponent
         }
     };
 
@@ -188,16 +322,20 @@ async function startPvPMatch(player1, player2, player2Id, client) {
     }
 
     // Update connection embed to show match found
+    const matchType = isAI ? 'AI Match' : 'Real PvP';
+    const opponentDisplay = isAI ? `${player2.username} (AI)` : player2.username;
+    
     const matchFoundEmbed = new EmbedBuilder()
-        .setTitle('✅ **OPPONENT FOUND!**')
-        .setDescription(`🎮 **${player1.username}** 🆚 **${player2.username}**\n\n🔥 **MATCH STARTING...**`)
-        .setColor('#27ae60')
+        .setTitle(`✅ **OPPONENT FOUND!** ${isAI ? '🤖' : '👥'}`)
+        .setDescription(`🎮 **${player1.username}** 🆚 **${opponentDisplay}**\n\n🔥 **MATCH STARTING...**`)
+        .setColor(isAI ? '#3498db' : '#27ae60')
         .addFields(
             { name: '⚽ Score', value: '**0 - 0**', inline: true },
             { name: '⏰ Time', value: "**0' - KICK OFF!** 🚀", inline: true },
-            { name: '💪 Team Power', value: `**${teamStrength1}** vs **${teamStrength2}**`, inline: true }
+            { name: '💪 Team Power', value: `**${teamStrength1}** vs **${teamStrength2}**`, inline: true },
+            { name: '🎮 Match Type', value: `**${matchType}**`, inline: false }
         )
-        .setFooter({ text: '🔥 PvP MATCH IS STARTING! Get ready for EPIC action!' });
+        .setFooter({ text: isAI ? '🤖 AI MATCH STARTING!' : '🔥 REAL PvP MATCH! Get ready for EPIC action!' });
 
     await player1.interaction.editReply({ embeds: [matchFoundEmbed] });
 
