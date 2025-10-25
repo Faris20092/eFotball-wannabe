@@ -104,7 +104,7 @@ function todayKey() {
 }
 
 // --- Bot Events ---
-client.on('ready', async () => {
+client.once('clientReady', async () => {
     // Fetch application to determine bot owner (for owner-only commands)
     try {
         await client.application.fetch();
