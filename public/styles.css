@@ -507,10 +507,10 @@ body {
 }
 
 .main-section-card {
-    width: 160px;
-    height: 140px;
-    border-radius: 20px;
-    padding: 20px 15px;
+    width: 200px;
+    height: 100px;
+    border-radius: 18px;
+    padding: 15px 20px;
     text-align: center;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -520,39 +520,42 @@ body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.5);
+    border: 2px solid rgba(255, 255, 255, 0.1);
 }
 
 .main-section-card:hover {
-    transform: translateY(-8px) scale(1.05);
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6);
+    transform: translateY(-5px) scale(1.03);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7);
+    border-color: rgba(255, 255, 255, 0.2);
 }
 
-/* Section Colors */
+/* Section Colors - Inspired by third image */
 .section-red {
-    background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+    background: linear-gradient(135deg, #e85d75 0%, #d63447 100%);
 }
 
 .section-purple {
-    background: linear-gradient(135deg, #c44ec4 0%, #9b59b6 100%);
+    background: linear-gradient(135deg, #d946ef 0%, #b83dba 100%);
 }
 
 .section-blue {
-    background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+    background: linear-gradient(135deg, #4da6ff 0%, #3b82f6 100%);
 }
 
 /* Section Content */
 .section-icon {
-    font-size: 3.5em;
-    margin-bottom: 12px;
-    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+    font-size: 2.5em;
+    margin-bottom: 8px;
+    filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.4));
 }
 
 .section-title {
-    font-size: 1.05em;
-    font-weight: bold;
+    font-size: 0.95em;
+    font-weight: 600;
     color: white;
-    text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.5);
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.6);
+    letter-spacing: 0.3px;
 }
 
 .section-description {
