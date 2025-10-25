@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const session = require('express-session');
+const BetterSqlite3Store = require('express-session-better-sqlite3')(session);
 const passport = require('passport');
 const DiscordStrategy = require('passport-discord').Strategy;
 const bodyParser = require('body-parser');
@@ -45,6 +46,10 @@ app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(session({
+    store: new BetterSqlite3Store({
+        path: path.join(__dirname, 'sessions.db'),
+        ttl: 7 * 24 * 60 * 60 * 1000 // 7 days in milliseconds
+    }),
     secret: process.env.SESSION_SECRET || 'efotball-secret-key-change-this',
     resave: false,
     saveUninitialized: false,

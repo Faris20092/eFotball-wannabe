@@ -4,3 +4,4 @@ data/
 *.log
 .DS_Store
 players_backup_*.json
+sessions.db
