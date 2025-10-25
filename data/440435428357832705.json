@@ -1,7 +1,7 @@
 {
   "id": "440435428357832705",
-  "gp": 265000,
-  "eCoins": 762115,
+  "gp": 284000,
+  "eCoins": 762154,
   "players": [
     {
       "id": "7731046d-b344-4238-be3b-c94c130ce399",
@@ -15939,7 +15939,7 @@
     }
   },
   "daily": {
-    "lastClaim": "2025-10-24"
+    "lastClaim": "2025-10-25"
   },
   "playerTrainers": [
     {
@@ -15951,5 +15951,12 @@
     }
   ],
   "trainingExp": 0,
-  "formation": "4-3-3"
+  "formation": "4-3-3",
+  "stats": {
+    "wins": 0,
+    "draws": 0,
+    "losses": 1,
+    "lastStrength": 45,
+    "bestStrength": 45
+  }
 }
