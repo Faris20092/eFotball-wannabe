@@ -857,7 +857,7 @@ body {
     font-weight: bold;
     font-size: 1em;
     background: rgba(0, 0, 0, 0.4);
-    z-index: 2;
+    z-index: 10;
 }
 
 .player-card-rating {
@@ -868,7 +868,8 @@ body {
     font-weight: 900;
     font-size: 2.5em;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
-    z-index: 2;
+    z-index: 10;
+    line-height: 1;
 }
 
 .player-card-rarity {
@@ -876,7 +877,7 @@ body {
     top: 95px;
     left: 10px;
     font-size: 2em;
-    z-index: 2;
+    z-index: 10;
     filter: drop-shadow(2px 2px 3px rgba(0, 0, 0, 0.8));
 }
 
@@ -892,7 +893,7 @@ body {
     font-weight: bold;
     text-align: center;
     font-size: 0.85em;
-    z-index: 2;
+    z-index: 10;
 }
 
 .player-detail-image {
@@ -904,6 +905,7 @@ body {
     left: 0;
     right: 0;
     bottom: 0;
+    z-index: 1;
 }
 
 .player-detail-right {
@@ -2043,9 +2045,9 @@ body {
     background: #000033;
     border-radius: 15px;
     padding: 30px;
-    max-width: 500px;
+    max-width: 950px;
     width: 90%;
-    max-height: 80vh;
+    max-height: 90vh;
     overflow-y: auto;
     position: relative;
 }
