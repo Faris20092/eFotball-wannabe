@@ -39,17 +39,20 @@
             </div>
         </div>
 
-        <!-- Game Mode Buttons and Commands Section -->
-        <div class="home-grid">
-            <div class="game-modes">
-                <button class="game-mode-btn mode-red" onclick="window.location.href='/my-team'">
-                    <div class="mode-icon">🛡️</div>
-                    <div class="mode-label">My Team</div>
-                </button>
-                <button class="game-mode-btn mode-purple" onclick="window.location.href='/contracts'">
-                    <div class="mode-icon">👤➕</div>
-                    <div class="mode-label">Contracts</div>
-                </button>
+        <!-- Main Sections Grid -->
+        <div class="main-sections-grid">
+            <!-- My Team Section -->
+            <div class="main-section-card section-red" onclick="window.location.href='/my-team'">
+                <div class="section-icon">🛡️</div>
+                <div class="section-title">My Team</div>
+                <div class="section-description">Build your squad, set formations, and manage your players</div>
+            </div>
+
+            <!-- Contracts Section -->
+            <div class="main-section-card section-purple" onclick="window.location.href='/contracts'">
+                <div class="section-icon">👤➕</div>
+                <div class="section-title">Contracts</div>
+                <div class="section-description">Sign new players and expand your collection</div>
             </div>
 
             <!-- Commands Section -->
@@ -58,7 +61,6 @@
                 <div class="section-title">Discord Commands</div>
                 <div class="section-description">View all available bot commands</div>
             </div>
-
         </div>
 
         <!-- Commands Modal -->
