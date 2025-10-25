@@ -1,7 +1,7 @@
 {
   "id": "440435428357832705",
-  "gp": 293000,
-  "eCoins": 762173,
+  "gp": 300000,
+  "eCoins": 762187,
   "players": [
     {
       "id": "7731046d-b344-4238-be3b-c94c130ce399",
@@ -15953,10 +15953,10 @@
   "trainingExp": 0,
   "formation": "4-3-3",
   "stats": {
-    "wins": 0,
+    "wins": 1,
     "draws": 1,
     "losses": 3,
-    "lastStrength": 45,
-    "bestStrength": 45
+    "lastStrength": 91,
+    "bestStrength": 91
   }
 }
