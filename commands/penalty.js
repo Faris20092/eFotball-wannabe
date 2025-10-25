@@ -72,7 +72,9 @@ module.exports = {
     .setName('penalty')
     .setDescription('Daily penalty minigame')
     .addSubcommand(sc => sc.setName('status').setDescription('View your daily penalty progress'))
-    .addSubcommand(sc => sc.setName('shoot').setDescription('Take your daily penalty shot (once per day)')),
+    .addSubcommand(sc => sc.setName('shoot').setDescription('Take your daily penalty shot (once per day)'))
+    .addSubcommand(sc => sc.setName('admin-shoot').setDescription('[ADMIN] Unlimited penalty shots'))
+    .addSubcommand(sc => sc.setName('admin-reset').setDescription('[ADMIN] Reset daily penalty status')),
 
   async execute(interaction) {
     const { client } = interaction;
