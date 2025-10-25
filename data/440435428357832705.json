@@ -18118,6 +18118,18 @@
       "type": "gp",
       "amount": 500,
       "date": "2025-10-25"
+    },
+    {
+      "id": "91o6oxto",
+      "type": "gp",
+      "amount": 500,
+      "date": "2025-10-25"
+    },
+    {
+      "id": "vfb8yagn",
+      "type": "gp",
+      "amount": 500,
+      "date": "2025-10-25"
     }
   ],
   "inventory": {
@@ -18132,9 +18144,11 @@
     "penalty": {
       "date": "",
       "lastPlay": "2025-10-25",
-      "remaining": 23,
+      "remaining": 7,
       "milestones": {
         "gp": {
+          "7": true,
+          "15": true,
           "23": true,
           "27": true
         }
