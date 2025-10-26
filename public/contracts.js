@@ -201,7 +201,7 @@ function renderPackDetails(packKey) {
 function filterAndRenderPlayers() {
     if (!currentPack) return;
     
-    const pack = window.packsData[currentPack];
+    const pack = PACKS_CONFIG[currentPack];
     const searchTerm = document.getElementById('playerSearch').value.toLowerCase();
     const rarityFilter = document.getElementById('rarityFilter').value;
     const ownedFilter = document.getElementById('ownedFilter').value;
