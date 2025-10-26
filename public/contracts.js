@@ -154,6 +154,13 @@ async function loadPacks() {
 
 // Show pack details (called from HTML onclick)
 function showPackDetails(packKey) {
+    console.log('showPackDetails called with:', packKey);
+    
+    if (!PACKS_CONFIG[packKey]) {
+        console.error('Invalid pack key:', packKey);
+        return;
+    }
+    
     currentPack = packKey;
     
     // Show pack details
@@ -167,6 +174,9 @@ function showPackDetails(packKey) {
     // Scroll to details
     document.getElementById('packDetailsContainer').scrollIntoView({ behavior: 'smooth' });
 }
+
+// Make function globally accessible
+window.showPackDetails = showPackDetails;
 
 // Render pack details
 function renderPackDetails(packKey) {
@@ -402,18 +412,24 @@ function closeModal() {
     modal.style.display = 'none';
 }
 
-// Event listeners
-document.getElementById('playerSearch').addEventListener('input', filterAndRenderPlayers);
-document.getElementById('rarityFilter').addEventListener('change', filterAndRenderPlayers);
-document.getElementById('ownedFilter').addEventListener('change', filterAndRenderPlayers);
-
-// Close modal on outside click
-window.onclick = function(event) {
-    const modal = document.getElementById('playerModal');
-    if (event.target === modal) {
-        closeModal();
-    }
-}
+// Make function globally accessible
+window.closeModal = closeModal;
 
 // Initialize on page load
-document.addEventListener('DOMContentLoaded', init);
+document.addEventListener('DOMContentLoaded', () => {
+    // Event listeners
+    document.getElementById('playerSearch').addEventListener('input', filterAndRenderPlayers);
+    document.getElementById('rarityFilter').addEventListener('change', filterAndRenderPlayers);
+    document.getElementById('ownedFilter').addEventListener('change', filterAndRenderPlayers);
+    
+    // Close modal on outside click
+    window.onclick = function(event) {
+        const modal = document.getElementById('playerModal');
+        if (event.target === modal) {
+            closeModal();
+        }
+    };
+    
+    // Initialize
+    init();
+});
