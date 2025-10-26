@@ -56,24 +56,11 @@ function selectRarity(chances) {
     return Object.keys(chances)[Object.keys(chances).length - 1]; // Fallback
 }
 
-function pullPlayer(rarity, allowedRarities, packKey = null) {
-    // For Iconic pack, use only the curated player pool
-    if (packKey === 'iconic') {
-        const pack = PACKS[packKey];
-        if (pack && pack.playerPool && pack.playerPool.length > 0) {
-            const players = require('../players.json');
-            const poolPlayers = players.filter(p => pack.playerPool.includes(p.id) && p.rarity === rarity);
-            if (poolPlayers.length === 0) return null;
-            return poolPlayers[Math.floor(Math.random() * poolPlayers.length)];
-        }
-    }
-
-    // Original logic for other packs
+function pullPlayer(rarity, allowedRarities) {
     if (Array.isArray(allowedRarities) && allowedRarities.length > 0 && !allowedRarities.includes(rarity)) {
         return null;
     }
 
-    const players = require('../players.json');
     const filteredPlayers = players.filter(p => p.rarity === rarity);
     if (filteredPlayers.length === 0) return null;
     return filteredPlayers[Math.floor(Math.random() * filteredPlayers.length)];
@@ -167,7 +154,7 @@ module.exports = {
 
         // Pull the player
         const targetRarity = selectRarity(pack.rarity_chances);
-        let newPlayer = pullPlayer(targetRarity, pack.includeRarities, packName);
+        let newPlayer = pullPlayer(targetRarity, pack.includeRarities);
 
         if (!newPlayer && Array.isArray(pack.includeRarities)) {
             const fallback = pack.includeRarities.find(r => {
@@ -175,7 +162,7 @@ module.exports = {
                 return pool.length > 0;
             });
             if (fallback) {
-                newPlayer = pullPlayer(fallback, pack.includeRarities, packName);
+                newPlayer = pullPlayer(fallback);
             }
         }
 

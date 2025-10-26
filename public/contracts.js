@@ -226,10 +226,8 @@ function renderPackDetails(packKey) {
     // Add Iconic pack limit info
     let limitInfo = '';
     if (packKey === 'iconic') {
-        const packConfig = PACKS_CONFIG[packKey];
-        if (packConfig && packConfig.limit) {
-            limitInfo = `<p style="color: var(--secondary); font-size: 1.1em; margin-top: 15px;">📦 Limited Edition: ${packConfig.limit} players only</p>`;
-        }
+        // We'll add this when we get the limit data
+        limitInfo = '<p style="color: var(--secondary); font-size: 1.1em; margin-top: 15px;">📦 Limited Edition: 150 packs only</p>';
     }
 
     container.innerHTML = `
@@ -259,39 +257,31 @@ function filterAndRenderPlayers() {
     const rarityFilter = document.getElementById('rarityFilter').value;
     const ownedFilter = document.getElementById('ownedFilter').value;
 
-    // Get available rarities in this pack
+    // Get available rarities in this pack (from config since API doesn't have includeRarities)
     const availableRarities = Object.keys(packConfig.rarity_chances).filter(r => packConfig.rarity_chances[r] > 0);
-
+    
     // Filter players
-    let filteredPlayers = allPlayers.filter(player => {
+    filteredPlayers = allPlayers.filter(player => {
         // Must be in pack's available rarities
         if (!availableRarities.includes(player.rarity)) return false;
-
-        // For Iconic pack, must be in the curated player pool
-        if (currentPack === 'iconic' && pack.playerPool) {
-            if (!pack.playerPool.includes(player.id)) return false;
-        }
-
+        
         // Search filter
         if (searchTerm && !player.name.toLowerCase().includes(searchTerm)) return false;
-
+        
         // Rarity filter
         if (rarityFilter && player.rarity !== rarityFilter) return false;
-
+        
         // Owned filter
         const isOwned = ownedPlayerIds.includes(player.id);
         if (ownedFilter === 'owned' && !isOwned) return false;
         if (ownedFilter === 'not-owned' && isOwned) return false;
-
+        
         return true;
     });
-
-    // Update filteredPlayers for rendering
-    filteredPlayers = filteredPlayers;
-
+    
     // Update stats
     updateStats();
-
+    
     // Render players
     renderPlayers();
 }
@@ -304,25 +294,12 @@ function updateStats() {
     if (!pack || !packConfig) return;
 
     const availableRarities = Object.keys(packConfig.rarity_chances).filter(r => packConfig.rarity_chances[r] > 0);
-
-    // Filter function for Iconic pack player pool
-    const isPlayerInPack = (player) => {
-        // Must be in pack's available rarities
-        if (!availableRarities.includes(player.rarity)) return false;
-
-        // For Iconic pack, must be in the curated player pool
-        if (currentPack === 'iconic' && pack.playerPool) {
-            if (!pack.playerPool.includes(player.id)) return false;
-        }
-
-        return true;
-    };
-
-    const totalInPack = allPlayers.filter(isPlayerInPack).length;
-    const ownedInPack = allPlayers.filter(p => isPlayerInPack(p) && ownedPlayerIds.includes(p.id)).length;
+    
+    const totalInPack = allPlayers.filter(p => availableRarities.includes(p.rarity)).length;
+    const ownedInPack = allPlayers.filter(p => availableRarities.includes(p.rarity) && ownedPlayerIds.includes(p.id)).length;
     const notOwnedInPack = totalInPack - ownedInPack;
     const collectionPercent = totalInPack > 0 ? ((ownedInPack / totalInPack) * 100).toFixed(1) : 0;
-
+    
     document.getElementById('playerCount').textContent = filteredPlayers.length;
     document.getElementById('totalPlayers').textContent = totalInPack;
     document.getElementById('ownedPlayers').textContent = ownedInPack;
