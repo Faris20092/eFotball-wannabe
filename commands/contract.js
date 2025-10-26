@@ -3,53 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const players = require('../players.json');
 const config = require('../config.json');
-
-// --- Contract Configuration ---
-
-const PACKS = {
-    'iconic': {
-        name: 'Iconic Moment Pack',
-        cost: 500,
-        currency: 'eCoins',
-        description: 'A special pack containing players of all rarities, with a chance to get an Iconic Moment player!',
-        rarity_chances: {
-            'Iconic': 0.01,
-            'Legend': 0.03,
-            'Black': 0.10,
-            'Gold': 0.20,
-            'Silver': 0.30,
-            'Bronze': 0.26,
-            'White': 0.10,
-        }
-    },
-    'legend': {
-        name: 'Legend Box Draw',
-        cost: 25000,
-        currency: 'GP',
-        description: 'A box draw with a chance to get a Legend player!',
-        rarity_chances: {
-            'Legend': 0.05,
-            'Black': 0.15,
-            'Gold': 0.25,
-            'Silver': 0.35,
-            'Bronze': 0.20,
-            'White': 0.00, // No white balls in this pack
-        }
-    },
-    'standard': {
-        name: 'Standard Pack',
-        cost: 10000,
-        currency: 'GP',
-        description: 'A standard pack containing players from Black to White rarity.',
-        rarity_chances: {
-            'Black': 0.05,
-            'Gold': 0.20,
-            'Silver': 0.40,
-            'Bronze': 0.25,
-            'White': 0.10,
-        }
-    }
-};
+const { PACKS, loadPackLimits, savePackLimits } = require('../shared/pack-config');
 
 const RARITY_SELL_VALUE = {
     'Iconic': 50000,
@@ -102,7 +56,11 @@ function selectRarity(chances) {
     return Object.keys(chances)[Object.keys(chances).length - 1]; // Fallback
 }
 
-function pullPlayer(rarity) {
+function pullPlayer(rarity, allowedRarities) {
+    if (Array.isArray(allowedRarities) && allowedRarities.length > 0 && !allowedRarities.includes(rarity)) {
+        return null;
+    }
+
     const filteredPlayers = players.filter(p => p.rarity === rarity);
     if (filteredPlayers.length === 0) return null;
     return filteredPlayers[Math.floor(Math.random() * filteredPlayers.length)];
@@ -162,6 +120,18 @@ module.exports = {
             return await interaction.reply({ content: 'That pack does not exist.', ephemeral: true });
         }
 
+        const packLimits = loadPackLimits();
+        const iconicLimit = packLimits?.iconic;
+
+        if (packName === 'iconic') {
+            if (!iconicLimit || iconicLimit.remaining <= 0) {
+                return await interaction.reply({
+                    content: '❌ Iconic Moment Pack is sold out (0/150 remaining). Please check back later!',
+                    ephemeral: true,
+                });
+            }
+        }
+
         // Ensure userData.players exists (presentation-only safeguard)
         if (!userData.players) userData.players = [];
 
@@ -184,7 +154,17 @@ module.exports = {
 
         // Pull the player
         const targetRarity = selectRarity(pack.rarity_chances);
-        const newPlayer = pullPlayer(targetRarity);
+        let newPlayer = pullPlayer(targetRarity, pack.includeRarities);
+
+        if (!newPlayer && Array.isArray(pack.includeRarities)) {
+            const fallback = pack.includeRarities.find(r => {
+                const pool = players.filter(p => p.rarity === r);
+                return pool.length > 0;
+            });
+            if (fallback) {
+                newPlayer = pullPlayer(fallback);
+            }
+        }
 
         if (!newPlayer) {
             // This should ideally not happen if players.json is populated correctly
@@ -206,6 +186,13 @@ module.exports = {
         }
 
         client.setUserData(interaction.user.id, userData);
+
+        if (packName === 'iconic') {
+            if (iconicLimit && typeof iconicLimit.remaining === 'number') {
+                iconicLimit.remaining = Math.max(0, iconicLimit.remaining - 1);
+            }
+            savePackLimits(packLimits);
+        }
 
         // Send result embed (beautified only)
         const rarityEmoji = RARITY_EMOJIS[newPlayer.rarity] || '';

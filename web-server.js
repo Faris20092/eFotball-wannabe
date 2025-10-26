@@ -85,6 +85,16 @@ function setUserData(userId, data) {
     fs.writeFileSync(userFile, JSON.stringify(data, null, 2));
 }
 
+const { PACKS: SHARED_PACKS, loadPackLimits, savePackLimits } = require('./shared/pack-config');
+
+// Helper: initialize pack limits file if missing (only iconic currently tracked)
+function ensurePackLimitsFile() {
+    const limits = loadPackLimits();
+    savePackLimits(limits);
+}
+
+ensurePackLimitsFile();
+
 // Helper: Get all players data
 function getAllPlayers() {
     const playersFile = path.join(__dirname, 'players.json');
@@ -250,51 +260,7 @@ app.get('/api/all-players', isAuthenticated, (req, res) => {
 
 // Packs API endpoint
 app.get('/api/packs', isAuthenticated, (req, res) => {
-    const PACKS = {
-        'iconic': {
-            name: 'Iconic Moment Pack',
-            cost: 500,
-            currency: 'eCoins',
-            description: 'A special pack containing players of all rarities, with a chance to get an Iconic Moment player!',
-            rarity_chances: {
-                'Iconic': 0.01,
-                'Legend': 0.03,
-                'Black': 0.10,
-                'Gold': 0.20,
-                'Silver': 0.30,
-                'Bronze': 0.26,
-                'White': 0.10
-            }
-        },
-        'legend': {
-            name: 'Legend Box Draw',
-            cost: 25000,
-            currency: 'GP',
-            description: 'A box draw with a chance to get a Legend player!',
-            rarity_chances: {
-                'Legend': 0.05,
-                'Black': 0.15,
-                'Gold': 0.25,
-                'Silver': 0.35,
-                'Bronze': 0.20,
-                'White': 0.00
-            }
-        },
-        'standard': {
-            name: 'Standard Pack',
-            cost: 10000,
-            currency: 'GP',
-            description: 'A standard pack containing players from Black to White rarity.',
-            rarity_chances: {
-                'Black': 0.05,
-                'Gold': 0.20,
-                'Silver': 0.40,
-                'Bronze': 0.25,
-                'White': 0.10
-            }
-        }
-    };
-    res.json({ packs: PACKS });
+    res.json({ packs: SHARED_PACKS });
 });
 
 // Mail API endpoints
