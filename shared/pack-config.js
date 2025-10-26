@@ -4,22 +4,19 @@ const fs = require('fs');
 const DATA_DIR = path.join(__dirname, '..', 'data');
 const PACK_LIMIT_FILE = path.join(DATA_DIR, 'pack_limits.json');
 
+// Load the curated Iconic pack configuration
+const iconicConfig = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'iconic_pack_config.json'), 'utf8'));
+
 const PACKS = {
   iconic: {
     name: 'Iconic Moment Pack',
     cost: 500,
     currency: 'eCoins',
-    description: 'Limited run pack featuring Iconic stars plus Black-to-White support cards.',
-    rarity_chances: {
-      Iconic: 0.12,
-      Black: 0.15,
-      Gold: 0.18,
-      Silver: 0.20,
-      Bronze: 0.15,
-      White: 0.20,
-    },
-    limit: 150,
-    includeRarities: ['Iconic', 'Black', 'Gold', 'Silver', 'Bronze', 'White'],
+    description: iconicConfig.description,
+    rarity_chances: iconicConfig.rarity_chances,
+    limit: iconicConfig.limit,
+    includeRarities: iconicConfig.includeRarities,
+    playerPool: iconicConfig.playerPool, // Only these 150 players
   },
   legend: {
     name: 'Legend Box Draw',
