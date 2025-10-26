@@ -23,18 +23,19 @@ const RARITY_EMOJIS = {
 
 // Define packs (Iconic, Legend, Standard only)
 const PACKS_CONFIG = {
-    'Iconic': {
+    'iconic': {
         name: 'Iconic Pack',
-        description: 'Highest chance for Iconic and Legend players',
+        description: 'Limited run pack featuring Iconic stars plus Black-to-White support cards.',
         rarity_chances: {
-            'Iconic': 0.15,
-            'Legend': 0.35,
-            'Black': 0.30,
-            'Gold': 0.15,
-            'Silver': 0.05
+            'Iconic': 0.12,
+            'Black': 0.15,
+            'Gold': 0.18,
+            'Silver': 0.20,
+            'Bronze': 0.15,
+            'White': 0.20
         }
     },
-    'Legend': {
+    'legend': {
         name: 'Legend Pack',
         description: 'Great chance for Legend and Black players',
         rarity_chances: {
@@ -45,7 +46,7 @@ const PACKS_CONFIG = {
             'Bronze': 0.02
         }
     },
-    'Standard': {
+    'standard': {
         name: 'Standard Pack',
         description: 'Standard pack with all rarities',
         rarity_chances: {
@@ -62,6 +63,7 @@ const PACKS_CONFIG = {
 async function init() {
     await loadUserData();
     await loadAllPlayers();
+    await loadPacks(); // Load API pack data
     document.getElementById('loading').style.display = 'none';
 }
 
@@ -99,40 +101,50 @@ async function loadAllPlayers() {
 // Load pack data
 async function loadPacks() {
     try {
+        console.log('Loading packs from API...');
         const response = await fetch('/api/packs');
         const data = await response.json();
+        console.log('API response:', data);
+
         window.packsData = data.packs || {};
+        console.log('Loaded packs:', Object.keys(window.packsData));
+
+        // Verify Iconic pack data
+        if (window.packsData.iconic) {
+            console.log('Iconic pack data:', window.packsData.iconic);
+        } else {
+            console.error('Iconic pack not found in API response');
+        }
     } catch (error) {
         console.error('Error loading packs:', error);
-        // Fallback to hardcoded packs if API fails
+        // Use fallback data if API fails
         window.packsData = {
             'iconic': {
                 name: 'Iconic Moment Pack',
                 cost: 500,
                 currency: 'eCoins',
-                description: 'A special pack containing players of all rarities, with a chance to get an Iconic Moment player!',
+                description: 'Limited run pack featuring Iconic stars plus Black-to-White support cards.',
                 rarity_chances: {
-                    'Iconic': 0.01,
-                    'Legend': 0.03,
-                    'Black': 0.10,
-                    'Gold': 0.20,
-                    'Silver': 0.30,
-                    'Bronze': 0.26,
-                    'White': 0.10
+                    'Iconic': 0.12,
+                    'Black': 0.15,
+                    'Gold': 0.18,
+                    'Silver': 0.20,
+                    'Bronze': 0.15,
+                    'White': 0.20
                 }
             },
             'legend': {
                 name: 'Legend Box Draw',
                 cost: 25000,
                 currency: 'GP',
-                description: 'A box draw with a chance to get a Legend player!',
+                description: 'A box draw with a strong emphasis on Legend players.',
                 rarity_chances: {
                     'Legend': 0.05,
                     'Black': 0.15,
                     'Gold': 0.25,
                     'Silver': 0.35,
                     'Bronze': 0.20,
-                    'White': 0.00
+                    'White': 0.0
                 }
             },
             'standard': {
@@ -149,28 +161,37 @@ async function loadPacks() {
                 }
             }
         };
+        console.log('Using fallback pack data');
     }
 }
 
 // Show pack details (called from HTML onclick)
 function showPackDetails(packKey) {
     console.log('showPackDetails called with:', packKey);
-    
-    if (!PACKS_CONFIG[packKey]) {
-        console.error('Invalid pack key:', packKey);
+    console.log('Available packs in API:', window.packsData ? Object.keys(window.packsData) : 'API data not loaded');
+    console.log('Pack config available:', Object.keys(PACKS_CONFIG));
+
+    if (!window.packsData || !window.packsData[packKey]) {
+        console.error('Pack not found in API data:', packKey);
+        console.error('Available API packs:', window.packsData ? Object.keys(window.packsData) : 'No API data');
         return;
     }
-    
+
+    if (!PACKS_CONFIG[packKey]) {
+        console.error('Pack config not found:', packKey);
+        return;
+    }
+
     currentPack = packKey;
-    
+
     // Show pack details
     renderPackDetails(packKey);
-    
+
     // Filter and render players
     filterAndRenderPlayers();
-    
+
     document.getElementById('packDetailsContainer').style.display = 'block';
-    
+
     // Scroll to details
     document.getElementById('packDetailsContainer').scrollIntoView({ behavior: 'smooth' });
 }
@@ -180,9 +201,14 @@ window.showPackDetails = showPackDetails;
 
 // Render pack details
 function renderPackDetails(packKey) {
-    const pack = PACKS_CONFIG[packKey];
+    const pack = window.packsData[packKey];
+    if (!pack) {
+        console.error('Pack not found:', packKey);
+        return;
+    }
+
     const container = document.getElementById('packDetails');
-    
+
     let rarityHTML = '';
     for (const [rarity, chance] of Object.entries(pack.rarity_chances)) {
         if (chance > 0) {
@@ -196,10 +222,18 @@ function renderPackDetails(packKey) {
             `;
         }
     }
-    
+
+    // Add Iconic pack limit info
+    let limitInfo = '';
+    if (packKey === 'iconic') {
+        // We'll add this when we get the limit data
+        limitInfo = '<p style="color: var(--secondary); font-size: 1.1em; margin-top: 15px;">📦 Limited Edition: 150 packs only</p>';
+    }
+
     container.innerHTML = `
-        <h3>${PACK_EMOJIS[packKey.toLowerCase()]} ${pack.name}</h3>
+        <h3>${PACK_EMOJIS[packKey]} ${pack.name}</h3>
         <p style="color: #ccc; margin-bottom: 15px;">${pack.description}</p>
+        ${limitInfo}
         <h4 style="color: #fff; margin-top: 20px; margin-bottom: 10px;">Drop Rates:</h4>
         <div class="rarity-chances">
             ${rarityHTML}
@@ -210,14 +244,21 @@ function renderPackDetails(packKey) {
 // Filter and render players
 function filterAndRenderPlayers() {
     if (!currentPack) return;
-    
-    const pack = PACKS_CONFIG[currentPack];
+
+    const pack = window.packsData[currentPack];
+    const packConfig = PACKS_CONFIG[currentPack];
+
+    if (!pack || !packConfig) {
+        console.error('Pack data not found for:', currentPack);
+        return;
+    }
+
     const searchTerm = document.getElementById('playerSearch').value.toLowerCase();
     const rarityFilter = document.getElementById('rarityFilter').value;
     const ownedFilter = document.getElementById('ownedFilter').value;
-    
-    // Get available rarities in this pack
-    const availableRarities = Object.keys(pack.rarity_chances).filter(r => pack.rarity_chances[r] > 0);
+
+    // Get available rarities in this pack (from config since API doesn't have includeRarities)
+    const availableRarities = Object.keys(packConfig.rarity_chances).filter(r => packConfig.rarity_chances[r] > 0);
     
     // Filter players
     filteredPlayers = allPlayers.filter(player => {
@@ -247,10 +288,12 @@ function filterAndRenderPlayers() {
 
 // Update statistics
 function updateStats() {
-    const pack = PACKS_CONFIG[currentPack];
-    if (!pack) return;
-    
-    const availableRarities = Object.keys(pack.rarity_chances).filter(r => pack.rarity_chances[r] > 0);
+    const pack = window.packsData[currentPack];
+    const packConfig = PACKS_CONFIG[currentPack];
+
+    if (!pack || !packConfig) return;
+
+    const availableRarities = Object.keys(packConfig.rarity_chances).filter(r => packConfig.rarity_chances[r] > 0);
     
     const totalInPack = allPlayers.filter(p => availableRarities.includes(p.rarity)).length;
     const ownedInPack = allPlayers.filter(p => availableRarities.includes(p.rarity) && ownedPlayerIds.includes(p.id)).length;
