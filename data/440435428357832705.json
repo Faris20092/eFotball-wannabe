@@ -1,7 +1,7 @@
 {
   "id": "440435428357832705",
-  "gp": 475500,
-  "eCoins": 707187,
+  "gp": 477500,
+  "eCoins": 707337,
   "players": [
     {
       "id": "7731046d-b344-4238-be3b-c94c130ce399",
@@ -18098,43 +18098,10 @@
       "25ffa7c0-6a46-4230-aaa0-2729e45eaac1"
     ]
   },
-  "mail": [
-    {
-      "id": "jwtryhlj",
-      "type": "trainer",
-      "trainerName": "S+ Trainer",
-      "exp": 1000000,
-      "date": "2025-10-24"
-    },
-    {
-      "id": "724w0sw0",
-      "type": "pack",
-      "rarity": "Iconic",
-      "qty": 1,
-      "date": "2025-10-24"
-    },
-    {
-      "id": "c2q9w4ls",
-      "type": "gp",
-      "amount": 500,
-      "date": "2025-10-25"
-    },
-    {
-      "id": "91o6oxto",
-      "type": "gp",
-      "amount": 500,
-      "date": "2025-10-25"
-    },
-    {
-      "id": "vfb8yagn",
-      "type": "gp",
-      "amount": 500,
-      "date": "2025-10-25"
-    }
-  ],
+  "mail": [],
   "inventory": {
     "freePacks": {
-      "Iconic": 1,
+      "Iconic": 2,
       "Legend": 7,
       "Black": 2
     },
@@ -18144,14 +18111,16 @@
     "penalty": {
       "date": "",
       "lastPlay": "2025-10-25",
-      "remaining": 7,
+      "remaining": 15,
       "milestones": {
         "gp": {
           "7": true,
           "15": true,
           "23": true,
-          "27": true
-        }
+          "27": true,
+          "31": true
+        },
+        "ecoin19": true
       }
     }
   },
@@ -18165,6 +18134,13 @@
       "rarity": "S+",
       "exp": 1000000,
       "createdAt": 1757941794735
+    },
+    {
+      "token": "7izl59gy",
+      "name": "S+ Trainer",
+      "rarity": "S+",
+      "exp": 1000000,
+      "createdAt": 1761397750389
     }
   ],
   "trainingExp": 0,
