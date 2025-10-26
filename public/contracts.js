@@ -247,7 +247,9 @@ function filterAndRenderPlayers() {
 
 // Update statistics
 function updateStats() {
-    const pack = window.packsData[currentPack];
+    const pack = PACKS_CONFIG[currentPack];
+    if (!pack) return;
+    
     const availableRarities = Object.keys(pack.rarity_chances).filter(r => pack.rarity_chances[r] > 0);
     
     const totalInPack = allPlayers.filter(p => availableRarities.includes(p.rarity)).length;
