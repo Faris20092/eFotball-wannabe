@@ -21,12 +21,47 @@ const RARITY_EMOJIS = {
     'White': '⬜'
 };
 
+// Define packs (Iconic, Legend, Standard only)
+const PACKS_CONFIG = {
+    'Iconic': {
+        name: 'Iconic Pack',
+        description: 'Highest chance for Iconic and Legend players',
+        rarity_chances: {
+            'Iconic': 0.15,
+            'Legend': 0.35,
+            'Black': 0.30,
+            'Gold': 0.15,
+            'Silver': 0.05
+        }
+    },
+    'Legend': {
+        name: 'Legend Pack',
+        description: 'Great chance for Legend and Black players',
+        rarity_chances: {
+            'Legend': 0.25,
+            'Black': 0.40,
+            'Gold': 0.25,
+            'Silver': 0.08,
+            'Bronze': 0.02
+        }
+    },
+    'Standard': {
+        name: 'Standard Pack',
+        description: 'Standard pack with all rarities',
+        rarity_chances: {
+            'Black': 0.10,
+            'Gold': 0.30,
+            'Silver': 0.35,
+            'Bronze': 0.20,
+            'White': 0.05
+        }
+    }
+};
+
 // Initialize
 async function init() {
     await loadUserData();
     await loadAllPlayers();
-    await loadPacks();
-    renderPackSelector();
     document.getElementById('loading').style.display = 'none';
 }
 
@@ -117,55 +152,25 @@ async function loadPacks() {
     }
 }
 
-// Render pack selector
-function renderPackSelector() {
-    const container = document.getElementById('packSelector');
-    container.innerHTML = '';
-    
-    for (const [packKey, pack] of Object.entries(window.packsData)) {
-        const packCard = document.createElement('div');
-        packCard.className = 'pack-card';
-        packCard.onclick = () => selectPack(packKey);
-        
-        const emoji = PACK_EMOJIS[packKey] || '📦';
-        
-        packCard.innerHTML = `
-            <div class="pack-icon">${emoji}</div>
-            <div class="pack-name">${pack.name}</div>
-            <div class="pack-cost">${pack.cost.toLocaleString()} ${pack.currency}</div>
-            <div class="pack-description">${pack.description}</div>
-        `;
-        
-        container.appendChild(packCard);
-    }
-}
-
-// Select a pack
-function selectPack(packKey) {
+// Show pack details (called from HTML onclick)
+function showPackDetails(packKey) {
     currentPack = packKey;
-    
-    // Update active state
-    document.querySelectorAll('.pack-card').forEach((card, index) => {
-        const keys = Object.keys(window.packsData);
-        if (keys[index] === packKey) {
-            card.classList.add('active');
-        } else {
-            card.classList.remove('active');
-        }
-    });
     
     // Show pack details
     renderPackDetails(packKey);
     
-    // Filter and show players
+    // Filter and render players
     filterAndRenderPlayers();
     
     document.getElementById('packDetailsContainer').style.display = 'block';
+    
+    // Scroll to details
+    document.getElementById('packDetailsContainer').scrollIntoView({ behavior: 'smooth' });
 }
 
 // Render pack details
 function renderPackDetails(packKey) {
-    const pack = window.packsData[packKey];
+    const pack = PACKS_CONFIG[packKey];
     const container = document.getElementById('packDetails');
     
     let rarityHTML = '';
@@ -183,9 +188,8 @@ function renderPackDetails(packKey) {
     }
     
     container.innerHTML = `
-        <h3>${PACK_EMOJIS[packKey]} ${pack.name}</h3>
+        <h3>${PACK_EMOJIS[packKey.toLowerCase()]} ${pack.name}</h3>
         <p style="color: #ccc; margin-bottom: 15px;">${pack.description}</p>
-        <p style="color: var(--secondary); font-size: 1.2em; font-weight: bold;">Cost: ${pack.cost.toLocaleString()} ${pack.currency}</p>
         <h4 style="color: #fff; margin-top: 20px; margin-bottom: 10px;">Drop Rates:</h4>
         <div class="rarity-chances">
             ${rarityHTML}

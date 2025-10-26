@@ -13,39 +13,52 @@
         }
 
         .pack-selector {
-            display: flex;
-            gap: 20px;
-            justify-content: center;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 30px;
             margin-bottom: 40px;
-            flex-wrap: wrap;
         }
 
         .pack-card {
-            background: rgba(0, 0, 51, 0.9);
-            border: 3px solid rgba(255, 237, 0, 0.3);
-            border-radius: 15px;
-            padding: 25px;
+            background: rgba(15, 15, 15, 0.95);
+            border: 3px solid rgba(255, 237, 0, 0.4);
+            border-radius: 20px;
+            overflow: hidden;
             cursor: pointer;
             transition: all 0.3s;
-            min-width: 280px;
-            text-align: center;
+            position: relative;
         }
 
         .pack-card:hover {
-            transform: translateY(-5px);
+            transform: translateY(-8px);
             border-color: var(--secondary);
-            box-shadow: 0 10px 30px rgba(255, 237, 0, 0.4);
+            box-shadow: 0 15px 40px rgba(255, 237, 0, 0.5);
         }
 
-        .pack-card.active {
-            border-color: var(--secondary);
-            background: rgba(0, 20, 220, 0.4);
-            box-shadow: 0 0 30px rgba(255, 237, 0, 0.5);
+        .pack-banner {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            display: block;
         }
 
-        .pack-icon {
-            font-size: 3em;
-            margin-bottom: 10px;
+        .pack-content {
+            padding: 20px;
+        }
+
+        .pack-rarity-label {
+            font-size: 0.85em;
+            color: #aaa;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .pack-name {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #fff;
+            margin-bottom: 15px;
         }
 
         .pack-name {
@@ -356,8 +369,33 @@
             <p>💬 <strong>Note:</strong> You can only open packs through Discord. Use the <code>/contract</code> command in Discord to spin packs!</p>
         </div>
 
-        <div class="pack-selector" id="packSelector">
-            <!-- Pack cards will be generated here -->
+        <div class="pack-selector">
+            <!-- Iconic Pack -->
+            <div class="pack-card" onclick="showPackDetails('Iconic')">
+                <img src="/assets/contractbanner/iconic.png" alt="Iconic Pack" class="pack-banner" onerror="this.src='/assets/contractbanner/iconic.jpg'">
+                <div class="pack-content">
+                    <div class="pack-rarity-label">Iconic</div>
+                    <div class="pack-name">Iconic Pack</div>
+                </div>
+            </div>
+
+            <!-- Legend Pack -->
+            <div class="pack-card" onclick="showPackDetails('Legend')">
+                <img src="/assets/contractbanner/legend.png" alt="Legend Pack" class="pack-banner" onerror="this.src='/assets/contractbanner/legend.jpg'">
+                <div class="pack-content">
+                    <div class="pack-rarity-label">Epic</div>
+                    <div class="pack-name">Legend Pack</div>
+                </div>
+            </div>
+
+            <!-- Standard Pack -->
+            <div class="pack-card" onclick="showPackDetails('Standard')">
+                <img src="/assets/contractbanner/standard.png" alt="Standard Pack" class="pack-banner" onerror="this.src='/assets/contractbanner/standard.jpg'">
+                <div class="pack-content">
+                    <div class="pack-rarity-label">Standard</div>
+                    <div class="pack-name">Standard Pack</div>
+                </div>
+            </div>
         </div>
 
         <div id="packDetailsContainer" style="display: none;">
