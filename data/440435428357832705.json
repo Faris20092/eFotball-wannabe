@@ -18783,6 +18783,55 @@
         "goalkeeping": 25
       },
       "maxOverall": 81
+    },
+    {
+      "id": "c7a2f1b0-4d9e-4321-8b65-9e0f3d7a6c12",
+      "name": "Cristiano Ronaldo★",
+      "rarity": "Iconic",
+      "overall": 93,
+      "position": "LWF",
+      "stats": {
+        "attacking": 88,
+        "dribbling": 88,
+        "defending": 76,
+        "passing": 83,
+        "physicality": 89,
+        "goalkeeping": 40
+      },
+      "playingStyle": "Prolific Winger",
+      "skills": [
+        "Acrobatic Finishing",
+        "Captaincy",
+        "Cross Over Turn",
+        "Fighting Spirit",
+        "First-time Shot",
+        "Heading",
+        "Knuckle Shot",
+        "Long Range Shooting",
+        "Low Lofted Pass",
+        "No Look Pass",
+        "Penalty Specialist",
+        "Scissors Feint"
+      ],
+      "aiPlayingStyles": [
+        "Incisive Run",
+        "Long Ranger",
+        "Mazing Run",
+        "Speeding Bullet",
+        "Trickster"
+      ],
+      "level": 1,
+      "exp": 0,
+      "maxLevel": 26,
+      "maxStats": {
+        "attacking": 94,
+        "dribbling": 94,
+        "defending": 82,
+        "passing": 89,
+        "physicality": 95,
+        "goalkeeping": 40
+      },
+      "maxOverall": 100
     }
   ],
   "squad": {
