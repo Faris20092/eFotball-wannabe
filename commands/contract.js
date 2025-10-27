@@ -120,18 +120,6 @@ module.exports = {
             return await interaction.reply({ content: 'That pack does not exist.', ephemeral: true });
         }
 
-        const packLimits = loadPackLimits();
-        const iconicLimit = packLimits?.iconic;
-
-        if (packName === 'iconic') {
-            if (!iconicLimit || iconicLimit.remaining <= 0) {
-                return await interaction.reply({
-                    content: '❌ Iconic Moment Pack is sold out (0/150 remaining). Please check back later!',
-                    ephemeral: true,
-                });
-            }
-        }
-
         // Ensure userData.players exists (presentation-only safeguard)
         if (!userData.players) userData.players = [];
 
@@ -186,13 +174,6 @@ module.exports = {
         }
 
         client.setUserData(interaction.user.id, userData);
-
-        if (packName === 'iconic') {
-            if (iconicLimit && typeof iconicLimit.remaining === 'number') {
-                iconicLimit.remaining = Math.max(0, iconicLimit.remaining - 1);
-            }
-            savePackLimits(packLimits);
-        }
 
         // Send result embed (beautified only)
         const rarityEmoji = RARITY_EMOJIS[newPlayer.rarity] || '';

@@ -25,7 +25,7 @@ const RARITY_EMOJIS = {
 const PACKS_CONFIG = {
     'iconic': {
         name: 'Iconic Pack',
-        description: 'Limited run pack featuring Iconic stars plus Black-to-White support cards.',
+        description: 'Premium pack featuring Iconic stars plus Black-to-White support cards.',
         rarity_chances: {
             'Iconic': 0.12,
             'Black': 0.15,
@@ -223,17 +223,9 @@ function renderPackDetails(packKey) {
         }
     }
 
-    // Add Iconic pack limit info
-    let limitInfo = '';
-    if (packKey === 'iconic') {
-        // We'll add this when we get the limit data
-        limitInfo = '<p style="color: var(--secondary); font-size: 1.1em; margin-top: 15px;">📦 Limited Edition: 150 packs only</p>';
-    }
-
     container.innerHTML = `
         <h3>${PACK_EMOJIS[packKey]} ${pack.name}</h3>
         <p style="color: #ccc; margin-bottom: 15px;">${pack.description}</p>
-        ${limitInfo}
         <h4 style="color: #fff; margin-top: 20px; margin-bottom: 10px;">Drop Rates:</h4>
         <div class="rarity-chances">
             ${rarityHTML}

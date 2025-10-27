@@ -30,6 +30,10 @@ module.exports = {
                     '`/squad formation formation:<4-3-3|4-4-2|3-5-2|4-2-3-1>` — Change formation',
                     '`/squad bench action:<add|remove> player:<name>` — Manage bench'
                 ].join('\n') },
+                { name: 'Player Management', value: [
+                    '`/removeplayer player:<name>` — Remove a player from your collection',
+                    '`/addplayer player:<name> [user:<@user>]` — [ADMIN] Add any player to a user\'s team'
+                ].join('\n') },
                 { name: 'Matches', value: [
                     '`/match` — Play a match vs AI for rewards',
                     '`/pvp` — Search for opponent (falls back to AI if no players found)'

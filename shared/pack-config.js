@@ -9,7 +9,7 @@ const PACKS = {
     name: 'Iconic Moment Pack',
     cost: 500,
     currency: 'eCoins',
-    description: 'Limited run pack featuring Iconic stars with supporting Black to White cards.',
+    description: 'Premium pack featuring Iconic stars with supporting Black to White cards.',
     rarity_chances: {
       Iconic: 0.12,
       Black: 0.18,
@@ -18,7 +18,6 @@ const PACKS = {
       Bronze: 0.17,
       White: 0.15,
     },
-    limit: 150,
     includeRarities: ['Iconic', 'Black', 'Gold', 'Silver', 'Bronze', 'White'],
   },
   legend: {

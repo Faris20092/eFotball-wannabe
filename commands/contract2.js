@@ -3,52 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const players = require('../players.json');
 const config = require('../config.json');
-
-// --- Contract Configuration ---
-const PACKS = {
-  'iconic': {
-    name: 'Iconic Moment Pack',
-    cost: 500,
-    currency: 'eCoins',
-    description: 'A special pack containing players of all rarities, with a chance to get an Iconic Moment player!',
-    rarity_chances: {
-      'Iconic': 0.01,
-      'Legend': 0.03,
-      'Black': 0.10,
-      'Gold': 0.20,
-      'Silver': 0.30,
-      'Bronze': 0.26,
-      'White': 0.10,
-    }
-  },
-  'legend': {
-    name: 'Legend Box Draw',
-    cost: 25000,
-    currency: 'GP',
-    description: 'A box draw with a chance to get a Legend player!',
-    rarity_chances: {
-      'Legend': 0.05,
-      'Black': 0.15,
-      'Gold': 0.25,
-      'Silver': 0.35,
-      'Bronze': 0.20,
-      'White': 0.00,
-    }
-  },
-  'standard': {
-    name: 'Standard Pack',
-    cost: 10000,
-    currency: 'GP',
-    description: 'A standard pack containing players from Black to White rarity.',
-    rarity_chances: {
-      'Black': 0.05,
-      'Gold': 0.20,
-      'Silver': 0.40,
-      'Bronze': 0.25,
-      'White': 0.10,
-    }
-  }
-};
+const { PACKS, loadPackLimits, savePackLimits } = require('../shared/pack-config');
 
 const RARITY_SELL_VALUE = {
   'Iconic': 50000,
@@ -101,7 +56,11 @@ function selectRarity(chances) {
   return Object.keys(chances)[Object.keys(chances).length - 1];
 }
 
-function pullPlayer(rarity) {
+function pullPlayer(rarity, allowedRarities) {
+  if (Array.isArray(allowedRarities) && allowedRarities.length > 0 && !allowedRarities.includes(rarity)) {
+    return null;
+  }
+  
   const filteredPlayers = players.filter(p => p.rarity === rarity);
   if (filteredPlayers.length === 0) return null;
   return filteredPlayers[Math.floor(Math.random() * filteredPlayers.length)];
@@ -216,7 +175,18 @@ module.exports = {
 
       for (let i = 0; i < count; i++) {
         const targetRarity = selectRarity(pack.rarity_chances);
-        const newPlayer = pullPlayer(targetRarity);
+        let newPlayer = pullPlayer(targetRarity, pack.includeRarities);
+
+        // Fallback if no player found for selected rarity
+        if (!newPlayer && Array.isArray(pack.includeRarities)) {
+          const fallback = pack.includeRarities.find(r => {
+            const pool = players.filter(p => p.rarity === r);
+            return pool.length > 0;
+          });
+          if (fallback) {
+            newPlayer = pullPlayer(fallback, pack.includeRarities);
+          }
+        }
 
         if (!newPlayer) continue;
 
