@@ -37,18 +37,23 @@ module.exports = {
                 .setRequired(false)),
 
     async autocomplete(interaction) {
-        const focusedValue = interaction.options.getFocused().toLowerCase();
-        
-        // Filter players by name
-        const filtered = players
-            .filter(player => player.name.toLowerCase().includes(focusedValue))
-            .slice(0, 25) // Discord limit
-            .map(player => ({
-                name: `${player.name} (${player.rarity} - ${player.position} - ${player.overall} OVR)`,
-                value: player.id
-            }));
+        try {
+            const focusedValue = interaction.options.getFocused().toLowerCase();
+            
+            // Filter players by name
+            const filtered = players
+                .filter(player => player.name && player.name.toLowerCase().includes(focusedValue))
+                .slice(0, 25) // Discord limit
+                .map(player => ({
+                    name: `${player.name} (${player.rarity} - ${player.position} - ${player.overall} OVR)`,
+                    value: player.id
+                }));
 
-        await interaction.respond(filtered);
+            await interaction.respond(filtered.length > 0 ? filtered : [{ name: 'No players found', value: 'none' }]);
+        } catch (error) {
+            console.error('Autocomplete error in addplayer:', error);
+            await interaction.respond([]);
+        }
     },
 
     async execute(interaction) {
@@ -66,11 +71,19 @@ module.exports = {
         const playerId = interaction.options.getString('player');
         const targetUser = interaction.options.getUser('user') || interaction.user;
 
+        // Check for placeholder values
+        if (playerId === 'none' || playerId === 'error') {
+            return await interaction.reply({ 
+                content: '❌ Please select a valid player from the autocomplete list.', 
+                ephemeral: true 
+            });
+        }
+
         // Find the player
         const player = players.find(p => p.id === playerId);
         if (!player) {
             return await interaction.reply({ 
-                content: '❌ Player not found.', 
+                content: '❌ Player not found. Please use the autocomplete search.', 
                 ephemeral: true 
             });
         }

@@ -31,25 +31,37 @@ module.exports = {
                 .setAutocomplete(true)),
 
     async autocomplete(interaction) {
-        const { client } = interaction;
-        const userData = client.getUserData(interaction.user.id);
-        
-        if (!userData.players || userData.players.length === 0) {
-            return await interaction.respond([]);
+        try {
+            const { client } = interaction;
+            
+            // Check if client and getUserData exist
+            if (!client || !client.getUserData) {
+                console.error('Client or getUserData not available in autocomplete');
+                return await interaction.respond([{ name: 'Error loading players', value: 'error' }]);
+            }
+
+            const userData = client.getUserData(interaction.user.id);
+            
+            if (!userData || !userData.players || userData.players.length === 0) {
+                return await interaction.respond([{ name: 'No players in your collection', value: 'none' }]);
+            }
+
+            const focusedValue = interaction.options.getFocused().toLowerCase();
+            
+            // Filter user's owned players by name
+            const filtered = userData.players
+                .filter(player => player.name && player.name.toLowerCase().includes(focusedValue))
+                .slice(0, 25) // Discord limit
+                .map(player => ({
+                    name: `${player.name} (${player.rarity} - ${player.position} - ${player.overall} OVR)`,
+                    value: player.id
+                }));
+
+            await interaction.respond(filtered.length > 0 ? filtered : [{ name: 'No matching players found', value: 'none' }]);
+        } catch (error) {
+            console.error('Autocomplete error in removeplayer:', error);
+            await interaction.respond([{ name: 'Error loading players', value: 'error' }]);
         }
-
-        const focusedValue = interaction.options.getFocused().toLowerCase();
-        
-        // Filter user's owned players by name
-        const filtered = userData.players
-            .filter(player => player.name.toLowerCase().includes(focusedValue))
-            .slice(0, 25) // Discord limit
-            .map(player => ({
-                name: `${player.name} (${player.rarity} - ${player.position} - ${player.overall} OVR)`,
-                value: player.id
-            }));
-
-        await interaction.respond(filtered);
     },
 
     async execute(interaction) {
@@ -65,11 +77,19 @@ module.exports = {
 
         const playerId = interaction.options.getString('player');
 
+        // Check for placeholder values
+        if (playerId === 'none' || playerId === 'error') {
+            return await interaction.reply({ 
+                content: '❌ Please select a valid player from the autocomplete list.', 
+                ephemeral: true 
+            });
+        }
+
         // Find the player in user's collection
         const playerIndex = userData.players.findIndex(p => p.id === playerId);
         if (playerIndex === -1) {
             return await interaction.reply({ 
-                content: '❌ You don\'t own this player.', 
+                content: '❌ You don\'t own this player. Please use the autocomplete search.', 
                 ephemeral: true 
             });
         }
