@@ -1963,6 +1963,56 @@ body {
     box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
 }
 
+.player-card[data-rarity="Black"] {
+    background: linear-gradient(135deg, 
+        rgba(40, 40, 40, 0.9) 0%, 
+        rgba(60, 60, 60, 0.8) 25%, 
+        rgba(30, 30, 30, 0.9) 50%, 
+        rgba(10, 10, 10, 0.95) 100%);
+    border: 2px solid rgba(80, 80, 80, 0.8);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.6);
+}
+
+.player-card[data-rarity="Gold"] {
+    background: linear-gradient(135deg, 
+        rgba(255, 195, 0, 0.9) 0%, 
+        rgba(255, 215, 100, 0.8) 25%, 
+        rgba(218, 165, 32, 0.9) 50%, 
+        rgba(184, 134, 11, 0.95) 100%);
+    border: 2px solid rgba(255, 195, 0, 0.8);
+    box-shadow: 0 0 20px rgba(255, 195, 0, 0.4);
+}
+
+.player-card[data-rarity="Silver"] {
+    background: linear-gradient(135deg, 
+        rgba(192, 192, 192, 0.9) 0%, 
+        rgba(220, 220, 220, 0.8) 25%, 
+        rgba(169, 169, 169, 0.9) 50%, 
+        rgba(128, 128, 128, 0.95) 100%);
+    border: 2px solid rgba(192, 192, 192, 0.8);
+    box-shadow: 0 0 20px rgba(192, 192, 192, 0.4);
+}
+
+.player-card[data-rarity="Bronze"] {
+    background: linear-gradient(135deg, 
+        rgba(205, 127, 50, 0.9) 0%, 
+        rgba(230, 150, 80, 0.8) 25%, 
+        rgba(184, 115, 51, 0.9) 50%, 
+        rgba(139, 90, 43, 0.95) 100%);
+    border: 2px solid rgba(205, 127, 50, 0.8);
+    box-shadow: 0 0 20px rgba(205, 127, 50, 0.4);
+}
+
+.player-card[data-rarity="White"] {
+    background: linear-gradient(135deg, 
+        rgba(245, 245, 245, 0.9) 0%, 
+        rgba(255, 255, 255, 0.8) 25%, 
+        rgba(230, 230, 230, 0.9) 50%, 
+        rgba(200, 200, 200, 0.95) 100%);
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+}
+
 .player-card.dragging {
     opacity: 0.5;
     cursor: grabbing;
@@ -1983,6 +2033,31 @@ body {
 .player-card[data-rarity="Legend"]:hover {
     box-shadow: 0 8px 30px rgba(255, 215, 0, 0.6);
     border-color: rgba(255, 215, 0, 1);
+}
+
+.player-card[data-rarity="Black"]:hover {
+    box-shadow: 0 8px 30px rgba(80, 80, 80, 0.8);
+    border-color: rgba(100, 100, 100, 1);
+}
+
+.player-card[data-rarity="Gold"]:hover {
+    box-shadow: 0 8px 30px rgba(255, 195, 0, 0.6);
+    border-color: rgba(255, 195, 0, 1);
+}
+
+.player-card[data-rarity="Silver"]:hover {
+    box-shadow: 0 8px 30px rgba(192, 192, 192, 0.6);
+    border-color: rgba(220, 220, 220, 1);
+}
+
+.player-card[data-rarity="Bronze"]:hover {
+    box-shadow: 0 8px 30px rgba(205, 127, 50, 0.6);
+    border-color: rgba(230, 150, 80, 1);
+}
+
+.player-card[data-rarity="White"]:hover {
+    box-shadow: 0 8px 30px rgba(255, 255, 255, 0.5);
+    border-color: rgba(255, 255, 255, 1);
 }
 
 .player-card .player-image-container {
