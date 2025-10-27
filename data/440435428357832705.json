@@ -1,7 +1,7 @@
 {
   "id": "440435428357832705",
-  "gp": 481500,
-  "eCoins": 707347,
+  "gp": 535500,
+  "eCoins": 687347,
   "players": [
     {
       "id": "7731046d-b344-4238-be3b-c94c130ce399",
@@ -18071,6 +18071,718 @@
         "goalkeeping": 22
       },
       "maxOverall": 91
+    },
+    {
+      "id": "585d5978-ad48-4249-bffd-28008016e2a8",
+      "name": "Alva Bogan",
+      "rarity": "Bronze",
+      "overall": 65,
+      "position": "CMF",
+      "stats": {
+        "attacking": 48,
+        "dribbling": 51,
+        "defending": 44,
+        "passing": 57,
+        "physicality": 29,
+        "goalkeeping": 16
+      },
+      "playingStyle": "Creative Playmaker",
+      "skills": [
+        "Dipping Shot",
+        "Chip Shot Control",
+        "Low Lofted Pass"
+      ],
+      "aiPlayingStyles": [
+        "Trickster",
+        "Mazing Run",
+        "Speeding Bullet"
+      ],
+      "level": 1,
+      "exp": 0,
+      "maxLevel": 47,
+      "maxStats": {
+        "attacking": 63,
+        "dribbling": 73,
+        "defending": 63,
+        "passing": 73,
+        "physicality": 54,
+        "goalkeeping": 17
+      },
+      "maxOverall": 75
+    },
+    {
+      "id": "a3354f11-76d9-49ff-a4e6-9ae200542531",
+      "name": "Loyal Sporer",
+      "rarity": "Bronze",
+      "overall": 61,
+      "position": "SS",
+      "stats": {
+        "attacking": 57,
+        "dribbling": 53,
+        "defending": 26,
+        "passing": 42,
+        "physicality": 35,
+        "goalkeeping": 22
+      },
+      "playingStyle": "Creative Playmaker",
+      "skills": [
+        "Long-Range Curler",
+        "Chip Shot Control",
+        "First-time Shot",
+        "Penalty Specialist",
+        "Man Marking",
+        "Double Touch"
+      ],
+      "aiPlayingStyles": [
+        "Speeding Bullet"
+      ],
+      "level": 1,
+      "exp": 0,
+      "maxLevel": 57,
+      "maxStats": {
+        "attacking": 82,
+        "dribbling": 80,
+        "defending": 35,
+        "passing": 62,
+        "physicality": 54,
+        "goalkeeping": 16
+      },
+      "maxOverall": 82
+    },
+    {
+      "id": "ffe62408-ed20-41dc-82ab-c23fdc9a6241",
+      "name": "Ansley Cremin",
+      "rarity": "Gold",
+      "overall": 83,
+      "position": "CF",
+      "stats": {
+        "attacking": 64,
+        "dribbling": 60,
+        "defending": 24,
+        "passing": 38,
+        "physicality": 65,
+        "goalkeeping": 16
+      },
+      "playingStyle": "Fox In The Box",
+      "skills": [
+        "Chip Shot Control",
+        "First-time Shot",
+        "Long-Range Curler",
+        "Long-Range Shooting",
+        "Double Touch",
+        "Through Passing",
+        "Heel Trick",
+        "Penalty Specialist"
+      ],
+      "aiPlayingStyles": [
+        "Trickster",
+        "Mazing Run",
+        "Incisive Run"
+      ],
+      "level": 1,
+      "exp": 0,
+      "maxLevel": 41,
+      "maxStats": {
+        "attacking": 96,
+        "dribbling": 84,
+        "defending": 35,
+        "passing": 59,
+        "physicality": 89,
+        "goalkeeping": 18
+      },
+      "maxOverall": 95
+    },
+    {
+      "id": "bda0e053-277b-4139-a9fc-e1fb3b633886",
+      "name": "Anabelle Lockman-O'Connell",
+      "rarity": "Bronze",
+      "overall": 63,
+      "position": "RMF",
+      "stats": {
+        "attacking": 44,
+        "dribbling": 50,
+        "defending": 29,
+        "passing": 49,
+        "physicality": 43,
+        "goalkeeping": 20
+      },
+      "playingStyle": "Box To Box",
+      "skills": [
+        "Interception",
+        "Long-Range Shooting",
+        "Dipping Shot",
+        "Heel Trick",
+        "Low Lofted Pass"
+      ],
+      "aiPlayingStyles": [
+        "Early Crosser",
+        "Incisive Run"
+      ],
+      "level": 1,
+      "exp": 0,
+      "maxLevel": 59,
+      "maxStats": {
+        "attacking": 63,
+        "dribbling": 76,
+        "defending": 54,
+        "passing": 78,
+        "physicality": 61,
+        "goalkeeping": 20
+      },
+      "maxOverall": 77
+    },
+    {
+      "id": "e4507c4b-6b87-40f8-ba41-1036768dff7f",
+      "name": "Candice Rath",
+      "rarity": "Bronze",
+      "overall": 65,
+      "position": "LB",
+      "stats": {
+        "attacking": 27,
+        "dribbling": 47,
+        "defending": 60,
+        "passing": 43,
+        "physicality": 44,
+        "goalkeeping": 15
+      },
+      "playingStyle": "Defensive Full-back",
+      "skills": [
+        "One-touch Pass",
+        "Through Passing",
+        "Double Touch",
+        "Captaincy",
+        "Interception"
+      ],
+      "aiPlayingStyles": [
+        "Speeding Bullet",
+        "Early Crosser",
+        "Mazing Run"
+      ],
+      "level": 1,
+      "exp": 0,
+      "maxLevel": 43,
+      "maxStats": {
+        "attacking": 45,
+        "dribbling": 73,
+        "defending": 72,
+        "passing": 62,
+        "physicality": 68,
+        "goalkeeping": 25
+      },
+      "maxOverall": 85
+    },
+    {
+      "id": "e6ab2a54-f4b8-4b0a-ac32-23e58fa7a7aa",
+      "name": "Tara Koss-Simonis",
+      "rarity": "Gold",
+      "overall": 82,
+      "position": "RMF",
+      "stats": {
+        "attacking": 46,
+        "dribbling": 68,
+        "defending": 37,
+        "passing": 58,
+        "physicality": 48,
+        "goalkeeping": 19
+      },
+      "playingStyle": "Cross Specialist",
+      "skills": [
+        "Long-Range Curler",
+        "Low Lofted Pass",
+        "Through Passing",
+        "Heel Trick",
+        "One-touch Pass",
+        "Long-Range Shooting"
+      ],
+      "aiPlayingStyles": [
+        "Speeding Bullet",
+        "Mazing Run"
+      ],
+      "level": 1,
+      "exp": 0,
+      "maxLevel": 43,
+      "maxStats": {
+        "attacking": 71,
+        "dribbling": 89,
+        "defending": 55,
+        "passing": 80,
+        "physicality": 80,
+        "goalkeeping": 19
+      },
+      "maxOverall": 90
+    },
+    {
+      "id": "b5706a5b-8ce7-4144-a983-3cf0444f2421",
+      "name": "Chanel Haag",
+      "rarity": "Silver",
+      "overall": 71,
+      "position": "SS",
+      "stats": {
+        "attacking": 56,
+        "dribbling": 58,
+        "defending": 28,
+        "passing": 51,
+        "physicality": 38,
+        "goalkeeping": 17
+      },
+      "playingStyle": "Deep-Lying Forward",
+      "skills": [
+        "Double Touch",
+        "Dipping Shot",
+        "Acrobatic Finishing",
+        "Man Marking",
+        "Long-Range Shooting",
+        "Penalty Specialist",
+        "Long-Range Curler",
+        "Through Passing"
+      ],
+      "aiPlayingStyles": [
+        "Trickster"
+      ],
+      "level": 1,
+      "exp": 0,
+      "maxLevel": 45,
+      "maxStats": {
+        "attacking": 85,
+        "dribbling": 81,
+        "defending": 39,
+        "passing": 70,
+        "physicality": 60,
+        "goalkeeping": 32
+      },
+      "maxOverall": 85
+    },
+    {
+      "id": "b5706a5b-8ce7-4144-a983-3cf0444f2421",
+      "name": "Chanel Haag",
+      "rarity": "Silver",
+      "overall": 71,
+      "position": "SS",
+      "stats": {
+        "attacking": 56,
+        "dribbling": 58,
+        "defending": 28,
+        "passing": 51,
+        "physicality": 38,
+        "goalkeeping": 17
+      },
+      "playingStyle": "Deep-Lying Forward",
+      "skills": [
+        "Double Touch",
+        "Dipping Shot",
+        "Acrobatic Finishing",
+        "Man Marking",
+        "Long-Range Shooting",
+        "Penalty Specialist",
+        "Long-Range Curler",
+        "Through Passing"
+      ],
+      "aiPlayingStyles": [
+        "Trickster"
+      ],
+      "level": 1,
+      "exp": 0,
+      "maxLevel": 45,
+      "maxStats": {
+        "attacking": 85,
+        "dribbling": 81,
+        "defending": 39,
+        "passing": 70,
+        "physicality": 60,
+        "goalkeeping": 32
+      },
+      "maxOverall": 85
+    },
+    {
+      "id": "245418dc-908c-456e-a2a5-b917f09c0b2f",
+      "name": "Edward Leannon",
+      "rarity": "Bronze",
+      "overall": 65,
+      "position": "RWF",
+      "stats": {
+        "attacking": 62,
+        "dribbling": 53,
+        "defending": 24,
+        "passing": 50,
+        "physicality": 27,
+        "goalkeeping": 16
+      },
+      "playingStyle": "Prolific Winger",
+      "skills": [
+        "Acrobatic Clear",
+        "One-touch Pass",
+        "Dipping Shot"
+      ],
+      "aiPlayingStyles": [
+        "Trickster",
+        "Incisive Run",
+        "Speeding Bullet"
+      ],
+      "level": 1,
+      "exp": 0,
+      "maxLevel": 48,
+      "maxStats": {
+        "attacking": 76,
+        "dribbling": 87,
+        "defending": 16,
+        "passing": 68,
+        "physicality": 40,
+        "goalkeeping": 34
+      },
+      "maxOverall": 87
+    },
+    {
+      "id": "6fb81a25-c885-4ab6-b87e-8b836aec4219",
+      "name": "Miller Lakin",
+      "rarity": "Bronze",
+      "overall": 69,
+      "position": "LB",
+      "stats": {
+        "attacking": 27,
+        "dribbling": 54,
+        "defending": 56,
+        "passing": 47,
+        "physicality": 41,
+        "goalkeeping": 22
+      },
+      "playingStyle": "Offensive Wingback",
+      "skills": [
+        "Double Touch",
+        "Long-Range Curler",
+        "Interception",
+        "Acrobatic Finishing",
+        "Chip Shot Control"
+      ],
+      "aiPlayingStyles": [
+        "Incisive Run"
+      ],
+      "level": 1,
+      "exp": 0,
+      "maxLevel": 57,
+      "maxStats": {
+        "attacking": 47,
+        "dribbling": 73,
+        "defending": 77,
+        "passing": 71,
+        "physicality": 70,
+        "goalkeeping": 27
+      },
+      "maxOverall": 85
+    },
+    {
+      "id": "2d9df6fb-02fa-45cd-ab23-5b5478c79b1b",
+      "name": "Juana King",
+      "rarity": "Bronze",
+      "overall": 61,
+      "position": "CMF",
+      "stats": {
+        "attacking": 44,
+        "dribbling": 49,
+        "defending": 43,
+        "passing": 53,
+        "physicality": 28,
+        "goalkeeping": 19
+      },
+      "playingStyle": "Orchestrator",
+      "skills": [
+        "Interception",
+        "Dipping Shot",
+        "Man Marking",
+        "Chip Shot Control",
+        "Acrobatic Clear"
+      ],
+      "aiPlayingStyles": [
+        "Incisive Run"
+      ],
+      "level": 1,
+      "exp": 0,
+      "maxLevel": 58,
+      "maxStats": {
+        "attacking": 58,
+        "dribbling": 71,
+        "defending": 67,
+        "passing": 75,
+        "physicality": 55,
+        "goalkeeping": 16
+      },
+      "maxOverall": 77
+    },
+    {
+      "id": "ff00ea94-1d09-40d4-b08d-4e1acc09b680",
+      "name": "Abbie Ratke",
+      "rarity": "Gold",
+      "overall": 77,
+      "position": "LB",
+      "stats": {
+        "attacking": 34,
+        "dribbling": 63,
+        "defending": 61,
+        "passing": 53,
+        "physicality": 53,
+        "goalkeeping": 21
+      },
+      "playingStyle": "Defensive Full-back",
+      "skills": [
+        "Through Passing",
+        "First-time Shot",
+        "Dipping Shot"
+      ],
+      "aiPlayingStyles": [
+        "Trickster",
+        "Mazing Run",
+        "Speeding Bullet"
+      ],
+      "level": 1,
+      "exp": 0,
+      "maxLevel": 42,
+      "maxStats": {
+        "attacking": 63,
+        "dribbling": 81,
+        "defending": 80,
+        "passing": 74,
+        "physicality": 74,
+        "goalkeeping": 19
+      },
+      "maxOverall": 89
+    },
+    {
+      "id": "ea9223e7-33c5-488e-a732-e60840c0f700",
+      "name": "Verlie McLaughlin",
+      "rarity": "Silver",
+      "overall": 72,
+      "position": "RWF",
+      "stats": {
+        "attacking": 64,
+        "dribbling": 63,
+        "defending": 17,
+        "passing": 54,
+        "physicality": 30,
+        "goalkeeping": 19
+      },
+      "playingStyle": "Roaming Flank",
+      "skills": [
+        "Through Passing",
+        "Penalty Specialist",
+        "Captaincy",
+        "Acrobatic Clear",
+        "Long-Range Curler"
+      ],
+      "aiPlayingStyles": [
+        "Speeding Bullet",
+        "Incisive Run",
+        "Mazing Run"
+      ],
+      "level": 1,
+      "exp": 0,
+      "maxLevel": 50,
+      "maxStats": {
+        "attacking": 88,
+        "dribbling": 81,
+        "defending": 17,
+        "passing": 78,
+        "physicality": 46,
+        "goalkeeping": 34
+      },
+      "maxOverall": 85
+    },
+    {
+      "id": "b907ae03-693f-42b4-8e60-2f839dba0371",
+      "name": "Pete Koch",
+      "rarity": "Bronze",
+      "overall": 66,
+      "position": "GK",
+      "stats": {
+        "attacking": 22,
+        "dribbling": 23,
+        "defending": 49,
+        "passing": 25,
+        "physicality": 44,
+        "goalkeeping": 60
+      },
+      "playingStyle": "Defensive Goalkeeper",
+      "skills": [
+        "One-touch Pass",
+        "Long-Range Shooting",
+        "Acrobatic Finishing",
+        "Dipping Shot",
+        "Man Marking",
+        "Captaincy",
+        "Penalty Specialist",
+        "Heel Trick"
+      ],
+      "aiPlayingStyles": [
+        "Incisive Run",
+        "Speeding Bullet"
+      ],
+      "level": 1,
+      "exp": 0,
+      "maxLevel": 42,
+      "maxStats": {
+        "attacking": 22,
+        "dribbling": 19,
+        "defending": 67,
+        "passing": 49,
+        "physicality": 73,
+        "goalkeeping": 82
+      },
+      "maxOverall": 74
+    },
+    {
+      "id": "894e42e2-bc5c-4f07-80f5-dc402938c649",
+      "name": "Alessandro Green",
+      "rarity": "Silver",
+      "overall": 76,
+      "position": "CF",
+      "stats": {
+        "attacking": 62,
+        "dribbling": 47,
+        "defending": 17,
+        "passing": 27,
+        "physicality": 66,
+        "goalkeeping": 16
+      },
+      "playingStyle": "Goal Poacher",
+      "skills": [
+        "First-time Shot",
+        "Man Marking",
+        "Acrobatic Finishing",
+        "Acrobatic Clear",
+        "Penalty Specialist"
+      ],
+      "aiPlayingStyles": [
+        "Trickster"
+      ],
+      "level": 1,
+      "exp": 0,
+      "maxLevel": 54,
+      "maxStats": {
+        "attacking": 82,
+        "dribbling": 70,
+        "defending": 28,
+        "passing": 54,
+        "physicality": 89,
+        "goalkeeping": 32
+      },
+      "maxOverall": 82
+    },
+    {
+      "id": "3d653821-e522-4938-81a5-01c06a7c5290",
+      "name": "Meredith Reinger",
+      "rarity": "Black",
+      "overall": 87,
+      "position": "CMF",
+      "stats": {
+        "attacking": 58,
+        "dribbling": 60,
+        "defending": 56,
+        "passing": 68,
+        "physicality": 45,
+        "goalkeeping": 17
+      },
+      "playingStyle": "Orchestrator",
+      "skills": [
+        "Double Touch",
+        "Long-Range Curler",
+        "Man Marking",
+        "First-time Shot",
+        "Chip Shot Control",
+        "Through Passing",
+        "Captaincy"
+      ],
+      "aiPlayingStyles": [
+        "Trickster",
+        "Early Crosser"
+      ],
+      "level": 1,
+      "exp": 0,
+      "maxLevel": 32,
+      "maxStats": {
+        "attacking": 78,
+        "dribbling": 90,
+        "defending": 73,
+        "passing": 90,
+        "physicality": 66,
+        "goalkeeping": 22
+      },
+      "maxOverall": 91
+    },
+    {
+      "id": "a0e5f1a1-f5fc-445d-bfca-6226c3b0893b",
+      "name": "Minnie Tillman",
+      "rarity": "Silver",
+      "overall": 75,
+      "position": "AMF",
+      "stats": {
+        "attacking": 62,
+        "dribbling": 63,
+        "defending": 21,
+        "passing": 54,
+        "physicality": 25,
+        "goalkeeping": 18
+      },
+      "playingStyle": "Classic No. 10",
+      "skills": [
+        "Dipping Shot",
+        "Chip Shot Control",
+        "Long-Range Curler"
+      ],
+      "aiPlayingStyles": [
+        "Early Crosser",
+        "Incisive Run",
+        "Speeding Bullet"
+      ],
+      "level": 1,
+      "exp": 0,
+      "maxLevel": 45,
+      "maxStats": {
+        "attacking": 83,
+        "dribbling": 83,
+        "defending": 35,
+        "passing": 75,
+        "physicality": 46,
+        "goalkeeping": 19
+      },
+      "maxOverall": 79
+    },
+    {
+      "id": "956757f0-2407-4d50-a9ae-38e64b0fc1c0",
+      "name": "Tressie Kovacek",
+      "rarity": "Silver",
+      "overall": 74,
+      "position": "RMF",
+      "stats": {
+        "attacking": 41,
+        "dribbling": 63,
+        "defending": 33,
+        "passing": 59,
+        "physicality": 47,
+        "goalkeeping": 23
+      },
+      "playingStyle": "Box To Box",
+      "skills": [
+        "First-time Shot",
+        "Penalty Specialist",
+        "Man Marking",
+        "Dipping Shot",
+        "Captaincy",
+        "Double Touch"
+      ],
+      "aiPlayingStyles": [
+        "Early Crosser",
+        "Speeding Bullet"
+      ],
+      "level": 1,
+      "exp": 0,
+      "maxLevel": 55,
+      "maxStats": {
+        "attacking": 67,
+        "dribbling": 86,
+        "defending": 47,
+        "passing": 76,
+        "physicality": 67,
+        "goalkeeping": 25
+      },
+      "maxOverall": 81
     }
   ],
   "squad": {
