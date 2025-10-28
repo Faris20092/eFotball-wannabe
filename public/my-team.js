@@ -409,7 +409,7 @@ function showPlayerDetails(player) {
     content.innerHTML = `
         <div class="player-detail-container">
             <div class="player-detail-left">
-                <div class="player-detail-card">
+                <div class="player-detail-card" data-rarity="${player.rarity}">
                     <div class="player-card-position">${player.position}</div>
                     <div class="player-card-rating">${player.overall}</div>
                     <div class="player-card-rarity">${rarityIcons[player.rarity] || '⚽'}</div>
